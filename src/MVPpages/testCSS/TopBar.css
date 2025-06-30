@@ -1,0 +1,52 @@
+/* 전체 래퍼는 항상 100% 너비 */
+.top-bar-wrapper {
+  width: 100%;
+  border-bottom: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+/* 내부 최대 너비 지정 + 중앙 정렬 */
+.top-bar {
+  max-width: 1150px;
+  padding: 6px 20px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+/* 링크 스타일 */
+.top-bar-links a,
+.top-bar-links button,
+.top-bar-links span {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.top-bar-links a:hover,
+.top-bar-links button:hover {
+  color: #3E7AEF;
+}
+
+
+@media (max-width: 600px) {
+  .top-bar {
+    justify-content: center; /* 작아지면 가운데 정렬 */
+    padding: 8px 10px;
+  }
+
+  .top-bar-links a,
+  .top-bar-links button,
+  .top-bar-links span {
+    margin-left: 10px;
+    font-size: 0.8rem;
+  }
+}

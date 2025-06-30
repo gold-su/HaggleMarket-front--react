@@ -1,0 +1,93 @@
+:root {
+  --santorini-blue: #416d83;
+  --santorini-light-blue: #6497b1;
+  --santorini-white: #f9f9f9;
+  --santorini-bg: #eaf4f9;
+  --santorini-shadow: rgba(65, 109, 131, 0.15);
+}
+
+.login-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.login-container {
+  background-color: var(--santorini-white);
+  padding: 40px 50px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px var(--santorini-shadow);
+  width: 320px;
+  text-align: center;
+}
+
+.login-container h1 {
+  margin-top: 5px;     /* ⬅️ 추가: 위 여백 줄이기 */
+  margin-bottom: 40px;  /* ⬅️ 필요시 아래 여백도 살짝 줄이기 */
+  color: var(--santorini-light-blue);
+  font-weight: 900;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  height: 40px;                /* 회원가입과 동일 */
+  padding: 0 10px;             /* 회원가입과 동일 */
+  margin-bottom: 14px;
+  border: 1px solid #ccc;      /* ✅ 테두리 통일 */
+  border-radius: 1px;          /* ✅ 둥근 테두리 제거 */
+  outline: none;
+  font-size: 1rem;
+  color: #8b8b8b;
+  background-color: transparent;
+  box-sizing: border-box;      /* ✅ border 포함 계산 */
+  transition: border-color 0.3s ease;
+}
+
+.login-container input::placeholder {
+  color: #aaaaaa;
+}
+
+.login-container input:focus {
+  border-bottom-color: var(--santorini-blue);
+}
+
+.login-container button {
+  width: 100%;
+  padding: 14px 0;
+  background-color: var(--santorini-light-blue);
+  border: none;
+  border-radius: 12px;
+  color: var(--santorini-white);
+  font-weight: 900;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 6px 12px var(--santorini-shadow);
+  transition: background-color 0.3s ease;
+  margin-top: 16px; /* ✅ 버튼을 링크 아래로 더 붙이기 위한 여백 조절 */
+}
+
+.login-container button:hover {
+  background-color: var(--santorini-light-blue);
+}
+
+.links {
+  margin-top: 0px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  color: var(--santorini-blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.links a {
+  color: var(--santorini-light-blue);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.links a:hover {
+  color: var(--santorini-blue);
+}

@@ -1,25 +1,132 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Signup from "./pages/Signup"; 
+import Login from "./pages/Login";
+import logo from "./logo.svg";
+import Header from './MVPpages/testPages/Header';
+import MenuBox from './MVPpages/testPages/MenuBox';
+import ProductList from './MVPpages/testPages/ProductList';
+import AuctionAdSection from './MVPpages/testPages/AuctionAdSection'; 
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
+
+
+import "./App.css";
+import TopBar from "./MVPpages/testPages/TopBar";
+
 
 function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴는 기본적으로 닫혀있어야 합니다.
+  const [frequentKeywords, setFrequentKeywords] = useState([]);
+  const [products, setProducts] = useState([]);
+
+
+  useEffect(() => {
+    setFrequentKeywords([
+      '재테크', '맛집', '카페', '소프트웨어 개발', '프로그래밍', '데이터 관리', 'IT 기술',
+      '여행', '건강', '영화', '음악', '독서', '운동', '요리'
+    ]);
+    setProducts([
+      {
+        id: 1,
+        title: '아이폰 12 중고',
+        description: '상태 아주 좋음, 케이스 포함',
+        price: '350,000원',
+        imageUrl: 'https://images.unsplash.com/photo-1603898037225-3e1a3b7a5d9f?auto=format&fit=crop&w=400&q=80',
+        detailUrl: 'detail/iphone12.html'
+      },
+      {
+        id: 2,
+        title: '삼성 갤럭시 버즈',
+        description: '사용감 약간 있음, 충전기 포함',
+        price: '50,000원',
+        imageUrl: 'https://images.unsplash.com/photo-1580910051070-1f6a4b1a8e7b?auto=format&fit=crop&w=400&q=80',
+        detailUrl: 'detail/galaxybuds.html'
+      },
+      {
+        id: 3,
+        title: '중고 노트북 Dell XPS',
+        description: 'i7, 16GB RAM, SSD 512GB',
+        price: '850,000원',
+        imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=400&q=80',
+        detailUrl: 'detail/dellxps.html'
+      },
+      {
+        id: 4,
+        title: '캠핑용 텐트',
+        description: '4인용, 상태 양호',
+        price: '120,000원',
+        imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+        detailUrl: 'detail/campingtent.html'
+      },
+      {
+        id: 5,
+        title: '중고 자전거',
+        description: '알루미늄 프레임, 변속기 포함',
+        price: '180,000원',
+        imageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=80',
+        detailUrl: 'detail/bike.html'
+      }
+    ]);
+  }, []);
+
+  //특정 단어로 검색
+  const handleSearch = (query) => {
+    if (query) {
+      window.location.href = `/search?query=${encodeURIComponent(query)}`;
+    }
+  };
+
+  //버튼 클릭 시 메뉴 박스 여닫기
+  const handleMenuToggle = () => {
+    setIsMenuOpen(prev => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutsideMenu = (e) => {
+      const menuBoxElement = document.getElementById('menuBox');
+      const menuToggleElement = document.getElementById('menuToggle');
+
+      if (menuBoxElement && menuToggleElement && !menuBoxElement.contains(e.target) && !menuToggleElement.contains(e.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    // 메뉴 박스 외부 클릭 시 메뉴 닫기
+    document.addEventListener('click', handleClickOutsideMenu);
+    return () => {
+      document.removeEventListener('click', handleClickOutsideMenu);
+    };
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+    <TopBar />
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            {/* 경매 물품 영역 추가 */}
+            <AuctionAdSection /> {/* <-- 여기에 추가 */}
+            <main>
+              <ProductList products={products} />
+            </main>
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        } />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
 export default App;
+

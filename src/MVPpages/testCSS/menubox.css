@@ -1,0 +1,49 @@
+
+/* 메뉴 박스 스타일 */
+.menu-box {
+  position: fixed;
+  top: 60px;
+  left: 15px;
+  background-color: var(--santorini-white);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px var(--santorini-shadow);
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  display: none;
+  z-index: 1500;
+}
+
+.menu-box.active {
+  display: block;
+}
+
+.menu-category {
+  margin-bottom: 20px;
+}
+
+.menu-category > h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--santorini-light-blue);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+ul li {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: var(--santorini-blue);
+  cursor: pointer;
+}
+
+ul li:hover {
+  color: var(--santorini-light-blue);
+}
