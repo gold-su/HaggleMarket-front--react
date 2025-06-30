@@ -1,7 +1,6 @@
 import React from 'react';
-import '../testCSS/TopBar.css'; // CSS 파일 경로를 맞춰주세요
 import { Link } from 'react-router-dom';
-
+import '../MainPagesCSS/TopBar.css'; // CSS 파일 경로를 맞춰주세요
 
 function TopBar() {
   const isLoggedIn = !!localStorage.getItem('jwtToken');

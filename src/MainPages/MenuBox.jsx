@@ -1,7 +1,7 @@
 // src/components/MenuBox.js
 import React, { useEffect } from 'react';
 // import { Link } from 'react-router-dom'; // Link는 현재 MenuBox에서 직접 사용되지 않으므로 제거 가능
-import '../testCSS/menubox.css'; // CSS 파일 경로를 맞춰주세요
+import '../MainPagesCSS/menubox.css'; // CSS 파일 경로를 맞춰주세요
 function MenuBox({ isOpen, onClose, frequentKeywords }) {
   // 메뉴가 열릴 때 body 스크롤 방지 (선택 사항)
   useEffect(() => {

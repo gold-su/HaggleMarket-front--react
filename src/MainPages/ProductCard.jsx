@@ -1,6 +1,6 @@
 // src/components/ProductCard.js
 import React, { useState } from 'react';
-import '../testCSS/productcard.css'; // CSS 파일 경로를 맞춰주세요
+import '../MainPagesCSS/productcard.css'; // CSS 파일 경로를 맞춰주세요
 
 function ProductCard({ product }) {
   const [isFavorite, setIsFavorite] = useState(false);

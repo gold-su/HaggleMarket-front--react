@@ -1,7 +1,7 @@
 // src/components/ProductList.js
 import React from 'react';
 import ProductCard from './ProductCard';
-import '../testCSS/productcard.css'; // CSS 파일 경로를 맞춰주세요
+import '../MainPagesCSS/productcard.css'; // CSS 파일 경로를 맞춰주세요
 
 function ProductList({ products, selectedCategory, onCategoryChange }) {
   return (

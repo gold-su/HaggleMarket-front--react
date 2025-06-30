@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup"; 
 import Login from "./pages/Login";
 import logo from "./logo.svg";
-import Header from './MVPpages/testPages/Header';
-import MenuBox from './MVPpages/testPages/MenuBox';
-import ProductList from './MVPpages/testPages/ProductList';
-import AuctionAdSection from './MVPpages/testPages/AuctionAdSection'; 
+import Header from './MainPages/Header';
+import MenuBox from './MainPages/MenuBox';
+import ProductList from './MainPages/ProductList';
+import AuctionAdSection from './MainPages/AuctionAdSection'; 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 
 import "./App.css";
-import TopBar from "./MVPpages/testPages/TopBar";
+import TopBar from "./MainPages/TopBar";
 
 
 function App() {
