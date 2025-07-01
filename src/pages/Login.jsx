@@ -10,17 +10,17 @@ function Login() {
   const [password, setPassword] = useState('');
 
   const handleSubmit = async (e) => {
-     e.preventDefault();
-            try {
-                const token = await login(userId, password);
-                localStorage.setItem("jwtToken", token);
-                localStorage.setItem("userId",userId);
-                alert("로그인 성공");
-                navigate('/');
-            } catch (error) {
-                alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
-                console.log(error);
-            }
+    e.preventDefault();
+    try {
+      const token = await login(userId, password);
+      localStorage.setItem("jwtToken", token);
+      localStorage.setItem("userId",userId);
+      alert("로그인 성공");
+      navigate('/');
+    } catch (error) {
+      alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
+      console.log(error);
+    }
   };
 
   const handleLinkClick = (action) => {
@@ -28,19 +28,19 @@ function Login() {
   };
 
   return (
-      <div className="login-page-wrapper">
-      <div className="login-container">
-        <h1>HAGGLE</h1>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="아이디"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            required
+  <div className="login-page-wrapper">
+    <div className="login-container">
+      <h1>HAGGLE</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+        type="text"
+        placeholder="아이디"
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
+        required
           />
           <input
-            type="password"
+          type="password"
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -57,7 +57,7 @@ function Login() {
         </form>
       </div>
       </div>
-    );
+      );
 }
 
 export default Login;
