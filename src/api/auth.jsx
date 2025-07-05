@@ -8,7 +8,7 @@ export async function login(username, password) {
         });
 
         // 응답 예시: { token: 'JWT토큰', userId: '사용자ID' }
-        return response.data.token;
+        return response.data;
     } catch (error) {
         // 에러가 발생하면 예외 던짐
         throw new Error(error.response?.data?.message || '로그인 실패');
