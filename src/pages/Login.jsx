@@ -12,11 +12,12 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = await login(userId, password);
+      const { token, nickname } = await login(userId, password);
       localStorage.setItem("jwtToken", token);
-      localStorage.setItem("userId",userId);
+      localStorage.setItem("nickName", nickname);
       alert("로그인 성공");
       navigate('/');
+      window.location.reload();
     } catch (error) {
       alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
       console.log(error);
@@ -36,7 +37,12 @@ function Login() {
         type="text"
         placeholder="아이디"
         value={userId}
-        onChange={(e) => setUserId(e.target.value)}
+        onChange={(e) => {
+          setUserId(e.target.value);
+          //한글 입력 제거
+          const filtered = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
+          setUserId(filtered);
+        }}
         required
           />
           <input

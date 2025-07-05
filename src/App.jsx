@@ -100,31 +100,37 @@ function App() {
 
   return (
     <BrowserRouter>
-    <TopBar />
-      <Routes>
-        <Route path="/" element={
-          <>
-            <Header
-              onMenuToggle={handleMenuToggle}
-              onSearch={handleSearch}
-              frequentKeywords={frequentKeywords}
-            />
-            {/* 경매 물품 영역 추가 */}
-            <AuctionAdSection /> {/* <-- 여기에 추가 */}
-            <main>
-              <ProductList products={products} />
-            </main>
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
-          </>
-        } />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
+  <Routes>
+    {/* 로그인 & 회원가입 (TopBar/Header 제외) */}
+    <Route path="/signup" element={<Signup />} />
+    <Route path="/login" element={<Login />} />
+
+    {/* 나머지 페이지 (TopBar/Header 포함) */}
+    <Route
+      path="/"
+      element={
+        <>
+          <TopBar />
+          <Header
+            onMenuToggle={handleMenuToggle}
+            onSearch={handleSearch}
+            frequentKeywords={frequentKeywords}
+          />
+          <AuctionAdSection />
+          <main>
+            <ProductList products={products} />
+          </main>
+          <MenuBox
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            frequentKeywords={frequentKeywords}
+          />
+        </>
+      }
+    />
+  </Routes>
+</BrowserRouter>
+
   );
 }
 
