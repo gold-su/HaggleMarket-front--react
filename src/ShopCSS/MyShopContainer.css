@@ -1,0 +1,38 @@
+/* 최상위 컨테이너: 전체 페이지의 최대 너비와 중앙 정렬 담당 */
+.myshop-container {
+  max-width: 1000px;
+  margin: 30px auto; /* 상하 여백 30px, 좌우 자동 마진으로 중앙 정렬 */
+  /* padding: 20px 30px;  <-- 제거 */
+  background-color: var(--santorini-white); /* 배경색은 유지 */
+  border-radius: 20px; /* 둥근 모서리도 유지 */
+  /* box-shadow: 0 8px 24px rgba(65, 109, 131, 0.15); <-- 제거 */
+  font-family: 'Noto Sans KR', sans-serif; /* 전체 MyShop 섹션의 폰트 */
+  color: var(--santorini-blue); /* 전체 MyShop 섹션의 기본 텍스트 색상 */
+}
+
+/* 상점 관리 영역 컨테이너 (프로필, 상점 상세 정보, 버튼 등) */
+.myshop-management-container {
+  background-color: var(--santorini-white); /* 흰색 배경 */
+  border-radius: 20px; /* 둥근 모서리 */
+  margin-bottom: 30px; /* 하단 여백 (다음 컨테이너와 분리) */
+}
+
+/* 상품 내역 영역 컨테이너 (탭 메뉴, 상품 목록 등) */
+.myshop-products-container {
+  background-color: var(--santorini-white); /* 흰색 배경 */
+  border-radius: 20px; /* 둥근 모서리 */
+}
+
+/* 미디어 쿼리: 모바일 반응형 조정 */
+@media (max-width: 768px) {
+  .myshop-container {
+    /* 전체 컨테이너의 모바일 마진 (양쪽 15px 여백) */
+    margin: 15px;
+  }
+
+  .myshop-management-container,
+  .myshop-products-container {
+    /* 개별 컨테이너의 모바일 패딩 */
+    padding: 15px 20px;
+  }
+}

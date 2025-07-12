@@ -69,7 +69,7 @@ function Header({ onMenuToggle, onSearch, frequentKeywords }) {
         <div className="auth-buttons">
         <Link to="/product"><FaTags style={{ marginRight: '6px' }} />판매하기</Link>
         <span className="divider">|</span>
-        <Link to="/myproduct"><FaStore style={{ marginRight: '6px' }} />내상점</Link>
+        <Link to="/myshop"><FaStore style={{ marginRight: '6px' }} />내상점</Link>
         <span className="divider">|</span>
         <Link to="/chat"><FaComments style={{ marginRight: '6px' }} />해글톡</Link>
         </div>

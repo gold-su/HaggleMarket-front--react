@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import "../pagesCSS/signup.css";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -59,7 +61,11 @@ const Signup = () => {
 
    return (
     <div className="page-wrapper">
-      <h1 className="haggle-title">HAGGLE</h1>
+      <h1 className="haggle-title">
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          HAGGLE
+        </Link>
+      </h1>
 
       <form onSubmit={handleSubmit} className="signup-form">
         <div className="signup-container">

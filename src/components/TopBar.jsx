@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../MainPagesCSS/TopBar.css'; // CSS 파일 경로를 맞춰주세요
+import '../editPage/EditProfile';
 
 function TopBar() {
   const isLoggedIn = !!localStorage.getItem('jwtToken');
@@ -10,8 +11,8 @@ function TopBar() {
       <div className='top-bar'>  
       {isLoggedIn ? (
         <div className="top-bar-links">
-          <span>{localStorage.getItem("nickName")}님 환영합니다</span>
-          <Link to="/mypage">마이페이지</Link>
+          <span>{localStorage.getItem("nickName")}님 환영합니다.</span>
+          <Link to="/editprofile">내 정보 수정</Link>
           <button onClick={() => {
             localStorage.clear();
             window.location.href = '/login';

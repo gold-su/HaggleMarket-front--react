@@ -15,6 +15,8 @@ function Login() {
       const { token, nickname } = await login(userId, password);
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("nickName", nickname);
+      console.log(localStorage.getItem("jwtToken")); // 토큰 확인용
+      console.log(localStorage.getItem("nickName")); // 닉네임 확인용
       alert("로그인 성공");
       navigate('/');
       window.location.reload();
@@ -31,7 +33,11 @@ function Login() {
   return (
   <div className="login-page-wrapper">
     <div className="login-container">
-      <h1>HAGGLE</h1>
+      <h1>
+      <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+        HAGGLE
+      </Link>
+    </h1>
       <form onSubmit={handleSubmit}>
         <input
         type="text"

@@ -1,0 +1,170 @@
+/* src/ShopCSS/MyShopHeader.css */
+
+.myshop-store-header {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--santorini-bg);
+}
+
+.myshop-profile-image-wrapper {
+  position: relative;
+  width: 140px; /* 프로필 이미지 래퍼의 너비 */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column; /* 이미지와 버튼을 세로로 쌓음 */
+  align-items: center; /* 이미지와 버튼 컨테이너를 중앙 정렬 */
+}
+
+.myshop-profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--santorini-light-blue);
+  margin-bottom: 15px;
+}
+
+.myshop-profile-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.myshop-profile-image-wrapper:hover .myshop-profile-image-overlay {
+  opacity: 1;
+}
+
+.myshop-camera-icon {
+  width: 40px;
+  height: 40px;
+  stroke: white;
+}
+
+/* 버튼들을 감싸는 컨테이너 */
+.myshop-buttons {
+  display: flex; /*  버튼들을 가로로 정렬 */
+  gap: 8px; /*  버튼 사이 간격 */
+  margin-top: 12px; /* 프로필 이미지 아래 여백 */
+  justify-content: center; 
+  flex-wrap: nowrap; 
+  width: 100%; 
+  margin-left: 75px;
+}
+
+/* "내 상점 관리" 버튼과 "마이페이지" 버튼 공통 스타일 */
+.myshop-manage-store-btn,
+.myshop-mypage-btn {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--santorini-blue);
+  background-color: transparent;
+  color: var(--santorini-blue);
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap; /* 버튼 텍스트가 줄바꿈되지 않도록 */
+}
+
+.myshop-manage-store-btn:hover,
+.myshop-mypage-btn:hover {
+  background-color: var(--santorini-blue);
+  color: white;
+}
+
+
+.myshop-store-details {
+  flex-grow: 1;
+  display: flex; /* 내부 요소들을 flex로 관리 */
+  flex-direction: column; /* 기본적으로 세로로 쌓음 */
+  gap: 10px; /* 필요에 따라 내부 요소 간 간격 추가 */
+}
+
+.myshop-store-name {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0; /* h1 기본 마진 제거 */
+  display: flex; /* 상점명과 배지를 나란히 정렬하기 위해 flex 사용 */
+  align-items: center;
+  gap: 12px; /* 상점명과 배지 사이 간격 */
+}
+
+.myshop-verified-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  color: white;
+  background-color: #4caf50;
+  border-radius: 12px;
+  vertical-align: middle;
+}
+
+.myshop-store-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 0.9rem;
+  color: var(--santorini-light-blue);
+  margin-bottom: 12px;
+}
+
+.myshop-store-description {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+/* 미디어 쿼리 (모바일 반응형) */
+@media (max-width: 768px) {
+  .myshop-store-header {
+    flex-direction: column; /* 세로로 쌓이도록 */
+    align-items: center; /* 중앙 정렬 */
+    gap: 15px;
+  }
+  .myshop-profile-image-wrapper {
+    width: auto; /* 내용에 맞춰 너비 조정 */
+    flex-direction: column; /* 이미지와 버튼 컨테이너를 세로로 쌓음 */
+    gap: 0; /* 불필요한 간격 제거 */
+    justify-content: center;
+  }
+  .myshop-profile-image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 0;
+  }
+  .myshop-buttons {
+    flex-direction: row; /* ✅ 모바일에서도 버튼 가로 정렬 유지 */
+    gap: 8px; /* 모바일 버튼 간격 */
+    margin-top: 10px; /* 모바일 버튼 상단 여백 */
+    justify-content: center; /* 모바일에서 버튼 중앙 정렬 */
+    width: auto; /* 내용에 맞춰 너비 조정 */
+    flex-wrap: nowrap; /* ✅ 모바일에서도 줄 바꿈 방지 */
+  }
+  .myshop-manage-store-btn,
+  .myshop-mypage-btn {
+    width: auto; /* 모바일에서 버튼 너비를 내용에 맞게 */
+    flex-grow: 1; /* 가로 공간 균등 분배 */
+    max-width: 150px; /* 너무 커지지 않도록 최대 너비 설정 */
+  }
+  .myshop-store-details {
+    flex-grow: 1;
+    text-align: center; /* 텍스트 중앙 정렬 */
+    align-items: center; /* 내부 요소 중앙 정렬 */
+  }
+  .myshop-store-name {
+    font-size: 1.5rem;
+    justify-content: center; /* 상점명 중앙 정렬 */
+  }
+  .myshop-store-stats {
+    justify-content: center; /* 통계 중앙 정렬 */
+  }
+}

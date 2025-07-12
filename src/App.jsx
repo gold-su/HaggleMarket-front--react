@@ -2,16 +2,19 @@ import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup"; 
 import Login from "./pages/Login";
 import logo from "./logo.svg";
-import Header from './MainPages/Header';
+import Header from './components/Header';
 import MenuBox from './MainPages/MenuBox';
 import ProductList from './MainPages/ProductList';
+import MyShop from './Shop/MyShop'; // 내 상점 컴포넌트 임포트
 import AuctionAdSection from './MainPages/AuctionAdSection'; 
+// import MyPage from './Shop/MyPage'; // 마이페이지 컴포넌트 임포트
+import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 
 import "./App.css";
-import TopBar from "./MainPages/TopBar";
+import TopBar from "./components/TopBar";
 
 
 function App() {
@@ -104,7 +107,8 @@ function App() {
     {/* 로그인 & 회원가입 (TopBar/Header 제외) */}
     <Route path="/signup" element={<Signup />} />
     <Route path="/login" element={<Login />} />
-
+    <Route path="/editprofile" element={<EditProfile />} />
+    {/* <Route path="/mypage" element={<MyPage />} /> */}
     {/* 나머지 페이지 (TopBar/Header 포함) */}
     <Route
       path="/"
@@ -128,6 +132,26 @@ function App() {
         </>
       }
     />
+    <Route
+      path="/myshop"
+      element={
+        <>
+          <TopBar />
+          <Header
+            onMenuToggle={handleMenuToggle}
+            onSearch={handleSearch}
+            frequentKeywords={frequentKeywords}
+          />
+          <MyShop />
+          <MenuBox
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            frequentKeywords={frequentKeywords}
+          />
+        </>
+      }
+    />
+
   </Routes>
 </BrowserRouter>
 

@@ -1,0 +1,10 @@
+.myshop-content {
+  min-height: 200px;
+  font-size: 1rem;
+  color: var(--santorini-light-blue);
+  text-align: center;
+}
+
+.myshop-empty-message {
+  margin-top: 50px;
+}

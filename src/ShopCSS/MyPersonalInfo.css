@@ -1,0 +1,152 @@
+/* src/ShopCSS/MyPersonalInfo.css */
+.myshop-personal-info-section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--santorini-bg);
+}
+
+.myshop-personal-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--santorini-light-blue);
+  padding-bottom: 8px;
+}
+
+.myshop-personal-info-section h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--santorini-blue);
+  margin: 0;
+}
+
+.myshop-edit-button,
+.myshop-save-button,
+.myshop-cancel-button {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  font-weight: 700;
+}
+
+.myshop-edit-button {
+  background-color: transparent;
+  border: 1.5px solid var(--santorini-blue);
+  color: var(--santorini-blue);
+}
+
+.myshop-edit-button:hover {
+  background-color: var(--santorini-blue);
+  color: white;
+}
+
+.myshop-edit-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.myshop-save-button {
+  background-color: var(--santorini-blue);
+  border: 1.5px solid var(--santorini-blue);
+  color: white;
+}
+
+.myshop-save-button:hover {
+  background-color: var(--santorini-light-blue);
+  border-color: var(--santorini-light-blue);
+}
+
+.myshop-cancel-button {
+  background-color: transparent;
+  border: 1.5px solid var(--santorini-light-blue);
+  color: var(--santorini-light-blue);
+}
+
+.myshop-cancel-button:hover {
+  background-color: var(--santorini-bg);
+}
+
+.myshop-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px 30px;
+}
+
+.myshop-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.myshop-info-row label {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--santorini-blue);
+  min-width: 80px;
+}
+
+.myshop-info-row span {
+  font-size: 0.95rem;
+  color: #555;
+  word-break: break-all;
+  text-align: right;
+  flex-grow: 1;
+}
+
+.myshop-info-row input[type="email"],
+.myshop-info-row input[type="text"],
+.myshop-info-row input[type="password"],
+.myshop-info-row input[type="tel"] {
+  flex-grow: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--santorini-light-blue);
+  border-radius: 5px;
+  font-size: 0.95rem;
+  color: var(--santorini-blue);
+  background-color: var(--santorini-bg);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.myshop-info-row input:focus {
+  border-color: var(--santorini-blue);
+  box-shadow: 0 0 5px rgba(65, 109, 131, 0.3);
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .myshop-personal-info-section h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  .myshop-info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .myshop-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .myshop-info-row label {
+    font-size: 0.95rem;
+  }
+  .myshop-info-row span,
+  .myshop-info-row input {
+    font-size: 0.9rem;
+    text-align: left;
+    width: 100%;
+  }
+  .myshop-personal-info-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .myshop-edit-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
