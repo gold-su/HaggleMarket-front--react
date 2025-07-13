@@ -5,16 +5,18 @@
   gap: 30px;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--santorini-bg);
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .myshop-profile-image-wrapper {
   position: relative;
-  width: 140px; /* 프로필 이미지 래퍼의 너비 */
+  width: 250px; /* ✅ 프로필 이미지 래퍼의 너비 더 확대 */
   flex-shrink: 0;
   display: flex;
-  flex-direction: column; /* 이미지와 버튼을 세로로 쌓음 */
-  align-items: center; /* 이미지와 버튼 컨테이너를 중앙 정렬 */
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .myshop-profile-image {
@@ -22,14 +24,14 @@
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--santorini-light-blue);
-  margin-bottom: 15px;
+  border: 2px solid #3E7AEF;
 }
 
+/* 프로필 이미지 오버레이 스타일 */
 .myshop-profile-image-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 10px;
+  /* left: 10px;  ✅ 제거 유지 */
   width: 120px;
   height: 120px;
   border-radius: 50%;
@@ -42,62 +44,71 @@
   transition: opacity 0.3s ease;
 }
 
+/* 마우스 오버 시 오버레이 표시 */
 .myshop-profile-image-wrapper:hover .myshop-profile-image-overlay {
   opacity: 1;
 }
 
+/* 카메라 아이콘 스타일 */
 .myshop-camera-icon {
   width: 40px;
   height: 40px;
   stroke: white;
+  fill: none;
 }
+
 
 /* 버튼들을 감싸는 컨테이너 */
 .myshop-buttons {
-  display: flex; /*  버튼들을 가로로 정렬 */
-  gap: 8px; /*  버튼 사이 간격 */
-  margin-top: 12px; /* 프로필 이미지 아래 여백 */
-  justify-content: center; 
-  flex-wrap: nowrap; 
-  width: 100%; 
-  margin-left: 75px;
+  display: flex;
+  gap: 8px; /* ✅ 버튼 사이 간격 다시 줄임 */
+  margin-top: 16px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
-/* "내 상점 관리" 버튼과 "마이페이지" 버튼 공통 스타일 */
+/* "내 상점 관리", "마이페이지" 버튼 공통 스타일 */
 .myshop-manage-store-btn,
 .myshop-mypage-btn {
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  border-radius: 20px;
-  border: 1.5px solid var(--santorini-blue);
+  padding: 8px 16px; /* ✅ 버튼 패딩 다시 줄임 */
+  font-size: 0.9rem; /* ✅ 버튼 폰트 크기 다시 줄임 */
+  border-radius: 20px; /* ✅ 버튼 둥근 정도 다시 줄임 */
+  border: 1.5px solid #3E7AEF;
   background-color: transparent;
-  color: var(--santorini-blue);
+  color: #3E7AEF;
   cursor: pointer;
+  white-space: nowrap;
+  flex: 1; /* ✅ 가로 공간을 균등하게 채우도록 유지 */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: background-color 0.3s ease, color 0.3s ease;
-  white-space: nowrap; /* 버튼 텍스트가 줄바꿈되지 않도록 */
 }
 
 .myshop-manage-store-btn:hover,
 .myshop-mypage-btn:hover {
-  background-color: var(--santorini-blue);
+  background-color: #3E7AEF;
   color: white;
 }
 
-
 .myshop-store-details {
   flex-grow: 1;
-  display: flex; /* 내부 요소들을 flex로 관리 */
-  flex-direction: column; /* 기본적으로 세로로 쌓음 */
-  gap: 10px; /* 필요에 따라 내부 요소 간 간격 추가 */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .myshop-store-name {
   font-size: 1.8rem;
   font-weight: 900;
-  margin: 0; /* h1 기본 마진 제거 */
-  display: flex; /* 상점명과 배지를 나란히 정렬하기 위해 flex 사용 */
+  margin: 0;
+  display: flex;
   align-items: center;
-  gap: 12px; /* 상점명과 배지 사이 간격 */
+  gap: 12px;
+  color: #3E7AEF;
 }
 
 .myshop-verified-badge {
@@ -114,26 +125,27 @@
   display: flex;
   gap: 20px;
   font-size: 0.9rem;
-  color: var(--santorini-light-blue);
+  color: #6497b1;
   margin-bottom: 12px;
 }
 
 .myshop-store-description {
   font-size: 1rem;
   margin-bottom: 12px;
+  color: #555;
 }
 
-/* 미디어 쿼리 (모바일 반응형) */
+/* 모바일 반응형 */
 @media (max-width: 768px) {
   .myshop-store-header {
-    flex-direction: column; /* 세로로 쌓이도록 */
-    align-items: center; /* 중앙 정렬 */
+    flex-direction: column;
+    align-items: center;
     gap: 15px;
   }
   .myshop-profile-image-wrapper {
-    width: auto; /* 내용에 맞춰 너비 조정 */
-    flex-direction: column; /* 이미지와 버튼 컨테이너를 세로로 쌓음 */
-    gap: 0; /* 불필요한 간격 제거 */
+    width: auto;
+    flex-direction: column;
+    gap: 0;
     justify-content: center;
   }
   .myshop-profile-image {
@@ -142,29 +154,29 @@
     margin-bottom: 0;
   }
   .myshop-buttons {
-    flex-direction: row; /* ✅ 모바일에서도 버튼 가로 정렬 유지 */
-    gap: 8px; /* 모바일 버튼 간격 */
-    margin-top: 10px; /* 모바일 버튼 상단 여백 */
-    justify-content: center; /* 모바일에서 버튼 중앙 정렬 */
-    width: auto; /* 내용에 맞춰 너비 조정 */
-    flex-wrap: nowrap; /* ✅ 모바일에서도 줄 바꿈 방지 */
+    flex-direction: row;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: center;
+    width: auto;
+    flex-wrap: nowrap;
   }
   .myshop-manage-store-btn,
   .myshop-mypage-btn {
-    width: auto; /* 모바일에서 버튼 너비를 내용에 맞게 */
-    flex-grow: 1; /* 가로 공간 균등 분배 */
-    max-width: 150px; /* 너무 커지지 않도록 최대 너비 설정 */
+    width: auto;
+    flex-grow: 1;
+    max-width: 150px;
   }
   .myshop-store-details {
     flex-grow: 1;
-    text-align: center; /* 텍스트 중앙 정렬 */
-    align-items: center; /* 내부 요소 중앙 정렬 */
+    text-align: center;
+    align-items: center;
   }
   .myshop-store-name {
     font-size: 1.5rem;
-    justify-content: center; /* 상점명 중앙 정렬 */
+    justify-content: center;
   }
   .myshop-store-stats {
-    justify-content: center; /* 통계 중앙 정렬 */
+    justify-content: center;
   }
 }

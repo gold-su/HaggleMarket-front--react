@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from "react";
-import Signup from "./pages/Signup"; 
+import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import logo from "./logo.svg";
-import Header from './components/Header';
+import Header from './MainPages/Header'; // Header 컴포넌트 임포트
 import MenuBox from './MainPages/MenuBox';
 import ProductList from './MainPages/ProductList';
-import MyShop from './Shop/MyShop'; // 내 상점 컴포넌트 임포트
-import AuctionAdSection from './MainPages/AuctionAdSection'; 
-// import MyPage from './Shop/MyPage'; // 마이페이지 컴포넌트 임포트
-import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
+import AuctionAdSection from './MainPages/AuctionAdSection';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
+import WithdrawUser from './oldMVP/WithdrawPage';
+import ProductDetail from "./oldMVP/ProductDetail";
+import MyShop from "./Shop/MyShop";
+import MyPage from './Shop/MyPage';
+import ProductRegister from './Product/ProductRegister';
 
-
-import "./App.css";
-import TopBar from "./components/TopBar";
+import "./App.css"; 
+import TopBar from "./MainPages/TopBar";
 
 
 function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴는 기본적으로 닫혀있어야 합니다.
+  console.log('App rendering');
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -72,14 +74,12 @@ function App() {
     ]);
   }, []);
 
-  //특정 단어로 검색
   const handleSearch = (query) => {
     if (query) {
       window.location.href = `/search?query=${encodeURIComponent(query)}`;
     }
   };
 
-  //버튼 클릭 시 메뉴 박스 여닫기
   const handleMenuToggle = () => {
     setIsMenuOpen(prev => !prev);
   };
@@ -94,7 +94,6 @@ function App() {
       }
     };
 
-    // 메뉴 박스 외부 클릭 시 메뉴 닫기
     document.addEventListener('click', handleClickOutsideMenu);
     return () => {
       document.removeEventListener('click', handleClickOutsideMenu);
@@ -103,60 +102,44 @@ function App() {
 
   return (
     <BrowserRouter>
-  <Routes>
-    {/* 로그인 & 회원가입 (TopBar/Header 제외) */}
-    <Route path="/signup" element={<Signup />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/editprofile" element={<EditProfile />} />
-    {/* <Route path="/mypage" element={<MyPage />} /> */}
-    {/* 나머지 페이지 (TopBar/Header 포함) */}
-    <Route
-      path="/"
-      element={
-        <>
-          <TopBar />
-          <Header
-            onMenuToggle={handleMenuToggle}
-            onSearch={handleSearch}
-            frequentKeywords={frequentKeywords}
-          />
-          <AuctionAdSection />
-          <main>
-            <ProductList products={products} />
-          </main>
-          <MenuBox
-            isOpen={isMenuOpen}
-            onClose={() => setIsMenuOpen(false)}
-            frequentKeywords={frequentKeywords}
-          />
-        </>
-      }
-    />
-    <Route
-      path="/myshop"
-      element={
-        <>
-          <TopBar />
-          <Header
-            onMenuToggle={handleMenuToggle}
-            onSearch={handleSearch}
-            frequentKeywords={frequentKeywords}
-          />
-          <MyShop />
-          <MenuBox
-            isOpen={isMenuOpen}
-            onClose={() => setIsMenuOpen(false)}
-            frequentKeywords={frequentKeywords}
-          />
-        </>
-      }
-    />
+      <TopBar />
 
-  </Routes>
-</BrowserRouter>
+      <Header
+        onMenuToggle={handleMenuToggle}
+        onSearch={handleSearch}
+        frequentKeywords={frequentKeywords}
+      />
 
+      <Routes>
+        <Route path="/" element={
+          <>
+            {/* <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            /> */}
+            {/* 경매 물품 영역 추가 */}
+            <AuctionAdSection />
+            <main>
+              <ProductList products={products} />
+            </main>
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        } />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/withdraw" element={<WithdrawUser />} />
+        <Route path="/detail/:id" element={<ProductDetail products={products} />} />
+        <Route path="/myproduct" element={<MyShop />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/register-product" element={<ProductRegister />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
 export default App;
-

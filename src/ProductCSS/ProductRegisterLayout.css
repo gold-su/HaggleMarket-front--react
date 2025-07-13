@@ -1,0 +1,172 @@
+/* src/ProductCSS/ProductRegisterLayout.css */
+
+:root {
+  --main-bg-color: #f8f8f8; 
+  --accent-color: #3E7AEF;  
+  --accent-color-dark: #3E7AEF; 
+  --bunjang-red: #3E7AEF; 
+  --bunjang-red-dark: #3E7AEF; 
+  --border-color: #eee;
+  --text-color-dark: #333;
+  --text-color-medium: #666;
+  --text-color-light: #999;
+}
+
+.product-register-page {
+  max-width: 1200px; 
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--main-bg-color);
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-color-dark);
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: sticky; 
+  top: 0;
+  z-index: 1000;
+}
+
+.register-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.close-button { 
+  background: none;
+  border: none;
+  color: var(--text-color-medium);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.register-main-content {
+  flex-grow: 1;
+  padding-bottom: 80px;
+  padding-left: 15px; 
+  padding-right: 15px; 
+  box-sizing: border-box; 
+}
+
+.register-section {
+  background-color: #ffffff;
+  padding: 20px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.register-section:last-of-type {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--text-color-dark);
+}
+
+.form-groups {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.form-group {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.form-group:last-of-type {
+  border-bottom: none;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color-dark);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.form-label small {
+  font-size: 0.8rem;
+  color: var(--text-color-medium);
+  margin-left: 5px;
+}
+
+.form-content {
+  color: var(--text-color-medium);
+}
+
+.register-footer {
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 1000;
+  gap: 15px; 
+  box-sizing: border-box;
+}
+
+.register-button-group {
+  display: flex;
+  gap: 15px; 
+  width: 100%; 
+  max-width: 500px; 
+}
+
+.register-footer button {
+  flex: 1;
+  margin: 0 5px;
+}
+
+/* ✅ 반응형: 태블릿 이하 (1200px 이하) */
+@media (max-width: 1200px) {
+  .product-register-page,
+  .register-footer {
+    max-width: 100%; 
+  }
+
+  .register-main-content {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+/* ✅ 반응형: 모바일 (768px 이하) */
+@media (max-width: 768px) {
+  .register-main-content {
+    padding-left: 10px; /* 모바일에서 더 좁은 패딩 */
+    padding-right: 10px;
+  }
+
+  .register-header,
+  .register-section,
+  .register-footer {
+    padding-left: 10px; /* 모바일에서 좌우 패딩 */
+    padding-right: 10px;
+  }
+}

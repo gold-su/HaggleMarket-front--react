@@ -12,11 +12,9 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { token, nickname } = await login(userId, password);
+      const token = await login(userId, password);
       localStorage.setItem("jwtToken", token);
-      localStorage.setItem("nickName", nickname);
-      console.log(localStorage.getItem("jwtToken")); // 토큰 확인용
-      console.log(localStorage.getItem("nickName")); // 닉네임 확인용
+      localStorage.setItem("userId",userId);
       alert("로그인 성공");
       navigate('/');
       window.location.reload();
@@ -33,22 +31,13 @@ function Login() {
   return (
   <div className="login-page-wrapper">
     <div className="login-container">
-      <h1>
-      <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-        HAGGLE
-      </Link>
-    </h1>
+      <h1>HAGGLE</h1>
       <form onSubmit={handleSubmit}>
         <input
         type="text"
         placeholder="아이디"
         value={userId}
-        onChange={(e) => {
-          setUserId(e.target.value);
-          //한글 입력 제거
-          const filtered = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
-          setUserId(filtered);
-        }}
+        onChange={(e) => setUserId(e.target.value)}
         required
           />
           <input

@@ -1,10 +1,12 @@
-.myshop-content {
-  min-height: 200px;
-  font-size: 1rem;
-  color: var(--santorini-light-blue);
-  text-align: center;
-}
+/* src/ShopCSS/MyShopContent.css */
 
-.myshop-empty-message {
-  margin-top: 50px;
+.myshop-content {
+  font-size: 1rem;
+  color: #555;
+  padding: 20px 0; /* 상하 패딩은 유지 */
+  margin: 0 15px; /* 좌우 마진 추가로 좌우 공간 확보 */
+  box-sizing: border-box; /* 패딩과 마진이 너비 계산에 포함되도록 */
+  overflow-x: auto; /* 혹시 가로 넘침 시 스크롤 가능하도록 */
+  width: 100%; /* 부모 너비에 맞게 */
+  min-width: 0; /* flexbox 내부에서 넘침 방지 */
 }
