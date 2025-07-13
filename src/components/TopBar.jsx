@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import '../MainPagesCSS/TopBar.css'; // CSS 파일 경로를 맞춰주세요
+import '../componentCSS/topBar.css'; // CSS 파일 경로를 맞춰주세요
 import '../editPage/EditProfile';
 
 function TopBar() {

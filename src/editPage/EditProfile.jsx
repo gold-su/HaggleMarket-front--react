@@ -89,7 +89,7 @@ const EditProfile = () => {
       // 비밀번호 제외한 데이터만 전송
       const { password, ...updateData } = form;
 
-      await axios.put(
+      const res = await axios.put(
         "http://localhost:8080/api/users/update",
         updateData,
         {
@@ -105,7 +105,7 @@ const EditProfile = () => {
 
       setShowSuccessModal(true);
       setMessage("내 정보 수정 완료!");
-      setTimeout(() => {z
+      setTimeout(() => {
         setShowSuccessModal(false);
         navigate("/"); // 홈으로 이동
         window.location.reload(); // ✅ 화면 새로고침으로 TopBar까지 갱신

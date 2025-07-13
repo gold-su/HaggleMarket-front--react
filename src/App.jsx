@@ -6,6 +6,7 @@ import MenuBox from './MainPages/MenuBox';
 import ProductList from './MainPages/ProductList';
 import AuctionAdSection from './MainPages/AuctionAdSection';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import LikeBox from "./components/LikeBox";
 import "./App.css";
 import WithdrawUser from './oldMVP/WithdrawPage';
 import ProductDetail from "./oldMVP/ProductDetail";
@@ -24,6 +25,7 @@ function App() {
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
 
+  const [likeCount, setLikeCount] = useState(5); // 예시로 5개 찜했다고 가정
 
   useEffect(() => {
     setFrequentKeywords([
@@ -102,43 +104,62 @@ function App() {
 
   return (
     <BrowserRouter>
-      <TopBar />
 
-      <Header
-        onMenuToggle={handleMenuToggle}
-        onSearch={handleSearch}
-        frequentKeywords={frequentKeywords}
-      />
+  <Routes>
+    {/* 로그인 & 회원가입 (TopBar/Header 제외) */}
+    <Route path="/signup" element={<Signup />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/editprofile" element={<EditProfile />} />
+    {/* <Route path="/mypage" element={<MyPage />} /> */}
+    {/* 나머지 페이지 (TopBar/Header 포함) */}
+    <Route
+      path="/"
+      element={
+        <>
+          <TopBar />
+          <Header
+            onMenuToggle={handleMenuToggle}
+            onSearch={handleSearch}
+            frequentKeywords={frequentKeywords}
+          />
+          <AuctionAdSection />
+          <main>
+            <ProductList products={products} />
+          </main>
 
-      <Routes>
-        <Route path="/" element={
-          <>
-            {/* <Header
-              onMenuToggle={handleMenuToggle}
-              onSearch={handleSearch}
-              frequentKeywords={frequentKeywords}
-            /> */}
-            {/* 경매 물품 영역 추가 */}
-            <AuctionAdSection />
-            <main>
-              <ProductList products={products} />
-            </main>
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
-          </>
-        } />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/withdraw" element={<WithdrawUser />} />
-        <Route path="/detail/:id" element={<ProductDetail products={products} />} />
-        <Route path="/myproduct" element={<MyShop />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/register-product" element={<ProductRegister />} />
-      </Routes>
-    </BrowserRouter>
+          <LikeBox likeCount={likeCount} />
+
+          <MenuBox
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            frequentKeywords={frequentKeywords}
+          />
+        </>
+      }
+    />
+    <Route
+      path="/myshop"
+      element={
+        <>
+          <TopBar />
+          <Header
+            onMenuToggle={handleMenuToggle}
+            onSearch={handleSearch}
+            frequentKeywords={frequentKeywords}
+          />
+          <MyShop />
+          <MenuBox
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            frequentKeywords={frequentKeywords}
+          />
+        </>
+      }
+    />
+
+  </Routes>
+</BrowserRouter>
+
   );
 }
 
