@@ -1,7 +1,7 @@
 // src/components/Header.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../MainPagesCSS/header.css'; // CSS 파일 경로를 맞춰주세요
+import '../componentCSS/Header.css'; // CSS 파일 경로를 맞춰주세요
 import { FaStore, FaUser, FaComments, FaTags } from 'react-icons/fa'; // FontAwesome 예시
 
 function Header({ onMenuToggle, onSearch, frequentKeywords }) {
