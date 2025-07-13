@@ -1,0 +1,29 @@
+.like-box {
+  position: fixed; /* 화면 옆에 고정 */
+  top: 100px; /* 상단 여백 */
+  right: 180px; /* 오른쪽에 붙이기 */
+  width: 150px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  text-align: center;
+  z-index: 1000;
+}
+
+.like-box h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.like-count {
+  font-size: 16px;
+  color: #555;
+}
+
+.like-count span {
+  font-weight: bold;
+  color: #ff5a5f; /* 포인트 색상 */
+}

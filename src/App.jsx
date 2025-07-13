@@ -10,6 +10,7 @@ import AuctionAdSection from './MainPages/AuctionAdSection';
 // import MyPage from './Shop/MyPage'; // 마이페이지 컴포넌트 임포트
 import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import LikeBox from "./components/LikeBox";
 import "./App.css";
 
 
@@ -22,6 +23,7 @@ function App() {
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
 
+  const [likeCount, setLikeCount] = useState(5); // 예시로 5개 찜했다고 가정
 
   useEffect(() => {
     setFrequentKeywords([
@@ -124,6 +126,9 @@ function App() {
           <main>
             <ProductList products={products} />
           </main>
+
+          <LikeBox likeCount={likeCount} />
+
           <MenuBox
             isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}
