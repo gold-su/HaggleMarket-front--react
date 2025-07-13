@@ -2,18 +2,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import "../pagesCSS/signup.css";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-
 
 const Signup = () => {
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({});
-  //로딩 상태
-  const [loading, setLoading] = useState(false);
-  //모달 / 성공 메시지
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-
 
   const [form, setForm] = useState({
     userId: "",
@@ -29,43 +22,35 @@ const Signup = () => {
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value.trimStart() });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // 시작 시 로딩 true
 
     try {
       const res = await axios.post("http://localhost:8080/api/users/signup", form);
-      setShowSuccessModal(true);
       setMessage("회원가입 성공!");
-      setTimeout(() => {
-         setShowSuccessModal(false);
+        setTimeout(() => {
          navigate("/login");
-        }, 2000); // 회원가입 성공 시 로그인 페이지로 이동 / 2초 뒤
+        }, 1000); // 회원가입 성공 시 로그인 페이지로 이동
     }   catch (err) {
-        const res = err.response;
-        const errorMap = res?.data?.message;
-        if (errorMap && typeof errorMap === "object") {
-            setErrors(errorMap);
-            setMessage(""); // 전역 메시지는 이제 따로 처리 안 함
-        } else {
-            setMessage("에러 발생");
-            setErrors({});
-        }
-    } finally {
-        setLoading(false); // 요청 완료 후 로딩 false
-    }
+  const res = err.response;
+  const errorMap = res?.data?.message;
+
+  if (errorMap && typeof errorMap === "object") {
+    setErrors(errorMap);
+    setMessage(""); // 전역 메시지는 이제 따로 처리 안 함
+  } else {
+    setMessage("에러 발생");
+    setErrors({});
+  }
+}
   };
 
    return (
     <div className="page-wrapper">
-      <h1 className="haggle-title">
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          HAGGLE
-        </Link>
-      </h1>
+      <h1 className="haggle-title">HAGGLE</h1>
 
       <form onSubmit={handleSubmit} className="signup-form">
         <div className="signup-container">
@@ -161,16 +146,9 @@ const Signup = () => {
           </div>
 
           {/* 버튼 */}
-          <button type="submit" disabled={loading}>{loading ? "로딩 중..." : "회원가입"}</button>
+          <button type="submit">회원가입</button>
         </div>
       </form>
-      {showSuccessModal && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      <p>회원가입에 성공했습니다!</p>
-    </div>
-  </div>
-)}
     </div>
   );
 

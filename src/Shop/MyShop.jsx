@@ -2,9 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../ShopCSS/MyShopContainer.css';
 import '../ShopCSS/MyShopHeader.css';
-import '../ShopCSS/MyShopNavigation.css'; // MyShopNavigation.css 임포트 확인
-import '../ShopCSS/MyShopContent.css';    // MyShopContent.css 임포트 확인
-
+import '../ShopCSS/MyShopNavigation.css';
+import '../ShopCSS/MyShopContent.css';
 
 function MyShop() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ function MyShop() {
   const [profile, setProfile] = useState(initialProfile);
   const fileInputRef = useRef(null);
 
-  const [activeTab, setActiveTab] = useState('상품'); // 기본값은 '상품'
+  const [activeTab, setActiveTab] = useState('상품');
 
   const handleProfileImageChangeClick = () => {
     fileInputRef.current.click();
@@ -48,14 +47,18 @@ function MyShop() {
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
-    // TODO: 탭에 따라 상품 목록, 후기 등을 로드하는 로직 추가
   };
 
   return (
     <section className="myshop-container">
       <div className="myshop-store-header">
         <div className="myshop-profile-image-wrapper">
-          <img src={profile.profileImage} alt="상점 프로필" className="myshop-profile-image" />
+          <img
+            src={profile.profileImage}
+            alt="상점 프로필"
+            className="myshop-profile-image"
+          />
+          {/* ✅ 오버레이 div와 카메라 아이콘 추가 */}
           <div className="myshop-profile-image-overlay" onClick={handleProfileImageChangeClick}>
             <svg
               className="myshop-camera-icon"
@@ -77,16 +80,19 @@ function MyShop() {
             onChange={handleFileChange}
             style={{ display: 'none' }}
           />
-          {/* ✅ 이 div로 버튼 두 개를 감싸야 합니다. */}
           <div className="myshop-buttons">
             <button className="myshop-manage-store-btn">내 상점 관리</button>
-            <button className="myshop-mypage-btn" onClick={goToMyPage}>마이페이지</button>
+            <button className="myshop-mypage-btn" onClick={goToMyPage}>
+              마이페이지
+            </button>
           </div>
         </div>
         <div className="myshop-store-details">
           <h1 className="myshop-store-name">
             {profile.storeName}
-            {profile.isVerified && <span className="myshop-verified-badge">본인인증 완료</span>}
+            {profile.isVerified && (
+              <span className="myshop-verified-badge">본인인증 완료</span>
+            )}
           </h1>
           <div className="myshop-store-stats">
             <span>상점오픈일 {profile.storeOpenDate}</span>
@@ -99,11 +105,36 @@ function MyShop() {
 
       <nav className="myshop-nav">
         <ul>
-          <li className={activeTab === '상품' ? 'active' : ''} onClick={() => handleTabClick('상품')}>상품 0</li>
-          <li className={activeTab === '상점후기' ? 'active' : ''} onClick={() => handleTabClick('상점후기')}>상점후기 0</li>
-          <li className={activeTab === '찜' ? 'active' : ''} onClick={() => handleTabClick('찜')}>찜 0</li>
-          <li className={activeTab === '팔로잉' ? 'active' : ''} onClick={() => handleTabClick('팔로잉')}>팔로잉 0</li>
-          <li className={activeTab === '팔로워' ? 'active' : ''} onClick={() => handleTabClick('팔로워')}>팔로워 0</li>
+          <li
+            className={activeTab === '상품' ? 'active' : ''}
+            onClick={() => handleTabClick('상품')}
+          >
+            상품 0
+          </li>
+          <li
+            className={activeTab === '상점후기' ? 'active' : ''}
+            onClick={() => handleTabClick('상점후기')}
+          >
+            상점후기 0
+          </li>
+          <li
+            className={activeTab === '찜' ? 'active' : ''}
+            onClick={() => handleTabClick('찜')}
+          >
+            찜 0
+          </li>
+          <li
+            className={activeTab === '팔로잉' ? 'active' : ''}
+            onClick={() => handleTabClick('팔로잉')}
+          >
+            팔로잉 0
+          </li>
+          <li
+            className={activeTab === '팔로워' ? 'active' : ''}
+            onClick={() => handleTabClick('팔로워')}
+          >
+            팔로워 0
+          </li>
         </ul>
       </nav>
 

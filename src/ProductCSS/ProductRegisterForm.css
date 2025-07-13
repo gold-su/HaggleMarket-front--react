@@ -1,0 +1,312 @@
+/* src/ProductCSS/ProductRegisterForm.css */
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 12px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-color-light);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--accent-color);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.char-counter {
+  font-size: 0.8rem;
+  color: var(--text-color-medium);
+  text-align: right;
+  margin-top: 5px;
+}
+
+.guide-link {
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  text-decoration: none;
+  margin-top: 5px;
+  display: block;
+}
+
+/* 이미지 업로드 리스트 */
+.image-upload-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.image-upload-item {
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-color-medium);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-upload-item.add-image {
+  border: 1px dashed var(--border-color);
+  background-color: #f7f7f7;
+}
+
+.image-upload-item.add-image svg {
+  width: 24px;
+  height: 24px;
+  color: var(--text-color-medium);
+}
+
+.image-upload-item.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image-button {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--text-color-light);
+  margin-top: 10px;
+}
+
+/* 상품명 입력 래퍼 */
+.product-name-input-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 480px) {
+  .product-name-input-wrapper {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+  }
+  .product-name-input-wrapper .form-input {
+    flex-grow: 1;
+  }
+}
+
+/* ✅ 카테고리 선택 영역 스타일 */
+.category-selection-area {
+  display: flex;
+  gap: 10px;
+  height: 300px; /* 고정 높이 */
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.category-column {
+  flex: 1;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-color);
+}
+
+.category-column:last-child {
+  border-right: none;
+}
+
+.category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-item {
+  padding: 0;
+}
+
+.category-item button {
+  width: 100%;
+  text-align: left;
+  padding: 12px 15px;
+  background-color: transparent;
+  border: none;
+  font-size: 0.95rem;
+  color: var(--text-color-dark);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-item button:hover {
+  background-color: #f0f0f0;
+}
+
+.category-item.active button {
+  background-color: var(--accent-color);
+  color: white;
+  font-weight: 700;
+}
+
+.category-item.placeholder {
+  padding: 12px 15px;
+  color: var(--text-color-light);
+  font-style: italic;
+  cursor: default;
+}
+
+.sub-category-selectors { /* 이 부분은 현재 JSX에서 사용되지 않음 (3단 컬럼으로 대체) */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background-color: #f7f7f7;
+  border-top: 1px solid var(--border-color);
+}
+
+/* 라디오 버튼 그룹 */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-color-medium);
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+/* 체크박스 라벨 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: var(--text-color-medium);
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.1);
+}
+
+/* 가격 입력 필드와 통화 단위 */
+.price-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.price-input-wrapper .price-input {
+  border: none;
+  flex-grow: 1;
+  padding: 12px 10px;
+}
+
+.price-input-wrapper .price-input:focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.price-input-wrapper .currency {
+  padding: 12px 10px;
+  font-size: 1rem;
+  color: var(--text-color-medium);
+  background-color: #f7f7f7;
+  border-left: 1px solid #ddd;
+}
+
+/* 토글 스위치 */
+.toggle-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toggle-label {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 25px;
+  cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 25px;
+  transition: 0.4s;
+}
+
+.toggle-switch:before {
+  position: absolute;
+  content: "";
+  height: 21px;
+  width: 21px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+.toggle-label input[type="checkbox"]:checked + .toggle-switch {
+  background-color: var(--accent-color);
+}
+
+.toggle-label input[type="checkbox"]:checked + .toggle-switch:before {
+  transform: translateX(20px);
+}

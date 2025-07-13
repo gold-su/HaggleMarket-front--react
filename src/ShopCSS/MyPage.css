@@ -1,0 +1,72 @@
+.mypage-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #333;
+}
+
+.mypage-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.mypage-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.profile-image-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #555;
+}
+
+input, textarea { /* textarea 추가 */
+  margin-top: 6px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #6497b1;
+  box-shadow: 0 0 5px rgba(100, 151, 177, 0.5);
+}
+
+.save-button {
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background-color: #6497b1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #416d83;
+}
