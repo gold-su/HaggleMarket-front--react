@@ -27,6 +27,8 @@ const EditProfile = () => {
 
   // ✅ 내 정보 불러오기
   useEffect(() => {
+    console.log("토큰 확인:", localStorage.getItem("jwtToken"));
+    
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -42,7 +44,7 @@ const EditProfile = () => {
         setForm(res.data);
       } catch (err) {
         console.error("유저 정보 불러오기 실패", err);
-        if (err.response && err.response.status === 401) {
+        if (err.response?.status === 401) {
           alert("로그인 세션이 만료되었습니다. 다시 로그인하세요.");
           localStorage.removeItem("jwtToken");
           navigate("/login");
@@ -99,9 +101,12 @@ const EditProfile = () => {
         }
       );
 
+      // ✅ 백엔드에서 새 토큰과 닉네임 반환
+      const { token, nickname } = res.data;
+
       // ✅ 토큰과 닉네임 동시 갱신
-      localStorage.setItem("jwtToken", res.data.token);
-      localStorage.setItem("nickName", res.data.nickname);
+      localStorage.setItem("jwtToken", token);
+      localStorage.setItem("nickName", nickname);
 
       setShowSuccessModal(true);
       setMessage("내 정보 수정 완료!");
@@ -112,7 +117,7 @@ const EditProfile = () => {
       }, 2000);
     } catch (err) {
       console.error("수정 실패", err);
-      if (err.response && err.response.status === 403) {
+      if (err.response?.status === 403) {
         alert("권한이 없습니다. 다시 로그인 해주세요.");
         localStorage.removeItem("jwtToken");
         navigate("/login");
@@ -140,7 +145,9 @@ const EditProfile = () => {
 
           {/* 이메일 */}
           <div className="form-group">
-            <label htmlFor="email">이메일<span className="required">*</span></label>
+            <label htmlFor="email">
+              이메일<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
               <input
                 name="email"
@@ -156,20 +163,19 @@ const EditProfile = () => {
 
           {/* 아이디 */}
           <div className="form-group">
-            <label htmlFor="userId">아이디<span className="required">*</span></label>
+            <label htmlFor="userId">
+              아이디<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input
-                name="userId"
-                id="userId"
-                value={form.userId}
-                disabled
-              />
+              <input name="userId" id="userId" value={form.userId} disabled />
             </div>
           </div>
 
           {/* 이름 */}
           <div className="form-group">
-            <label htmlFor="userName">이름<span className="required">*</span></label>
+            <label htmlFor="userName">
+              이름<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
               <input
                 name="userName"
@@ -184,7 +190,9 @@ const EditProfile = () => {
 
           {/* 닉네임 */}
           <div className="form-group">
-            <label htmlFor="nickName">닉네임<span className="required">*</span></label>
+            <label htmlFor="nickName">
+              닉네임<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
               <input
                 name="nickName"
@@ -199,7 +207,9 @@ const EditProfile = () => {
 
           {/* 주소 */}
           <div className="form-group">
-            <label htmlFor="address">주소<span className="required">*</span></label>
+            <label htmlFor="address">
+              주소<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
               <input
                 name="address"

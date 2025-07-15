@@ -12,19 +12,24 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { token, nickname } = await login(userId, password);
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("nickName", nickname);
-      console.log(localStorage.getItem("jwtToken")); // 토큰 확인용
-      console.log(localStorage.getItem("nickName")); // 닉네임 확인용
-      alert("로그인 성공");
-      navigate('/');
-      window.location.reload();
+        const { token, nickname } = await login(userId, password);
+
+        // ✅ LocalStorage에 저장
+        localStorage.setItem("jwtToken", token);
+        localStorage.setItem("nickName", nickname);
+
+        console.log("토큰:", token);
+        console.log("닉네임:", nickname);
+
+        alert("로그인 성공");
+        navigate('/');
+        window.location.reload();
     } catch (error) {
-      alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
-      console.log(error);
+        alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
+        console.log(error);
     }
-  };
+};
+
 
   const handleLinkClick = (action) => {
     alert(`${action} 기능은 아직 구현되지 않았습니다.`);

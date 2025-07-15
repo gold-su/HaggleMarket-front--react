@@ -6,11 +6,13 @@ export async function login(username, password) {
             userId: username,
             password: password,
         });
-        // 응답 예시: { token: 'JWT토큰', userId: '사용자ID' }
-        return response.data.token;
+
+        // ✅ token과 nickname 모두 반환
+        return {
+            token: response.data.token,
+            nickname: response.data.nickname,
+        };
     } catch (error) {
-        // 에러가 발생하면 예외 던짐
         throw new Error(error.response?.data?.message || '로그인 실패');
     }
 }
-
