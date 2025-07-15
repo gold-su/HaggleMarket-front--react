@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../ProductCSS/ProductRegisterLayout.css';
-import '../ProductCSS/ProductRegisterForm.css';
-import '../ProductCSS/ProductRegisterButtons.css';
+// import '../ProductCSS/ProductRegisterLayout.css';
+// import '../ProductCSS/ProductRegisterForm.css';
+// import '../ProductCSS/ProductRegisterButtons.css';
 
 // ✅ 카테고리 데이터 정의 (실제 앱에서는 API로 받아오거나 별도 파일로 관리)
 const categoriesData = {

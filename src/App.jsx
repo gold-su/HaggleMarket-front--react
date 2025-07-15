@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Header from './MainPages/Header'; // Header 컴포넌트 임포트
+
+import Header from './components/Header';
+import TopBar from "./components/TopBar";
+
 import MenuBox from './MainPages/MenuBox';
+
 import ProductList from './MainPages/ProductList';
 import AuctionAdSection from './MainPages/AuctionAdSection';
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+
 import LikeBox from "./components/LikeBox";
-import "./App.css";
 import WithdrawUser from './oldMVP/WithdrawPage';
 import ProductDetail from "./oldMVP/ProductDetail";
 import MyShop from "./Shop/MyShop";
 import MyPage from './Shop/MyPage';
 import ProductRegister from './Product/ProductRegister';
 
+import EditProfile from './editPage/EditProfile';
+
 import "./App.css"; 
-import TopBar from "./MainPages/TopBar";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 
 function App() {
