@@ -1,19 +1,25 @@
 /* src/ProductCSS/ProductRegisterLayout.css */
 
+/* =========================
+   전역 변수 (색상, 폰트 등)
+   ========================= */
 :root {
-  --main-bg-color: #f8f8f8; 
-  --accent-color: #3E7AEF;  
-  --accent-color-dark: #3E7AEF; 
-  --bunjang-red: #3E7AEF; 
-  --bunjang-red-dark: #3E7AEF; 
+  --main-bg-color: #f8f8f8;
+  --accent-color: #3E7AEF;
+  --accent-color-dark: #3E7AEF;
+  --bunjang-red: #3E7AEF;
+  --bunjang-red-dark: #3E7AEF;
   --border-color: #eee;
   --text-color-dark: #333;
   --text-color-medium: #666;
   --text-color-light: #999;
 }
 
+/* =========================
+   전체 페이지 레이아웃
+   ========================= */
 .product-register-page {
-  max-width: 1200px; 
+  max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
@@ -23,53 +29,46 @@
   color: var(--text-color-dark);
 }
 
-.register-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: #ffffff;
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  position: sticky; 
-  top: 0;
-  z-index: 1000;
-}
-
+/* 헤더 내 타이틀(페이지 이름) - 이제 main 안에 직접 위치 */
 .register-title {
-  font-size: 1.1rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin: 0;
+  color: var(--text-color-dark);
+  margin: 0 0 20px 0;
+  text-align: left;
 }
 
-.close-button { 
-  background: none;
-  border: none;
-  color: var(--text-color-medium);
-  font-size: 0.9rem;
-  cursor: pointer;
-  padding: 5px 10px;
-}
-
+/* =========================
+   메인 컨텐츠 영역
+   ========================= */
 .register-main-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   flex-grow: 1;
+  padding-top: 0;
   padding-bottom: 80px;
-  padding-left: 15px; 
-  padding-right: 15px; 
-  box-sizing: border-box; 
+  padding-left: 40px;
+  padding-right: 40px;
+  box-sizing: border-box;
 }
 
+/* =========================
+   각 입력 섹션(구역) 스타일
+   ========================= */
 .register-section {
   background-color: #ffffff;
-  padding: 20px;
-  margin-bottom: 10px;
+  padding: 20px 10px;
+  margin-bottom: 20px;
   border-bottom: 1px solid var(--border-color);
 }
 
+/* 마지막 섹션은 하단 경계선 제거 */
 .register-section:last-of-type {
   border-bottom: none;
 }
 
+/* 섹션 제목 스타일 */
 .section-title {
   font-size: 1.2rem;
   font-weight: 700;
@@ -78,21 +77,27 @@
   color: var(--text-color-dark);
 }
 
+/* =========================
+   폼 그룹(ul/li 구조) 스타일
+   ========================= */
 .form-groups {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+/* 각 입력 그룹(폼 필드) */
 .form-group {
   padding: 15px 0;
   border-bottom: 1px solid var(--border-color);
 }
 
+/* 마지막 입력 그룹은 구분선 제거 */
 .form-group:last-of-type {
   border-bottom: none;
 }
 
+/* 입력 필드 라벨 */
 .form-label {
   font-size: 0.9rem;
   font-weight: 600;
@@ -102,71 +107,89 @@
   align-items: center;
 }
 
+/* 라벨 내 보조 설명(작은 글씨) */
 .form-label small {
   font-size: 0.8rem;
   color: var(--text-color-medium);
   margin-left: 5px;
 }
 
+/* 입력값(내용) 스타일 */
 .form-content {
   color: var(--text-color-medium);
 }
 
+/* =========================
+   하단 고정 버튼 영역(푸터)
+   ========================= */
 .register-footer {
-  display: flex;
-  justify-content: flex-end; 
-  align-items: center;
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #ffffff;
-  border-top: 1px solid var(--border-color);
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
   position: fixed;
   bottom: 0;
   left: 0;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  padding: 10px 0;
+  background-color: #ffffff;
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
   z-index: 1000;
-  gap: 15px; 
+  display: flex;
+  justify-content: center;
   box-sizing: border-box;
 }
 
-.register-button-group {
+.register-footer .inner {
   display: flex;
-  gap: 15px; 
-  width: 100%; 
-  max-width: 500px; 
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  padding-right: 0;
+  gap: 15px;
+  box-sizing: border-box;
 }
 
+/* 버튼 그룹(여러 버튼 수평 배치) */
+.register-button-group {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* 하단 버튼 스타일 */
 .register-footer button {
   flex: 1;
   margin: 0 5px;
 }
 
-/* ✅ 반응형: 태블릿 이하 (1200px 이하) */
+/* =========================
+   반응형: 태블릿 이하 (1200px 이하)
+   ========================= */
 @media (max-width: 1200px) {
   .product-register-page,
   .register-footer {
-    max-width: 100%; 
+    max-width: 100%;
   }
 
+  .register-main-content {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* =========================
+   반응형: 모바일 (768px 이하)
+   ========================= */
+@media (max-width: 768px) {
   .register-main-content {
     padding-left: 15px;
     padding-right: 15px;
   }
-}
 
-/* ✅ 반응형: 모바일 (768px 이하) */
-@media (max-width: 768px) {
-  .register-main-content {
-    padding-left: 10px; /* 모바일에서 더 좁은 패딩 */
-    padding-right: 10px;
-  }
-
-  .register-header,
+  .register-header, /* 이 규칙은 이제 ProductRegister.jsx에서 사용되지 않습니다. */
   .register-section,
   .register-footer {
-    padding-left: 10px; /* 모바일에서 좌우 패딩 */
-    padding-right: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 }

@@ -12,6 +12,7 @@ import AuctionAdSection from './MainPages/AuctionAdSection';
 import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LikeBox from "./components/LikeBox";
+import Product from './Product/ProductRegister';
 import "./App.css";
 
 
@@ -168,6 +169,26 @@ function App() {
             frequentKeywords={frequentKeywords}
           />
           <MyShop />
+          <MenuBox
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            frequentKeywords={frequentKeywords}
+          />
+        </>
+      }
+    />
+
+    <Route
+      path="/product"
+      element={
+        <>
+          <TopBar />
+          <Header
+            onMenuToggle={handleMenuToggle}
+            onSearch={handleSearch}
+            frequentKeywords={frequentKeywords}
+          />
+          <Product />
           <MenuBox
             isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}

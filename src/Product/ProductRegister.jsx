@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import '../ProductCSS/ProductRegisterLayout.css';
-// import '../ProductCSS/ProductRegisterForm.css';
-// import '../ProductCSS/ProductRegisterButtons.css';
+import '../ProductCSS/ProductRegisterLayout.css';
+import '../ProductCSS/ProductRegisterForm.css';
+import '../ProductCSS/ProductRegisterButtons.css';
 
 // ✅ 카테고리 데이터 정의 (실제 앱에서는 API로 받아오거나 별도 파일로 관리)
 const categoriesData = {
@@ -97,14 +97,10 @@ function ProductRegister() {
 
   return (
     <div className="product-register-page">
-      <header className="register-header">
-        <h1 className="register-title">상품 등록</h1>
-        {/* ✅ 닫기 버튼 삭제 */}
-        {/* <button className="close-button" onClick={handleClose}>닫기</button> */}
-      </header>
-
       <main className="register-main-content">
+        {/* ✅ h1 태그만 main 안으로 옮겼습니다. */}
         <section className="register-section">
+          <h1 className="register-title">상품 등록</h1>
           <h2 className="section-title">상품정보</h2>
           <ul className="form-groups">
             {/* 상품 이미지 */}
@@ -154,9 +150,6 @@ function ProductRegister() {
                     onChange={(e) => setProductName(e.target.value)}
                     required
                   />
-                  <a href="https://help.bunjang.co.kr/faq/2/220" target="_blank" rel="noopener noreferrer" className="guide-link">
-                    거래금지 품목 보기
-                  </a>
                 </div>
                 <div className="char-counter">{productName.length}/40</div>
               </div>
@@ -164,7 +157,7 @@ function ProductRegister() {
 
             {/* ✅ 카테고리 섹션 - 번개장터 스타일로 변경 */}
             <li className="form-group">
-              <div className="form-label">카테고리</div>
+              <div className="form-label">카테고리 </div>
               <div className="form-content category-selection-area">
                 {/* 대분류 */}
                 <div className="category-column">
@@ -220,7 +213,7 @@ function ProductRegister() {
               <div className="form-label">상품 상태</div>
               <div className="form-content">
                 <div className="radio-group">
-                  {['새 상품', '사용감 적음', '사용감 많음', '고장/파손'].map((status) => (
+                  {['새 상품 (미사용)', '사용감 없음', '사용감 적음', '사용감 많음', '고장/파손 상품'].map((status) => (
                     <label key={status} className="radio-label">
                       <input
                         type="radio"
@@ -284,26 +277,18 @@ function ProductRegister() {
               <div className="form-label">배송비</div>
               <div className="form-content">
                 <div className="radio-group">
-                  <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="deliveryFee"
-                      value="포함"
-                      checked={deliveryFee === '포함'}
-                      onChange={() => setDeliveryFee('포함')}
-                    />
-                    포함
-                  </label>
-                  <label className="radio-label">
-                    <input
-                      type="radio"
-                      name="deliveryFee"
-                      value="별도"
-                      checked={deliveryFee === '별도'}
-                      onChange={() => setDeliveryFee('별도')}
-                    />
-                    별도
-                  </label>
+                  {['포함', '별도'].map((fee) => (
+                    <label key={fee} className="radio-label">
+                      <input
+                        type="radio"
+                        name="deliveryFee"
+                        value={fee}
+                        checked={deliveryFee === fee}
+                        onChange={() => setDeliveryFee(fee)}
+                      />
+                      {fee}
+                    </label>
+                  ))}
                 </div>
               </div>
             </li>
@@ -371,7 +356,7 @@ function ProductRegister() {
       </main>
 
       <footer className="register-footer">
-        <div className="register-button-group">
+        <div className="inner">
           <button type="button" className="btn-draft" onClick={handleSaveDraft}>임시저장</button>
           <button type="submit" className="btn-submit" onClick={handleSubmit}>등록하기</button>
         </div>
