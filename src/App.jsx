@@ -1,33 +1,26 @@
 import React, { useState, useEffect } from "react";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import Signup from "./pages/Signup"; 
+import Login from "./pages/Login";
 import Header from './components/Header';
 import TopBar from "./components/TopBar";
-
-import MenuBox from './MainPages/MenuBox';
-
 import ProductList from './MainPages/ProductList';
 import AuctionAdSection from './MainPages/AuctionAdSection';
-
-
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LikeBox from "./components/LikeBox";
+import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
+import "./App.css";
 import WithdrawUser from './oldMVP/WithdrawPage';
 import ProductDetail from "./oldMVP/ProductDetail";
 import MyShop from "./Shop/MyShop";
-import MyPage from './Shop/MyPage';
 import ProductRegister from './Product/ProductRegister';
 
-import EditProfile from './editPage/EditProfile';
-
 import "./App.css"; 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 
 function App() {
-  console.log('App rendering');
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // 메뉴는 기본적으로 닫혀있어야 합니다.
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
 
@@ -82,12 +75,14 @@ function App() {
     ]);
   }, []);
 
+  //특정 단어로 검색
   const handleSearch = (query) => {
     if (query) {
       window.location.href = `/search?query=${encodeURIComponent(query)}`;
     }
   };
 
+  //버튼 클릭 시 메뉴 박스 여닫기
   const handleMenuToggle = () => {
     setIsMenuOpen(prev => !prev);
   };
@@ -102,6 +97,7 @@ function App() {
       }
     };
 
+    // 메뉴 박스 외부 클릭 시 메뉴 닫기
     document.addEventListener('click', handleClickOutsideMenu);
     return () => {
       document.removeEventListener('click', handleClickOutsideMenu);
@@ -110,8 +106,7 @@ function App() {
 
   return (
     <BrowserRouter>
-
-  <Routes>
+    <Routes>
     {/* 로그인 & 회원가입 (TopBar/Header 제외) */}
     <Route path="/signup" element={<Signup />} />
     <Route path="/login" element={<Login />} />
@@ -163,6 +158,25 @@ function App() {
       }
     />
 
+    <Route
+      path="/myshop"
+      element={
+        <>
+          <TopBar />
+          <Header
+            onMenuToggle={handleMenuToggle}
+            onSearch={handleSearch}
+            frequentKeywords={frequentKeywords}
+          />
+          <MyShop />
+          <MenuBox
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+            frequentKeywords={frequentKeywords}
+          />
+        </>
+      }
+    />
   </Routes>
 </BrowserRouter>
 
