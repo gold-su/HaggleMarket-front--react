@@ -13,6 +13,8 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   //모달 / 성공 메시지
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [profileImage, setProfileImage] = useState(null); // 프로필 이미지 상태
+  const [previewUrl, setPreviewUrl] = useState(null); // 미리보기 이미지 상태
 
 
   const [form, setForm] = useState({
@@ -22,8 +24,7 @@ const Signup = () => {
     phoneNumber: "",
     nickName: "",
     email: "",
-    address: "",
-    imageURL: ""
+    address: ""
   });
 
   const [message, setMessage] = useState("");
@@ -32,12 +33,29 @@ const Signup = () => {
     setForm({ ...form, [e.target.name]: e.target.value.trimStart() });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      setPreviewUrl(URL.createObjectURL(file)); // 파일 선택 시 미리보기 URL 설정
+    }
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // 시작 시 로딩 true
 
     try {
-      const res = await axios.post("http://localhost:8080/api/users/signup", form);
+      // 프로필 이미지가 선택된 경우 FormData로 전송
+      const formData = new FormData();
+      formData.append("user", new Blob([JSON.stringify(form)], { type: "application/json" }));
+      if (profileImage) {
+        formData.append("profileImage", profileImage);
+      }
+
+      const res = await axios.post("http://localhost:8080/api/users/signup", formData);
+
       setShowSuccessModal(true);
       setMessage("회원가입 성공!");
       setTimeout(() => {
@@ -70,6 +88,24 @@ const Signup = () => {
       <form onSubmit={handleSubmit} className="signup-form">
         <div className="signup-container">
           <h2 className="signup-title">회원 정보 입력</h2>
+
+            {/* 프로필 이미지 업로드 */}
+          <div className="form-group">
+            <label htmlFor="profileImage">프로필 이미지</label>
+            <input
+              type="file"
+              id="profileImage"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            {/* ✅ 이미지 미리보기 */}
+            {previewUrl && (
+              <div className="image-preview">
+                <img src={previewUrl} alt="미리보기" width="150" />
+              </div>
+            )}
+          </div>
+
 
           {/* 이메일 */}
           <div className="form-group">
@@ -148,15 +184,6 @@ const Signup = () => {
               <p className={`error-msg ${errors.address ? "" : "invisible"}`}>
                 {errors.address || "‎"}
               </p>
-            </div>
-          </div>
-
-          {/* 이미지 URL */}
-          <div className="form-group">
-            <label htmlFor="imageURL">이미지 URL</label>
-            <div className="input-with-hint">
-              <input name="imageURL" id="imageURL" onChange={handleChange} />
-              <p className="error-msg invisible">‎</p> {/* 일관된 정렬을 위해 빈 공간 유지 */}
             </div>
           </div>
 
