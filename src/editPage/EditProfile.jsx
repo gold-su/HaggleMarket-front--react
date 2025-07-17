@@ -27,8 +27,6 @@ const EditProfile = () => {
 
   // ✅ 내 정보 불러오기
   useEffect(() => {
-    console.log("토큰 확인:", localStorage.getItem("jwtToken"));
-    
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -75,7 +73,7 @@ const EditProfile = () => {
         }
       );
       setIsPasswordVerified(true);
-      setShowPasswordModal(false); // 모달 닫기
+      setShowPasswordModal(false);
     } catch (err) {
       alert("비밀번호가 틀렸습니다.");
       setPassword("");
@@ -88,7 +86,6 @@ const EditProfile = () => {
     setLoading(true);
 
     try {
-      // 비밀번호 제외한 데이터만 전송
       const { password, ...updateData } = form;
 
       const res = await axios.put(
@@ -101,10 +98,7 @@ const EditProfile = () => {
         }
       );
 
-      // ✅ 백엔드에서 새 토큰과 닉네임 반환
       const { token, nickname } = res.data;
-
-      // ✅ 토큰과 닉네임 동시 갱신
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("nickName", nickname);
 
@@ -112,8 +106,8 @@ const EditProfile = () => {
       setMessage("내 정보 수정 완료!");
       setTimeout(() => {
         setShowSuccessModal(false);
-        navigate("/"); // 홈으로 이동
-        window.location.reload(); // ✅ 화면 새로고침으로 TopBar까지 갱신
+        navigate("/");
+        window.location.reload();
       }, 2000);
     } catch (err) {
       console.error("수정 실패", err);
@@ -130,106 +124,112 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="page-wrapper">
-      {/* 로고 */}
-      <h1 className="haggle-title">
-        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-          HAGGLE
-        </Link>
-      </h1>
+    <div className="edit-page-wrapper">
+      <header className="edit-header">
+        <h1 className="edit-title">
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            HAGGLE
+          </Link>
+        </h1>
+      </header>
 
-      {/* 내 정보 수정 폼 */}
-      <form onSubmit={handleSubmit} className="signup-form">
-        <div className="signup-container">
-          <h2 className="signup-title">내 정보 수정</h2>
+      <main className="edit-main">
+        <form onSubmit={handleSubmit} className="edit-form">
+          <div className="edit-container">
+            <h2 className="edit-subtitle">내 정보 수정</h2>
 
-          {/* 이메일 */}
-          <div className="form-group">
-            <label htmlFor="email">
-              이메일<span className="required">*</span>
-            </label>
-            <div className="input-with-hint">
-              <input
-                name="email"
-                type="email"
-                id="email"
-                value={form.email}
-                onChange={handleChange}
-                disabled={!isPasswordVerified}
-                required
-              />
+            {/* 이메일 */}
+            <div className="edit-form-group">
+              <label htmlFor="email">
+                이메일<span className="required">*</span>
+              </label>
+              <div className="input-with-hint">
+                <input
+                  name="email"
+                  type="email"
+                  id="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  disabled={!isPasswordVerified}
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* 아이디 */}
-          <div className="form-group">
-            <label htmlFor="userId">
-              아이디<span className="required">*</span>
-            </label>
-            <div className="input-with-hint">
-              <input name="userId" id="userId" value={form.userId} disabled />
+            {/* 아이디 */}
+            <div className="edit-form-group">
+              <label htmlFor="userId">
+                아이디<span className="required">*</span>
+              </label>
+              <div className="input-with-hint">
+                <input name="userId" id="userId" value={form.userId} disabled />
+              </div>
             </div>
-          </div>
 
-          {/* 이름 */}
-          <div className="form-group">
-            <label htmlFor="userName">
-              이름<span className="required">*</span>
-            </label>
-            <div className="input-with-hint">
-              <input
-                name="userName"
-                id="userName"
-                value={form.userName}
-                onChange={handleChange}
-                disabled={!isPasswordVerified}
-                required
-              />
+            {/* 이름 */}
+            <div className="edit-form-group">
+              <label htmlFor="userName">
+                이름<span className="required">*</span>
+              </label>
+              <div className="input-with-hint">
+                <input
+                  name="userName"
+                  id="userName"
+                  value={form.userName}
+                  onChange={handleChange}
+                  disabled={!isPasswordVerified}
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* 닉네임 */}
-          <div className="form-group">
-            <label htmlFor="nickName">
-              닉네임<span className="required">*</span>
-            </label>
-            <div className="input-with-hint">
-              <input
-                name="nickName"
-                id="nickName"
-                value={form.nickName}
-                onChange={handleChange}
-                disabled={!isPasswordVerified}
-                required
-              />
+            {/* 닉네임 */}
+            <div className="edit-form-group">
+              <label htmlFor="nickName">
+                닉네임<span className="required">*</span>
+              </label>
+              <div className="input-with-hint">
+                <input
+                  name="nickName"
+                  id="nickName"
+                  value={form.nickName}
+                  onChange={handleChange}
+                  disabled={!isPasswordVerified}
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          {/* 주소 */}
-          <div className="form-group">
-            <label htmlFor="address">
-              주소<span className="required">*</span>
-            </label>
-            <div className="input-with-hint">
-              <input
-                name="address"
-                id="address"
-                value={form.address}
-                onChange={handleChange}
-                disabled={!isPasswordVerified}
-                required
-              />
+            {/* 주소 */}
+            <div className="edit-form-group">
+              <label htmlFor="address">
+                주소<span className="required">*</span>
+              </label>
+              <div className="input-with-hint">
+                <input
+                  name="address"
+                  id="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  disabled={!isPasswordVerified}
+                  required
+                />
+              </div>
             </div>
+
+            {/* 버튼 */}
+            <button
+              type="submit"
+              disabled={loading || !isPasswordVerified}
+              className="edit-submit-button"
+            >
+              {loading ? "로딩 중..." : "수정 완료"}
+            </button>
           </div>
+        </form>
+      </main>
 
-          {/* 버튼 */}
-          <button type="submit" disabled={loading || !isPasswordVerified}>
-            {loading ? "로딩 중..." : "수정 완료"}
-          </button>
-        </div>
-      </form>
-
-      {/* ✅ 비밀번호 확인 모달 */}
+      {/* 비밀번호 확인 모달 */}
       {showPasswordModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -245,7 +245,7 @@ const EditProfile = () => {
         </div>
       )}
 
-      {/* ✅ 수정 성공 모달 */}
+      {/* 수정 성공 모달 */}
       {showSuccessModal && (
         <div className="modal-overlay">
           <div className="modal-content">
