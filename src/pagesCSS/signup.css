@@ -17,7 +17,7 @@
 /* 헤더 영역 */
 .signup-header {
   text-align: center;
-  padding: 50px 0 30px 0; /* ✅ 타이틀과 폼 간격 확보 */
+  padding: 30px 0 0px 0; /* ✅ 타이틀과 폼 간격 확보 */
 }
 
 .haggle-title {
@@ -32,12 +32,12 @@
   flex: 1; /* 남은 영역 채움 */
   display: flex;
   justify-content: center; /* ✅ 메인 가로 중앙정렬 */
-  padding: 20px 0;
+  padding: 0px 0;
 }
 
 .signup-container {
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   padding: 2rem;
   background-color: none;
   /* ✅ 기존 스타일 유지 */
@@ -58,13 +58,14 @@
 /* 입력 그룹 */
 .form-group {
   display: flex;
+  justify-content: space-between;
   align-items: center; /* ✅ 라벨과 인풋 한 줄로 */
-  margin-bottom: 1rem;
-  width: 90%;
+  margin-bottom: 1.2rem;
+  width: 100%;
 }
 
 .form-group label {
-  width: 120px; /* ✅ 라벨 너비 고정 */
+  width: 150px; /* ✅ 라벨 너비 고정 */
   margin-right: 40px;
   color: darkgrey;
   height: 40px;
@@ -74,14 +75,15 @@
 
 .form-group input {
   flex: 1;
-  height: 40px;
+  height: 50px;
   padding: 0 10px;
   border: 1px solid #ccc;
   border-radius: 0px; /* ✅ 직각 유지 */
+  max-width: 600;
   box-sizing: border-box;
 }
 
-.input-with-hint {
+.input-with-hint > input {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -108,7 +110,7 @@
 
 /* 버튼 */
 .signup-form button {
-  width: 90%;
+  width: 100%;
   padding: 10px;
   background-color: var(--santorini-light-blue);
   border: none;
@@ -120,8 +122,8 @@
 
 .signup-form button:hover {
   background-color: #ffffff;
-  color: #4caf50;
-  border: 1px solid #4caf50;
+  color: #416d83;
+  border: 1px solid #416d83;
 }
 
 /* 이미지 미리보기 */

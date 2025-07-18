@@ -1,10 +1,9 @@
-:root {
+/* :root {
   --primary-color: #6497b1;
   --primary-dark: #416d83;
   --error-color: #d32f2f;
   --light-gray: #f9f9f9;
-  --border-radius: 8px;
-}
+} */
 
 .edit-page-wrapper {
   min-height: 100vh;
@@ -85,7 +84,7 @@
 .edit-submit-button:hover {
   background-color: var(--primary-dark);
 }
-
+/* 
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -109,4 +108,4 @@
 .required {
   color: var(--error-color);
   margin-left: 4px;
-}
+} */
