@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../editPage/EditProfile.css";
 import { useNavigate, Link } from "react-router-dom";
 
 const EditProfile = () => {
@@ -28,7 +27,7 @@ const EditProfile = () => {
   // ✅ 내 정보 불러오기
   useEffect(() => {
     console.log("토큰 확인:", localStorage.getItem("jwtToken"));
-    
+
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       alert("로그인이 필요합니다.");

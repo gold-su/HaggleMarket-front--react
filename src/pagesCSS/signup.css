@@ -11,7 +11,7 @@
   display: flex;
   align-items: flex-start; /* ✅ 왼쪽 정렬로 수정 */
   margin-bottom: 1rem;
-  width: 90%;
+  width: 100%;
 }
 .invisible {
   visibility: hidden;
@@ -22,7 +22,7 @@
   margin-right: 40px;
   color: darkgrey;
   display: flex;
-  height: 40px;          /* ✅ input 높이에 맞춤 */
+  height: 40px; /* ✅ input 높이에 맞춤 */
 }
 
 .form-group input {
@@ -57,9 +57,10 @@
 
 .signup-container {
   position: absolute;
-  top: 50%;
+  justify-content: space-between;
+  top: 55%;
   left: 50%;
-  transform: translate(-50%, -50%);  /* 정확한 중앙 정렬 */
+  transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
   width: 100%;
   max-width: 700px;
   padding: 2rem;
@@ -69,15 +70,60 @@
   /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
 }
 .signup-container h2 {
-  margin-top: 0;       /* 위 여백 없애기 */
+  margin-top: 0; /* 위 여백 없애기 */
   margin-bottom: 1.5rem; /* 아래 간격만 주기 */
   /* text-align: center; */
 }
-.signup-form {
-  /* display: flex;
-  flex-direction: column; */
-  /* align-items: center; 👉 input, button을 수평 가운데 정렬 */
+/* 라벨과 업로드 박스를 한 줄에 정렬 */
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 20px; /* 라벨과 박스 사이 간격 */
 }
+
+/* 이미지 업로드 라벨 */
+.profile-label {
+  width: 150px;
+  color: darkgrey;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* 업로드 박스 */
+.image-upload-box-signup {
+  width: 130px;
+  height: 130px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 업로드된 이미지 스타일 */
+.image-upload-box-signup img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* 숨겨진 input */
+.hidden-file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .required {
   color: red;
   margin-left: 4px;
@@ -92,12 +138,13 @@
 .password-hint {
   font-size: 12px;
   color: #9c9c9c;
-  margin: 0;               /* ✅ 불필요한 여백 제거 */
+  margin: 0; /* ✅ 불필요한 여백 제거 */
   margin-left: 3px; /* ✅ 왼쪽 여백 추가 */
 }
 .signup-form input {
   width: 100%;
   padding: 10px;
+  height: 80px;
   /* margin-bottom: 1rem; */
   border-radius: 4px;
   border: 1px solid #ddd;
@@ -113,7 +160,7 @@
   margin: 0;
 }
 .error-msg {
-  width: 90%;
+  width: 100%;
   color: #d32f2f;
   font-size: 13px;
   margin: -12px 0 12px 0; /* 위 아래 간격 조정 */
@@ -121,7 +168,7 @@
 }
 
 .signup-form button {
-  width: 90%;
+  width: 100%;
   padding: 10px;
   background-color: #6497b1;
   border: none;
@@ -133,10 +180,9 @@
 
 .signup-form button:hover {
   background-color: #ffffff;
-   color: #4CAF50; /* 초록색 글자 */
-  border: 1px solid #4CAF50; /* 필요하면 테두리도 추가 */
+  color: #416d83; /* 초록색 글자 */
+  border: 1px solid #416d83; /* 필요하면 테두리도 추가 */
 }
-
 
 .signup-message {
   margin-top: 1rem;
@@ -147,4 +193,48 @@
   border-radius: 4px;
   font-size: 14px;
   text-align: center;
+}
+
+/* 모달 전체 화면 오버레이 */
+.modal-overlay-signup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* 반투명 검정 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 모달 본문 박스 */
+.modal-content-signup {
+  background-color: var(--santorini-white); /* 밝은 배경 */
+  padding: 30px 50px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* 부드러운 그림자 */
+  text-align: center;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+/* 모달 텍스트 */
+.modal-content-signup p {
+  font-size: 1.2rem;
+  color: var(--santorini-blue); /* 포인트 컬러 */
+  font-weight: bold;
+  margin: 0;
+}
+
+/* 모달 애니메이션 (열릴 때 부드럽게) */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
