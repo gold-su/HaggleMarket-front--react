@@ -66,6 +66,11 @@ const Signup = () => {
         navigate("/login");
       }, 2000); // 회원가입 성공 시 로그인 페이지로 이동 / 2초 뒤
     } catch (err) {
+      console.log("🔥 [에러 응답 전체]", err); // ✅ 전체 에러 출력
+      console.log("🔥 [에러 응답 데이터]", err.response?.data); // ✅ 응답 데이터 출력
+      console.log("🔥 [에러 메시지 객체]", err.response?.data?.message); // ✅ 메시지 맵 확인
+
+
       const res = err.response;
       const errorMap = res?.data?.message;
       if (errorMap && typeof errorMap === "object") {
