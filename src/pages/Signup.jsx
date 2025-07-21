@@ -59,6 +59,8 @@ const Signup = () => {
         formData
       );
 
+      //회원가입 성공하면 기존 에러 초기화
+      setErrors({});
       setShowSuccessModal(true);
       setMessage("회원가입 성공!");
       setTimeout(() => {
@@ -70,11 +72,10 @@ const Signup = () => {
       console.log("🔥 [에러 응답 데이터]", err.response?.data); // ✅ 응답 데이터 출력
       console.log("🔥 [에러 메시지 객체]", err.response?.data?.message); // ✅ 메시지 맵 확인
 
-
       const res = err.response;
       const errorMap = res?.data?.message;
       if (errorMap && typeof errorMap === "object") {
-        setErrors(errorMap);
+        setErrors(errorMap); //에러 상태 세팅
         setMessage(""); // 전역 메시지는 이제 따로 처리 안 함
       } else {
         setMessage("에러 발생");
@@ -135,7 +136,11 @@ const Signup = () => {
                 required
                 placeholder="올바른 이메일 형식이어야 합니다."
               />
-              <p className={`error-msg ${errors.email ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.email ? "visible" : "invisible"
+                }`}
+              >
                 {errors.email || "‎"}
               </p>
             </div>
@@ -154,7 +159,11 @@ const Signup = () => {
                 required
                 placeholder="아이디는 영문자와 숫자 조합의 5~20자여야 합니다."
               />
-              <p className={`error-msg ${errors.userId ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.userId ? "visible" : "invisible"
+                }`}
+              >
                 {errors.userId || "‎"}
               </p>
             </div>
@@ -178,7 +187,11 @@ const Signup = () => {
                 비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할
                 수 있습니다.
               </p>
-              <p className={`error-msg ${errors.password ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.password ? "visible" : "invisible"
+                }`}
+              >
                 {errors.password || "‎"}
               </p>
             </div>
@@ -197,7 +210,11 @@ const Signup = () => {
                 required
                 placeholder="닉네임은 특수문자를 제외한 2~15자여야 합니다."
               />
-              <p className={`error-msg ${errors.nickName ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.nickName ? "visible" : "invisible"
+                }`}
+              >
                 {errors.nickName || "‎"}
               </p>
             </div>
@@ -216,7 +233,11 @@ const Signup = () => {
                 required
                 placeholder="이름은 한글 2~10자여야 합니다."
               />
-              <p className={`error-msg ${errors.userName ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.userName ? "visible" : "invisible"
+                }`}
+              >
                 {errors.userName || "‎"}
               </p>
             </div>
@@ -236,7 +257,9 @@ const Signup = () => {
                 placeholder="전화번호는 '-' 없이 숫자 11자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.phoneNumber ? "" : "invisible"}`}
+                className={`error-msg ${
+                  errors.phoneNumber ? "visible" : "invisible"
+                }`}
               >
                 {errors.phoneNumber || "‎"}
               </p>
@@ -256,7 +279,11 @@ const Signup = () => {
                 required
                 placeholder="정확한 주소를 입력하세요."
               />
-              <p className={`error-msg ${errors.address ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.address ? "visible" : "invisible"
+                }`}
+              >
                 {errors.address || "‎"}
               </p>
             </div>
