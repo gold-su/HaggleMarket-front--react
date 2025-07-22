@@ -7,11 +7,20 @@
   pointer-events: none;
 }
 
+html,
 body {
+  height: 100%;
+  min-height: 100vh;
+  /* 화면보다 컨텐츠가 길어져도 배경 유지 */
   margin: 0;
   padding: 0;
   font-family: 'Noto Sans KR', sans-serif;
-  background-color: #f8f8f8;
+  background-color: #ffffff;
+
+  background-attachment: fixed;
+  /* 스크롤 시 배경 고정 */
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .App-header {
