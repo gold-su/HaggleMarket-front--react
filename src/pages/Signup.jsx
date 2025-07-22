@@ -73,7 +73,7 @@ const Signup = () => {
       console.log("🔥 [에러 메시지 객체]", err.response?.data?.message); // ✅ 메시지 맵 확인
 
       const res = err.response;
-      const errorMap = res?.data?.message;
+      const errorMap = res?.data; //data 바로 사용
       if (errorMap && typeof errorMap === "object") {
         setErrors(errorMap); //에러 상태 세팅
         setMessage(""); // 전역 메시지는 이제 따로 처리 안 함
