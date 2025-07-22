@@ -41,6 +41,11 @@ function MyShop() {
     }
   };
 
+  const goToProductManagement = () => {
+    console.log("내 상점 관리 버튼 클릭됨!"); // ✅ 디버깅용 로그
+    navigate('/myshop/products'); // ProductManagementPage가 연결된 경로
+  };
+
   const goToMyPage = () => {
     navigate('/mypage');
   };
@@ -81,7 +86,11 @@ function MyShop() {
             style={{ display: 'none' }}
           />
           <div className="myshop-buttons">
-            <button className="myshop-manage-store-btn">내 상점 관리</button>
+            <button
+              className="myshop-manage-store-btn" onClick={goToProductManagement}
+            >
+              내 상점 관리
+            </button>
             <button className="myshop-mypage-btn" onClick={goToMyPage}>
               마이페이지
             </button>

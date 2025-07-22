@@ -36,10 +36,6 @@ function MyPage() {
       <h1 className="mypage-title">마이페이지</h1>
 
       <form className="mypage-form" onSubmit={handleSubmit}>
-        <div className="profile-image-wrapper">
-          <img src={profile.profileImage} alt="프로필" className="profile-image" />
-          {/* 프로필 이미지 변경 기능 추가 가능 */}
-        </div>
 
         <label>
           이메일
