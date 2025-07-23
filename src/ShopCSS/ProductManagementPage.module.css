@@ -1,9 +1,8 @@
 /* src/ShopCSS/ProductManagementPage.module.css */
 
 .productManagementPage {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
   background-color: #f8f8f8;
   font-family: 'Noto Sans KR', sans-serif;
 }
