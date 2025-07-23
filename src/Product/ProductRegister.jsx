@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../ProductCSS/ProductRegisterLayout.css';
@@ -32,6 +33,7 @@ function ProductRegister() {
   const navigate = useNavigate();
 
   const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [productName, setProductName] = useState('');
   const [selectedLargeCategory, setSelectedLargeCategory] = useState(''); // 대분류 선택 상태
   const [selectedMiddleCategory, setSelectedMiddleCategory] = useState(''); // 중분류 선택 상태
@@ -47,33 +49,90 @@ function ProductRegister() {
   const [tags, setTags] = useState('');
 
   const handleImageChange = (e) => {
-    if (e.target.files) {
-      const newImages = Array.from(e.target.files).map(file => URL.createObjectURL(file));
-      setImages(prev => [...prev, ...newImages].slice(0, 12)); // 최대 12장
-    }
+    const files = Array.from(e.target.files);
+    setImages((prev) => [...prev, ...files].slice(0, 12));
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews((prev) => [...prev, ...newPreviews].slice(0, 12));
   };
 
-  const handleRemoveImage = (indexToRemove) => {
-    setImages(prev => prev.filter((_, index) => index !== indexToRemove));
+  const handleRemoveImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSaveDraft = () => {
     alert('임시 저장되었습니다.');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("최종 상품 등록 정보:", {
-      productName,
-      selectedLargeCategory,
-      selectedMiddleCategory,
-      selectedSmallCategory,
-      productStatus,
-      price,
-      description,
-      images,
-    });
-    alert('상품이 등록되었습니다.');
+
+    const token = localStorage.getItem("jwtToken");
+
+    // 1. 제목 검사
+    if (!productName.trim()) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+    // 2. 내용 검사
+    if (description.trim().length < 10) {
+      alert("상품 설명은 10자 이상 입력해주세요.");
+      return;
+    }
+
+    try {
+      // ✅ Step 1. 이미지 먼저 업로드
+      const imageFormData = new FormData();
+      images.forEach((file) => imageFormData.append("images", file));
+
+      const imageUploadRes = await axios.post(
+        "http://localhost:8080/api/products/images",
+        imageFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const imageUrls = imageUploadRes.data; // 서버에서 /uploads/~~~ 형태로 URL 배열 반환
+
+      // ✅ Step 2. 게시물 등록 요청 (이미지 URL 포함)
+      const postRequestDto = {
+        title: productName,
+        cost: parseInt(price),
+        content: description,
+        negotiable,
+        swapping: exchangeable,
+        deliveryFee: deliveryFee === "포함",
+        productStatus:
+          productStatus === "새 상품"
+            ? "LIKE_NEW"
+            : productStatus === "사용감 적음"
+              ? "USED_GOOD"
+              : productStatus === "사용감 많음"
+                ? "USED"
+                : "DAMAGED",
+        imageUrls, // 이미지 경로 리스트
+      };
+
+      const response = await axios.post(
+        "http://localhost:8080/api/products",
+        postRequestDto,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      alert("상품 등록 성공!");
+    } catch (err) {
+      console.error("등록 실패:", err);
+      alert("상품 등록 실패!");
+    }
   };
 
   const handleClose = () => {
@@ -125,10 +184,16 @@ function ProductRegister() {
                       style={{ display: 'none' }}
                     />
                   </li>
-                  {images.map((imageSrc, index) => (
+                  {imagePreviews.map((previewUrl, index) => (
                     <li key={index} className="image-upload-item image-preview-item">
-                      <img src={imageSrc} alt={`상품 이미지 ${index + 1}`} />
-                      <button type="button" className="remove-image-button" onClick={() => handleRemoveImage(index)}>X</button>
+                      <img src={previewUrl} alt={`상품 이미지 ${index + 1}`} />
+                      <button
+                        type="button"
+                        className="remove-image-button"
+                        onClick={() => handleRemoveImage(index)}
+                      >
+                        X
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -213,16 +278,22 @@ function ProductRegister() {
               <div className="form-label">상품 상태</div>
               <div className="form-content">
                 <div className="radio-group">
-                  {['새 상품 (미사용)', '사용감 없음', '사용감 적음', '사용감 많음', '고장/파손 상품'].map((status) => (
-                    <label key={status} className="radio-label">
+                  {[
+                    { label: "새 상품 (미사용)", value: "LIKE_NEW" },
+                    { label: "사용감 없음", value: "USED_GOOD" },
+                    { label: "사용감 적음", value: "USED" },
+                    { label: "사용감 많음", value: "DAMAGED" },
+                    { label: "고장/파손 상품", value: "BROKEN" }
+                  ].map((item) => (
+                    <label key={item.value} className="radio-label">
                       <input
                         type="radio"
                         name="productStatus"
-                        value={status}
-                        checked={productStatus === status}
-                        onChange={() => setProductStatus(status)}
+                        value={item.value}
+                        checked={productStatus === item.value}
+                        onChange={() => setProductStatus(item.value)}
                       />
-                      {status}
+                      {item.label}
                     </label>
                   ))}
                 </div>
