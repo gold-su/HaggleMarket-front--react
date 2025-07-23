@@ -263,9 +263,14 @@
 /* 체크박스 */
 .checkboxLabel {
   display: flex;
+  flex-direction: row;
+  justify-content: flex-end;  /* 오른쪽 정렬 */
   align-items: center;
-  font-size: 0.9rem;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.95rem;
+  color: var(--text-color-medium);
+  width: 100%;
 }
 
 .checkboxLabel input[type="checkbox"] {

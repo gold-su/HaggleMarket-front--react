@@ -103,6 +103,37 @@
   gap: 12px;
 }
 
+/* 번개장터 스타일 버튼 */
+.registerButton {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.registerButton.draft {
+  background-color: #f0f0f0;
+  color: var(--text-color-medium);
+}
+
+.registerButton.draft:hover {
+  background-color: #e0e0e0;
+}
+
+.registerButton.submit {
+  background-color: var(--bunjang-red);
+  color: white;
+}
+
+.registerButton.submit:hover {
+  background-color: var(--bunjang-red-dark);
+}
+
+
 /* 반응형 */
 @media (max-width: 768px) {
   .registerMainContent {

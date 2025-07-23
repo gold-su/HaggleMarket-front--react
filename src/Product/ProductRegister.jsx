@@ -449,14 +449,18 @@ function ProductRegister() {
 
       {/* ✅ stylesLayout 및 stylesButtons 사용 */}
       <footer className={stylesLayout.registerFooter}>
-        {/* ✅ stylesLayout 사용 */}
         <div className={stylesLayout.inner}>
-          {/* ✅ stylesButtons 사용 */}
-          <button type="button" className={stylesButtons.btnDraft} onClick={handleSaveDraft}>임시저장</button>
-          {/* ✅ stylesButtons 사용 */}
-          <button type="submit" className={stylesButtons.btnSubmit} onClick={handleSubmit}>등록하기</button>
+          <div className={stylesButtons["btn-group"]}>
+            <button type="button" className={stylesButtons.btnDraft} onClick={handleSaveDraft}>
+              임시저장
+            </button>
+            <button type="submit" className={stylesButtons.btnSubmit} onClick={handleSubmit}>
+              등록하기
+            </button>
+          </div>
         </div>
       </footer>
+
     </div>
   );
 }
