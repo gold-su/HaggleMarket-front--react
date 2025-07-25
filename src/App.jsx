@@ -6,6 +6,7 @@ import Header from './components/Header';
 import MenuBox from './MainPages/MenuBox';
 import TopBar from "./components/TopBar";
 import ProductList from './MainPages/ProductList';
+import AuctionRegister from './Auction/AuctionRegister'; // ✅ 새로 생성한 경매 상품 등록 컴포넌트 임포트
 import MyShop from './Shop/MyShop'; // 내 상점 컴포넌트 임포트
 import ProductManagementPage from './Shop/ProductManagementPage';
 import AuctionAdSection from './MainPages/AuctionAdSection'; 
@@ -211,6 +212,28 @@ function App() {
                 onClose={() => setIsMenuOpen(false)}
                 frequentKeywords={frequentKeywords}
               /> {/* ✅ 기존 MenuBox */}
+            </>
+          }
+        />
+
+        {/* ✅ 경매 상품 등록 페이지 라우트 추가 */}
+        <Route
+          path="/register-auction" // ✅ 이 경로로 접근합니다.
+          element={
+            <>
+              {/* TopBar와 Header를 포함할지 여부는 페이지 디자인에 따라 결정 */}
+              <TopBar />
+              <Header
+                onMenuToggle={handleMenuToggle}
+                onSearch={handleSearch}
+                frequentKeywords={frequentKeywords}
+              />
+              <AuctionRegister /> {/* ✅ 새로운 경매 상품 등록 컴포넌트 렌더링 */}
+              <MenuBox
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                frequentKeywords={frequentKeywords}
+              />
             </>
           }
         />

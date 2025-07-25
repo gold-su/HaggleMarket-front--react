@@ -1,7 +1,7 @@
 /* src/ProductCSS/ProductRegisterLayout.module.css */
 
 :root {
-  --main-bg-color: #f8f8f8;
+  --main-bg-color: #fff;
   --accent-color: #3E7AEF;
   --accent-color-dark: #2f65c0;
   --bunjang-red: #3E7AEF;
@@ -43,22 +43,29 @@
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #ccc;
 }
 
 .sectionTitle {
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ccc;
 }
 
 .formGroups {
   list-style: none;
   margin: 0;
   padding: 0;
+  border-bottom: 1px solid #ccc;
 }
 
 .formGroup {
   margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-color); /* ⬅ 각 formGroup 사이에 구분선 */
 }
 
 .formLabel {
@@ -103,7 +110,7 @@
   gap: 12px;
 }
 
-/* 번개장터 스타일 버튼 */
+/* 버튼 */
 .registerButton {
   padding: 12px 20px;
   font-size: 1rem;
@@ -133,7 +140,6 @@
   background-color: var(--bunjang-red-dark);
 }
 
-
 /* 반응형 */
 @media (max-width: 768px) {
   .registerMainContent {
@@ -146,5 +152,15 @@
 
   .registerFooter {
     padding: 10px 12px;
+  }
+
+  .inner {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .registerButton {
+    width: 100%;
   }
 }
