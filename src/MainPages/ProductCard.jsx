@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ 추가
+import { useNavigate } from 'react-router-dom'; // 추가
 import '../MainPagesCSS/productcard.css';
 
 function ProductCard({ product }) {
   const [isFavorite, setIsFavorite] = useState(false);
-  const navigate = useNavigate(); // ✅ 훅 초기화
+  const navigate = useNavigate(); // 훅 초기화
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
@@ -14,7 +14,7 @@ function ProductCard({ product }) {
   const handleCardClick = () => {
     console.log("🔍 클릭된 product 객체:", product);
     console.log("➡️ 이동할 postId:", product.id);
-    navigate(`/products/detail/${product.id}`); // ✅ 상세 페이지 경로 이동
+    navigate(`/products/detail/${product.id}`); // 상세 페이지 경로 이동
   };
 
   return (

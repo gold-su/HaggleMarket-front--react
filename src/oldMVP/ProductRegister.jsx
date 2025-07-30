@@ -1,11 +1,10 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../ProductCSS/ProductRegisterLayout.css';
 import '../ProductCSS/ProductRegisterForm.css';
 import '../ProductCSS/ProductRegisterButtons.css';
 
-// ✅ 카테고리 데이터 정의 (실제 앱에서는 API로 받아오거나 별도 파일로 관리)
 const categoriesData = {
   '여성의류': {
     '원피스': ['미니원피스', '롱원피스', '쉬폰원피스'],
@@ -25,20 +24,23 @@ const categoriesData = {
     '휴대폰': ['갤럭시', '아이폰'],
     '노트북': ['맥북', '그램'],
   },
-  // 필요한 카테고리를 더 추가하세요.
 };
 
-
-function ProductRegister() {
+function ProductForm({ mode = 'create' }) {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem("jwtToken");
 
+  // 공통 상태
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [existingImageUrls, setExistingImageUrls] = useState([]);
+
   const [productName, setProductName] = useState('');
-  const [selectedLargeCategory, setSelectedLargeCategory] = useState(''); // 대분류 선택 상태
-  const [selectedMiddleCategory, setSelectedMiddleCategory] = useState(''); // 중분류 선택 상태
-  const [selectedSmallCategory, setSelectedSmallCategory] = useState(''); // 소분류 선택 상태
-  const [productStatus, setProductStatus] = useState('새 상품');
+  const [selectedLargeCategory, setSelectedLargeCategory] = useState('');
+  const [selectedMiddleCategory, setSelectedMiddleCategory] = useState('');
+  const [selectedSmallCategory, setSelectedSmallCategory] = useState('');
+  const [productStatus, setProductStatus] = useState('LIKE_NEW');
   const [price, setPrice] = useState('');
   const [negotiable, setNegotiable] = useState(false);
   const [exchangeable, setExchangeable] = useState(false);
@@ -48,131 +50,115 @@ function ProductRegister() {
   const [tradeLocation, setTradeLocation] = useState('');
   const [tags, setTags] = useState('');
 
+  // 수정 모드일 때 기존 데이터 불러오기
+  useEffect(() => {
+    if (mode === 'edit' && id) {
+      axios.get(`/api/products/detail/${id}`)
+        .then(res => {
+          const data = res.data;
+          setProductName(data.title);
+          setPrice(data.cost);
+          setDescription(data.content);
+          setProductStatus(data.productStatus);
+          setNegotiable(data.negotiable);
+          setExchangeable(data.swapping);
+          setDeliveryFee(data.deliveryFee ? '포함' : '별도');
+          setTags(data.tag || '');
+          setTradeLocation(data.seller?.address || '');
+          setExistingImageUrls(data.images);
+          setImagePreviews(data.images.map(url => `http://localhost:8080${url}`));
+        })
+        .catch(err => console.error("게시글 로딩 실패", err));
+    }
+  }, [mode, id]);
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setImages((prev) => [...prev, ...files].slice(0, 12));
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews((prev) => [...prev, ...newPreviews].slice(0, 12));
+    setImages(prev => [...prev, ...files].slice(0, 12));
+    const newPreviews = files.map(f => URL.createObjectURL(f));
+    setImagePreviews(prev => [...prev, ...newPreviews].slice(0, 12));
   };
 
   const handleRemoveImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+    if (mode === 'edit' && index < existingImageUrls.length) {
+      setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
+    } else {
+      const newIndex = index - existingImageUrls.length;
+      setImages(prev => prev.filter((_, i) => i !== newIndex));
+    }
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSaveDraft = () => {
-    alert('임시 저장되었습니다.');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("jwtToken");
-
-    // 1. 제목 검사
-    if (!productName.trim()) {
-      alert("제목을 입력해주세요.");
-      return;
-    }
-    // 2. 내용 검사
-    if (description.trim().length < 10) {
-      alert("상품 설명은 10자 이상 입력해주세요.");
-      return;
-    }
+    if (!productName.trim()) return alert("제목을 입력해주세요.");
+    if (description.trim().length < 10) return alert("상품 설명은 10자 이상 입력해주세요.");
 
     try {
-      // ✅ Step 1. 이미지 먼저 업로드
-      const imageFormData = new FormData();
-      images.forEach((file) => imageFormData.append("images", file));
+      // 새 이미지 업로드
+      let uploadedImageUrls = [];
+      if (images.length > 0) {
+        const formData = new FormData();
+        images.forEach(f => formData.append("images", f));
+        const res = await axios.post("/api/products/images", formData, {
+          headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+        });
+        uploadedImageUrls = res.data;
+      }
 
-      const imageUploadRes = await axios.post(
-        "http://localhost:8080/api/products/images",
-        imageFormData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const finalImageUrls = [...existingImageUrls, ...uploadedImageUrls];
 
-      const imageUrls = imageUploadRes.data; // 서버에서 /uploads/~~~ 형태로 URL 배열 반환
-
-      // ✅ Step 2. 게시물 등록 요청 (이미지 URL 포함)
-      const postRequestDto = {
+      const dto = {
         title: productName,
         cost: parseInt(price),
         content: description,
         negotiable,
         swapping: exchangeable,
         deliveryFee: deliveryFee === "포함",
-        productStatus:
-          productStatus === "새 상품"
-            ? "LIKE_NEW"
-            : productStatus === "사용감 적음"
-              ? "USED_GOOD"
-              : productStatus === "사용감 많음"
-                ? "USED"
-                : "DAMAGED",
-        imageUrls, // 이미지 경로 리스트
+        productStatus,
+        imageUrls: finalImageUrls,
+        category: selectedSmallCategory,
+        tag: tags,
+        tradeLocation
       };
 
-      const response = await axios.post(
-        "http://localhost:8080/api/products",
-        postRequestDto,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      alert("상품 등록 성공!");
+      if (mode === 'edit') {
+        await axios.put(`/api/products/${id}`, dto, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        alert("수정 완료!");
+        navigate(`/products/detail/${id}`);
+      } else {
+        const res = await axios.post("/api/products", dto, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        });
+        alert("등록 완료!");
+        navigate(`/products/detail/${res.data.id}`);
+      }
     } catch (err) {
-      console.error("등록 실패:", err);
-      alert("상품 등록 실패!");
+      console.error("저장 실패:", err);
+      alert("저장에 실패했습니다.");
     }
-  };
-
-  const handleClose = () => {
-    navigate(-1);
-  };
-
-  const handleLargeCategoryClick = (cat) => {
-    setSelectedLargeCategory(cat);
-    setSelectedMiddleCategory('');
-    setSelectedSmallCategory('');
-  };
-
-  const handleMiddleCategoryClick = (cat) => {
-    setSelectedMiddleCategory(cat);
-    setSelectedSmallCategory('');
-  };
-
-  const handleSmallCategoryClick = (cat) => {
-    setSelectedSmallCategory(cat);
   };
 
   return (
     <div className="product-register-page">
       <main className="register-main-content">
-        {/* ✅ h1 태그만 main 안으로 옮겼습니다. */}
         <section className="register-section">
-          <h1 className="register-title">상품 등록</h1>
+          <h1 className="register-title">
+            {mode === 'edit' ? '상품 수정' : '상품 등록'}
+          </h1>
           <h2 className="section-title">상품정보</h2>
           <ul className="form-groups">
-            {/* 상품 이미지 */}
+
+            {/* 이미지 업로드 */}
             <li className="form-group">
-              <div className="form-label">상품이미지<small>({images.length}/12)</small></div>
+              <div className="form-label">상품이미지<small>({imagePreviews.length}/12)</small></div>
               <div className="form-content">
                 <ul className="image-upload-list">
                   <li className="image-upload-item add-image">
                     <label htmlFor="image-upload-input">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                        <circle cx="12" cy="13" r="4"></circle>
-                      </svg>
                       <span>이미지 등록</span>
                     </label>
                     <input
@@ -184,20 +170,13 @@ function ProductRegister() {
                       style={{ display: 'none' }}
                     />
                   </li>
-                  {imagePreviews.map((previewUrl, index) => (
-                    <li key={index} className="image-upload-item image-preview-item">
-                      <img src={previewUrl} alt={`상품 이미지 ${index + 1}`} />
-                      <button
-                        type="button"
-                        className="remove-image-button"
-                        onClick={() => handleRemoveImage(index)}
-                      >
-                        X
-                      </button>
+                  {imagePreviews.map((url, i) => (
+                    <li key={i} className="image-upload-item image-preview-item">
+                      <img src={url} alt={`미리보기 ${i + 1}`} />
+                      <button type="button" className="remove-image-button" onClick={() => handleRemoveImage(i)}>X</button>
                     </li>
                   ))}
                 </ul>
-                <div className="form-hint">상품 이미지는 PC에서는 1:1, 모바일에서는 1:1.23 비율로 보여져요.</div>
               </div>
             </li>
 
@@ -220,55 +199,44 @@ function ProductRegister() {
               </div>
             </li>
 
-            {/* ✅ 카테고리 섹션 - 번개장터 스타일로 변경 */}
+            {/* 카테고리 */}
             <li className="form-group">
-              <div className="form-label">카테고리 </div>
+              <div className="form-label">카테고리</div>
               <div className="form-content category-selection-area">
-                {/* 대분류 */}
                 <div className="category-column">
-                  <ul className="category-list">
-                    {Object.keys(categoriesData).map((cat) => (
-                      <li key={cat} className={`category-item ${selectedLargeCategory === cat ? 'active' : ''}`}>
-                        <button type="button" onClick={() => handleLargeCategoryClick(cat)}>
+                  <ul>
+                    {Object.keys(categoriesData).map(cat => (
+                      <li key={cat}>
+                        <button type="button" onClick={() => { setSelectedLargeCategory(cat); setSelectedMiddleCategory(''); setSelectedSmallCategory(''); }}>
                           {cat}
                         </button>
                       </li>
                     ))}
                   </ul>
                 </div>
-
-                {/* 중분류 */}
                 <div className="category-column">
-                  <ul className="category-list">
-                    {selectedLargeCategory ? (
-                      Object.keys(categoriesData[selectedLargeCategory]).map((cat) => (
-                        <li key={cat} className={`category-item ${selectedMiddleCategory === cat ? 'active' : ''}`}>
-                          <button type="button" onClick={() => handleMiddleCategoryClick(cat)}>
+                  {selectedLargeCategory && (
+                    <ul>
+                      {Object.keys(categoriesData[selectedLargeCategory]).map(cat => (
+                        <li key={cat}>
+                          <button type="button" onClick={() => { setSelectedMiddleCategory(cat); setSelectedSmallCategory(''); }}>
                             {cat}
                           </button>
                         </li>
-                      ))
-                    ) : (
-                      <li className="category-item placeholder">중분류</li>
-                    )}
-                  </ul>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-
-                {/* 소분류 */}
                 <div className="category-column">
-                  <ul className="category-list">
-                    {selectedLargeCategory && selectedMiddleCategory ? (
-                      categoriesData[selectedLargeCategory][selectedMiddleCategory].map((cat) => (
-                        <li key={cat} className={`category-item ${selectedSmallCategory === cat ? 'active' : ''}`}>
-                          <button type="button" onClick={() => handleSmallCategoryClick(cat)}>
-                            {cat}
-                          </button>
+                  {selectedLargeCategory && selectedMiddleCategory && (
+                    <ul>
+                      {categoriesData[selectedLargeCategory][selectedMiddleCategory].map(cat => (
+                        <li key={cat}>
+                          <button type="button" onClick={() => setSelectedSmallCategory(cat)}>{cat}</button>
                         </li>
-                      ))
-                    ) : (
-                      <li className="category-item placeholder">소분류</li>
-                    )}
-                  </ul>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </li>
@@ -428,12 +396,13 @@ function ProductRegister() {
 
       <footer className="register-footer">
         <div className="inner">
-          <button type="button" className="btn-draft" onClick={handleSaveDraft}>임시저장</button>
-          <button type="submit" className="btn-submit" onClick={handleSubmit}>등록하기</button>
+          <button className="btn-submit" onClick={handleSubmit}>
+            {mode === 'edit' ? '수정하기' : '등록하기'}
+          </button>
         </div>
       </footer>
     </div>
   );
 }
 
-export default ProductRegister;
+export default ProductForm;

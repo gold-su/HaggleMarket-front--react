@@ -13,9 +13,11 @@ import AuctionAdSection from './MainPages/AuctionAdSection';
 import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LikeBox from "./components/LikeBox";
-import Product from './Product/ProductRegister';
+import Product from './oldMVP/ProductRegister';
 import "./App.css";
 import ProductDetail from './Product/ProductDetail';
+import ProductEdit from './oldMVP/ProductEdit';
+import ProductForm from './Product/ProductForm';
 
 
 function App() {
@@ -147,26 +149,6 @@ function App() {
         />
 
         <Route
-          path="/product"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
-              />
-              <Product />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
-
-        <Route
           path="/products/detail/:id"
           element={
             <>
@@ -177,6 +159,46 @@ function App() {
                 frequentKeywords={frequentKeywords}
               />
               <ProductDetail />
+              <MenuBox
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                frequentKeywords={frequentKeywords}
+              />
+            </>
+          }
+        />
+
+        <Route
+          path="/product"
+          element={
+            <>
+              <TopBar />
+              <Header
+                onMenuToggle={handleMenuToggle}
+                onSearch={handleSearch}
+                frequentKeywords={frequentKeywords}
+              />
+              <ProductForm mode="create" />
+              <MenuBox
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                frequentKeywords={frequentKeywords}
+              />
+            </>
+          }
+        />
+
+        <Route
+          path="/products/edit/:id"
+          element={
+            <>
+              <TopBar />
+              <Header
+                onMenuToggle={handleMenuToggle}
+                onSearch={handleSearch}
+                frequentKeywords={frequentKeywords}
+              />
+              <ProductForm mode="edit" />
               <MenuBox
                 isOpen={isMenuOpen}
                 onClose={() => setIsMenuOpen(false)}
