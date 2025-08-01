@@ -1,18 +1,18 @@
-/* ProductRegisterLayout.module.css - 번개장터 스타일 기반 재작성 */
+/* src/ProductCSS/ProductRegisterLayout.module.css */
 
 :root {
-  --main-bg-color: #f8f8f8;
+  --main-bg-color: #fff;
   --accent-color: #3E7AEF;
   --accent-color-dark: #2f65c0;
   --bunjang-red: #3E7AEF;
   --bunjang-red-dark: #2f65c0;
-  --border-color: #ebebeb;
+  --border-color: #e0e0e0;
   --text-color-dark: #111;
   --text-color-medium: #555;
   --text-color-light: #999;
   --shadow-light: rgba(0, 0, 0, 0.06);
 }
-              
+
 .productRegisterPage {
   background-color: var(--main-bg-color);
   min-height: 100vh;
@@ -20,44 +20,53 @@
   color: var(--text-color-dark);
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .registerMainContent {
   width: 100%;
-  max-width: 768px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px 16px 120px;
+  padding: 20px 24px 140px;
   box-sizing: border-box;
 }
 
 .registerSection {
-  background-color: white;
+  background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 1px 4px var(--shadow-light);
-  padding: 20px 16px;
-  margin-bottom: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
 .registerTitle {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #ccc;
 }
 
 .sectionTitle {
   font-size: 1.125rem;
   font-weight: 600;
   margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ccc;
 }
 
 .formGroups {
   list-style: none;
   margin: 0;
   padding: 0;
+  border-bottom: 1px solid #ccc;
 }
 
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  /* ⬅ 각 formGroup 사이에 구분선 */
 }
 
 .formLabel {
@@ -87,7 +96,7 @@
   background-color: #fff;
   border-top: 1px solid var(--border-color);
   box-shadow: 0 -1px 4px var(--shadow-light);
-  padding: 12px 16px;
+  padding: 16px 24px;
   display: flex;
   justify-content: center;
   z-index: 100;
@@ -96,13 +105,43 @@
 
 .inner {
   width: 100%;
-  max-width: 768px;
+  max-width: 1200px;
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-/* 반응형 대응 */
+/* 버튼 */
+.registerButton {
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.registerButton.draft {
+  background-color: #f0f0f0;
+  color: var(--text-color-medium);
+}
+
+.registerButton.draft:hover {
+  background-color: #e0e0e0;
+}
+
+.registerButton.submit {
+  background-color: var(--bunjang-red);
+  color: white;
+}
+
+.registerButton.submit:hover {
+  background-color: var(--bunjang-red-dark);
+}
+
+/* 반응형 */
 @media (max-width: 768px) {
   .registerMainContent {
     padding: 16px 12px 120px;
@@ -114,5 +153,15 @@
 
   .registerFooter {
     padding: 10px 12px;
+  }
+
+  .inner {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .registerButton {
+    width: 100%;
   }
 }

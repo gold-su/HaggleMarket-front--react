@@ -21,6 +21,7 @@ body {
   /* 스크롤 시 배경 고정 */
   background-repeat: no-repeat;
   background-size: cover;
+  background-color: #fff;
 }
 
 .App-header {

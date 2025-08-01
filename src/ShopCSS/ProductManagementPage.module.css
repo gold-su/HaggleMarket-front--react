@@ -1,0 +1,134 @@
+/* src/ShopCSS/ProductManagementPage.module.css */
+
+.productManagementPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fff;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.tabNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tabButton {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.tabButton.active {
+  background-color: #3E7AEF;
+  color: #fff;
+  border-color: #3E7AEF;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searchForm {
+  display: flex;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+}
+
+.searchButton {
+  padding: 8px 12px;
+  border: none;
+  background-color: #3E7AEF;
+  color: #fff;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+}
+
+.dropdown {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fff;
+  font-size: 0.9rem;
+}
+
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+.productTable th,
+.productTable td {
+  border: 1px solid #eee;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 50px 0;
+  font-style: italic;
+  color: #aaa;
+}
+
+.action {
+  margin: 0 4px;
+  padding: 5px 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.action:hover {
+  background-color: #f0f0f0;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchForm {
+    max-width: 100%;
+  }
+
+  .dropdown {
+    width: 100%;
+  }
+
+  .productTable th,
+  .productTable td {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+}

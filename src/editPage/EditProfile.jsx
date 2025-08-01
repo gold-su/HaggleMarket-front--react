@@ -26,8 +26,6 @@ const EditProfile = () => {
 
   // ✅ 내 정보 불러오기
   useEffect(() => {
-    console.log("토큰 확인:", localStorage.getItem("jwtToken"));
-
     const token = localStorage.getItem("jwtToken");
     if (!token) {
       alert("로그인이 필요합니다.");
