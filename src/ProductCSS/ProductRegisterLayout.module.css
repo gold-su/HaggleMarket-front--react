@@ -12,7 +12,7 @@
   --text-color-light: #999;
   --shadow-light: rgba(0, 0, 0, 0.06);
 }
-
+              
 .productRegisterPage {
   background-color: var(--main-bg-color);
   min-height: 100vh;
