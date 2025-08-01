@@ -1,4 +1,7 @@
-.register-footer .btn-draft,
+<<<<<<< HEAD=======
+/* src/ProductCSS/ProductRegisterButtons.module.css */
+
+>>>>>>>origin/Gwang-Pyo .register-footer .btn-draft,
 .register-footer .btn-submit {
   padding: 12px 30px;
   font-weight: 700;
@@ -28,6 +31,7 @@
 
 .register-footer .btn-submit:hover {
   background-color: var(--bunjang-red-dark);
+  <<<<<<< HEAD
 }
 
 
@@ -85,4 +89,6 @@
   .btnSubmit {
     width: 100%;
   }
+
+  =======>>>>>>>origin/Gwang-Pyo
 }
