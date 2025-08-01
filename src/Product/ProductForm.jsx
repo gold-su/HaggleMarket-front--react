@@ -5,26 +5,15 @@ import '../ProductCSS/ProductRegisterLayout.css';
 import '../ProductCSS/ProductRegisterForm.css';
 import '../ProductCSS/ProductRegisterButtons.css';
 
-const categoriesData = {
-  '여성의류': {
-    '원피스': ['미니원피스', '롱원피스', '쉬폰원피스'],
-    '상의': ['블라우스', '티셔츠', '니트'],
-    '하의': ['청바지', '스커트', '슬랙스'],
-  },
-  '남성의류': {
-    '셔츠': ['긴팔', '반팔'],
-    '바지': ['청바지', '면바지', '반바지'],
-    '아우터': ['자켓', '코트', '패딩'],
-  },
-  '신발': {
-    '운동화': ['런닝화', '스니커즈'],
-    '구두': ['로퍼', '부츠'],
-  },
-  '디지털/가전': {
-    '휴대폰': ['갤럭시', '아이폰'],
-    '노트북': ['맥북', '그램'],
-  },
-};
+// 카테고리 상태
+const [largeCategories, setLargeCategories] = useState([]);
+const [middleCategories, setMiddleCategories] = useState([]);
+const [smallCategories, setSmallCategories] = useState([]);
+
+const [selectedLarge, setSelectedLarge] = useState(null);
+const [selectedMiddle, setSelectedMiddle] = useState(null);
+const [selectedSmall, setSelectedSmall] = useState(null);
+
 
 function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
@@ -37,9 +26,6 @@ function ProductForm({ mode = 'create' }) {
   const [existingImageUrls, setExistingImageUrls] = useState([]);
 
   const [productName, setProductName] = useState('');
-  const [selectedLargeCategory, setSelectedLargeCategory] = useState('');
-  const [selectedMiddleCategory, setSelectedMiddleCategory] = useState('');
-  const [selectedSmallCategory, setSelectedSmallCategory] = useState('');
   const [productStatus, setProductStatus] = useState('LIKE_NEW');
   const [price, setPrice] = useState('');
   const [negotiable, setNegotiable] = useState(false);
@@ -49,6 +35,30 @@ function ProductForm({ mode = 'create' }) {
   const [contact, setContact] = useState('');
   const [tradeLocation, setTradeLocation] = useState('');
   const [tags, setTags] = useState('');
+
+  useEffect(() => {
+    axios.get("/api/categories")
+      .then(res => setLargeCategories(res.data))
+      .catch(err => console.error("카테고리 로딩 실패", err));
+  }, []);
+
+  const handleLargeChange = (id) => {
+    setSelectedLarge(id);
+    setSelectedMiddle(null);
+    setSelectedSmall(null);
+    setSmallCategories([]);
+    axios.get(`/api/categories/${id}`).then(res => setMiddleCategories(res.data));
+  };
+
+  const handleMiddleChange = (id) => {
+    setSelectedMiddle(id);
+    setSelectedSmall(null);
+    axios.get(`/api/categories/${id}`).then(res => setSmallCategories(res.data));
+  };
+
+  const handleSmallChange = (id) => {
+    setSelectedSmall(id);
+  };
 
   // 수정 모드일 때 기존 데이터 불러오기
   useEffect(() => {
@@ -118,7 +128,7 @@ function ProductForm({ mode = 'create' }) {
         deliveryFee: deliveryFee === "포함",
         productStatus,
         imageUrls: finalImageUrls,
-        category: selectedSmallCategory,
+        categoryId: selectedSmall,
         tag: tags,
         tradeLocation
       };
@@ -189,41 +199,53 @@ function ProductForm({ mode = 'create' }) {
             <li className="form-group">
               <div className="form-label">카테고리</div>
               <div className="form-content category-selection-area">
+
+                {/* 대분류 */}
                 <div className="category-column">
                   <ul>
-                    {Object.keys(categoriesData).map(cat => (
-                      <li key={cat}>
-                        <button type="button" onClick={() => { setSelectedLargeCategory(cat); setSelectedMiddleCategory(''); setSelectedSmallCategory(''); }}>
-                          {cat}
+                    {largeCategories.map(cat => (
+                      <li key={cat.id}>
+                        <button type="button"
+                          onClick={() => handleLargeChange(cat.id)}>
+                          {cat.name}
                         </button>
                       </li>
                     ))}
                   </ul>
                 </div>
+
+                {/* 중분류 */}
                 <div className="category-column">
-                  {selectedLargeCategory && (
+                  {selectedLarge && (
                     <ul>
-                      {Object.keys(categoriesData[selectedLargeCategory]).map(cat => (
-                        <li key={cat}>
-                          <button type="button" onClick={() => { setSelectedMiddleCategory(cat); setSelectedSmallCategory(''); }}>
-                            {cat}
+                      {middleCategories.map(cat => (
+                        <li key={cat.id}>
+                          <button type="button"
+                            onClick={() => handleMiddleChange(cat.id)}>
+                            {cat.name}
                           </button>
                         </li>
                       ))}
                     </ul>
                   )}
                 </div>
+
+                {/* 소분류 */}
                 <div className="category-column">
-                  {selectedLargeCategory && selectedMiddleCategory && (
+                  {selectedMiddle && (
                     <ul>
-                      {categoriesData[selectedLargeCategory][selectedMiddleCategory].map(cat => (
-                        <li key={cat}>
-                          <button type="button" onClick={() => setSelectedSmallCategory(cat)}>{cat}</button>
+                      {smallCategories.map(cat => (
+                        <li key={cat.id}>
+                          <button type="button"
+                            onClick={() => handleSmallChange(cat.id)}>
+                            {cat.name}
+                          </button>
                         </li>
                       ))}
                     </ul>
                   )}
                 </div>
+
               </div>
             </li>
             {/* 상품 상태 */}
