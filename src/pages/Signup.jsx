@@ -41,41 +41,105 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // 시작 시 로딩 true
 
     try {
-      const res = await axios.post("http://localhost:8080/api/users/signup", form);
+      // 프로필 이미지가 선택된 경우 FormData로 전송
+      const formData = new FormData();
+      formData.append(
+        "user",
+        new Blob([JSON.stringify(form)], { type: "application/json" })
+      );
+      if (profileImage) {
+        formData.append("profileImage", profileImage);
+      }
+
+      const res = await axios.post(
+        "http://localhost:8080/api/users/signup",
+        formData
+      );
+
+      //회원가입 성공하면 기존 에러 초기화
+      setErrors({});
+      setShowSuccessModal(true);
       setMessage("회원가입 성공!");
       setTimeout(() => {
+        setShowSuccessModal(false);
         navigate("/login");
-      }, 1000); // 회원가입 성공 시 로그인 페이지로 이동
+      }, 2000); // 회원가입 성공 시 로그인 페이지로 이동 / 2초 뒤
     } catch (err) {
-      const res = err.response;
-      const errorMap = res?.data?.message;
+      console.log("🔥 [에러 응답 전체]", err); // ✅ 전체 에러 출력
+      console.log("🔥 [에러 응답 데이터]", err.response?.data); // ✅ 응답 데이터 출력
+      console.log("🔥 [에러 메시지 객체]", err.response?.data?.message); // ✅ 메시지 맵 확인
 
+      const res = err.response;
+      const errorMap = res?.data; //data 바로 사용
       if (errorMap && typeof errorMap === "object") {
-        setErrors(errorMap);
+        setErrors(errorMap); //에러 상태 세팅
         setMessage(""); // 전역 메시지는 이제 따로 처리 안 함
       } else {
         setMessage("에러 발생");
         setErrors({});
       }
+    } finally {
+      setLoading(false); // 요청 완료 후 로딩 false
     }
   };
 
   return (
     <div className="page-wrapper">
-      <h1 className="haggle-title">HAGGLE</h1>
+      <h1 className="haggle-title">
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          HAGGLE
+        </Link>
+      </h1>
 
       <form onSubmit={handleSubmit} className="signup-form">
         <div className="signup-container">
           <h2 className="signup-title">회원 정보 입력</h2>
 
+          <div className="form-group">
+            <label htmlFor="profileImage" className="profile-label">
+              이미지 업로드
+            </label>
+
+            {/* ✅ 업로드 박스와 input을 하나로 감싼 구조 */}
+            <div className="profile-upload-wrapper">
+              <div className="image-upload-box-signup">
+                {previewUrl ? (
+                  <img src={previewUrl} alt="미리보기" />
+                ) : (
+                  <span>+ 이미지 선택</span>
+                )}
+                <input
+                  type="file"
+                  id="profileImage"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden-file-input"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* 이메일 */}
           <div className="form-group">
-            <label htmlFor="email">이메일<span className="required">*</span></label>
+            <label htmlFor="email">
+              이메일<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="email" type="email" id="email" onChange={handleChange} required placeholder="올바른 이메일 형식이어야 합니다." />
-              <p className={`error-msg ${errors.email ? "" : "invisible"}`}>
+              <input
+                name="email"
+                type="email"
+                id="email"
+                onChange={handleChange}
+                required
+                placeholder="올바른 이메일 형식이어야 합니다."
+              />
+              <p
+                className={`error-msg ${errors.email ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.email || "‎"}
               </p>
             </div>
@@ -83,10 +147,21 @@ const Signup = () => {
 
           {/* 아이디 */}
           <div className="form-group">
-            <label htmlFor="userId">아이디<span className="required">*</span></label>
+            <label htmlFor="userId">
+              아이디<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="userId" id="userId" onChange={handleChange} required placeholder="아이디는 영문자와 숫자 조합의 5~20자여야 합니다." />
-              <p className={`error-msg ${errors.userId ? "" : "invisible"}`}>
+              <input
+                name="userId"
+                id="userId"
+                onChange={handleChange}
+                required
+                placeholder="아이디는 영문자와 숫자 조합의 5~20자여야 합니다."
+              />
+              <p
+                className={`error-msg ${errors.userId ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.userId || "‎"}
               </p>
             </div>
@@ -94,13 +169,26 @@ const Signup = () => {
 
           {/* 비밀번호 */}
           <div className="form-group">
-            <label htmlFor="password">비밀번호<span className="required">*</span></label>
+            <label htmlFor="password">
+              비밀번호<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="password" type="password" id="password" onChange={handleChange} required placeholder="비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다." />
+              <input
+                name="password"
+                type="password"
+                id="password"
+                onChange={handleChange}
+                required
+                placeholder="비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다."
+              />
               <p className="password-hint">
-                비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할 수 있습니다.
+                비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할
+                수 있습니다.
               </p>
-              <p className={`error-msg ${errors.password ? "" : "invisible"}`}>
+              <p
+                className={`error-msg ${errors.password ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.password || "‎"}
               </p>
             </div>
@@ -108,10 +196,21 @@ const Signup = () => {
 
           {/* 닉네임 */}
           <div className="form-group">
-            <label htmlFor="nickName">닉네임<span className="required">*</span></label>
+            <label htmlFor="nickName">
+              닉네임<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="nickName" id="nickName" onChange={handleChange} required placeholder="닉네임은 특수문자를 제외한 2~15자여야 합니다." />
-              <p className={`error-msg ${errors.nickName ? "" : "invisible"}`}>
+              <input
+                name="nickName"
+                id="nickName"
+                onChange={handleChange}
+                required
+                placeholder="닉네임은 특수문자를 제외한 2~15자여야 합니다."
+              />
+              <p
+                className={`error-msg ${errors.nickName ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.nickName || "‎"}
               </p>
             </div>
@@ -119,10 +218,21 @@ const Signup = () => {
 
           {/* 이름 */}
           <div className="form-group">
-            <label htmlFor="userName">이름<span className="required">*</span></label>
+            <label htmlFor="userName">
+              이름<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="userName" id="userName" onChange={handleChange} required placeholder="이름은 한글 2~10자여야 합니다." />
-              <p className={`error-msg ${errors.userName ? "" : "invisible"}`}>
+              <input
+                name="userName"
+                id="userName"
+                onChange={handleChange}
+                required
+                placeholder="이름은 한글 2~10자여야 합니다."
+              />
+              <p
+                className={`error-msg ${errors.userName ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.userName || "‎"}
               </p>
             </div>
@@ -130,10 +240,21 @@ const Signup = () => {
 
           {/* 전화번호 */}
           <div className="form-group">
-            <label htmlFor="phoneNumber">전화번호<span className="required">*</span></label>
+            <label htmlFor="phoneNumber">
+              전화번호<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="phoneNumber" id="phoneNumber" onChange={handleChange} required placeholder="전화번호는 '-' 없이 숫자 11자여야 합니다." />
-              <p className={`error-msg ${errors.phoneNumber ? "" : "invisible"}`}>
+              <input
+                name="phoneNumber"
+                id="phoneNumber"
+                onChange={handleChange}
+                required
+                placeholder="전화번호는 '-' 없이 숫자 11자여야 합니다."
+              />
+              <p
+                className={`error-msg ${errors.phoneNumber ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.phoneNumber || "‎"}
               </p>
             </div>
@@ -141,28 +262,39 @@ const Signup = () => {
 
           {/* 주소 */}
           <div className="form-group">
-            <label htmlFor="address">주소<span className="required">*</span></label>
+            <label htmlFor="address">
+              주소<span className="required">*</span>
+            </label>
             <div className="input-with-hint">
-              <input name="address" id="address" onChange={handleChange} required placeholder="정확한 주소를 입력하세요." />
-              <p className={`error-msg ${errors.address ? "" : "invisible"}`}>
+              <input
+                name="address"
+                id="address"
+                onChange={handleChange}
+                required
+                placeholder="정확한 주소를 입력하세요."
+              />
+              <p
+                className={`error-msg ${errors.address ? "visible" : "invisible"
+                  }`}
+              >
                 {errors.address || "‎"}
               </p>
             </div>
           </div>
 
-          {/* 이미지 URL */}
-          <div className="form-group">
-            <label htmlFor="imageURL">이미지 URL</label>
-            <div className="input-with-hint">
-              <input name="imageURL" id="imageURL" onChange={handleChange} />
-              <p className="error-msg invisible">‎</p> {/* 일관된 정렬을 위해 빈 공간 유지 */}
-            </div>
-          </div>
-
           {/* 버튼 */}
-          <button type="submit">회원가입</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "로딩 중..." : "회원가입"}
+          </button>
         </div>
       </form>
+      {showSuccessModal && (
+        <div className="modal-overlay-sginup">
+          <div className="modal-content-signup">
+            <p>회원가입에 성공했습니다!</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
