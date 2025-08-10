@@ -5,20 +5,19 @@ import '../ProductCSS/ProductRegisterLayout.css';
 import '../ProductCSS/ProductRegisterForm.css';
 import '../ProductCSS/ProductRegisterButtons.css';
 
-// 카테고리 상태
-const [largeCategories, setLargeCategories] = useState([]);
-const [middleCategories, setMiddleCategories] = useState([]);
-const [smallCategories, setSmallCategories] = useState([]);
-
-const [selectedLarge, setSelectedLarge] = useState(null);
-const [selectedMiddle, setSelectedMiddle] = useState(null);
-const [selectedSmall, setSelectedSmall] = useState(null);
-
-
 function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
+
+  // 카테고리 상태
+  const [largeCategories, setLargeCategories] = useState([]);
+  const [middleCategories, setMiddleCategories] = useState([]);
+  const [smallCategories, setSmallCategories] = useState([]);
+
+  const [selectedLarge, setSelectedLarge] = useState(null);
+  const [selectedMiddle, setSelectedMiddle] = useState(null);
+  const [selectedSmall, setSelectedSmall] = useState(null);
 
   // 공통 상태
   const [images, setImages] = useState([]);
@@ -36,12 +35,14 @@ function ProductForm({ mode = 'create' }) {
   const [tradeLocation, setTradeLocation] = useState('');
   const [tags, setTags] = useState('');
 
+  // 대분류 목록 로딩 (공통)
   useEffect(() => {
-    axios.get("/api/categories")
+    axios.get("/api/categories/roots")
       .then(res => setLargeCategories(res.data))
       .catch(err => console.error("카테고리 로딩 실패", err));
   }, []);
 
+  // 카테고리 선택 핸들러
   const handleLargeChange = (id) => {
     setSelectedLarge(id);
     setSelectedMiddle(null);
@@ -60,11 +61,11 @@ function ProductForm({ mode = 'create' }) {
     setSelectedSmall(id);
   };
 
-  // 수정 모드일 때 기존 데이터 불러오기
+  // 수정 모드 데이터 로딩
   useEffect(() => {
     if (mode === 'edit' && id) {
       axios.get(`/api/products/detail/${id}`)
-        .then(res => {
+        .then(async (res) => {
           const data = res.data;
           setProductName(data.title);
           setPrice(data.cost);
@@ -77,6 +78,38 @@ function ProductForm({ mode = 'create' }) {
           setTradeLocation(data.seller?.address || '');
           setExistingImageUrls(data.images);
           setImagePreviews(data.images.map(url => `http://localhost:8080${url}`));
+
+          // categoryId 기반 자동 세팅
+          if (data.categoryId) {
+            try {
+              // 1. 소분류
+              const smallRes = await axios.get(`/api/categories/detail/${data.categoryId}`);
+              const small = smallRes.data;
+              const middleId = small.parent.id;
+
+              // 2. 중분류
+              const middleRes = await axios.get(`/api/categories/detail/${middleId}`);
+              const middle = middleRes.data;
+              const largeId = middle.parent.id;
+
+              // 대분류 목록
+              const largeList = await axios.get(`/api/categories/roots`);
+              setLargeCategories(largeList.data);
+              setSelectedLarge(largeId);
+
+              // 중분류 목록
+              const middleList = await axios.get(`/api/categories/${largeId}`);
+              setMiddleCategories(middleList.data);
+              setSelectedMiddle(middleId);
+
+              // 소분류 목록
+              const smallList = await axios.get(`/api/categories/${middleId}`);
+              setSmallCategories(smallList.data);
+              setSelectedSmall(data.categoryId);
+            } catch (err) {
+              console.error("카테고리 자동 세팅 실패", err);
+            }
+          }
         })
         .catch(err => console.error("게시글 로딩 실패", err));
     }
@@ -106,7 +139,7 @@ function ProductForm({ mode = 'create' }) {
     if (description.trim().length < 10) return alert("상품 설명은 10자 이상 입력해주세요.");
 
     try {
-      // 새로 추가한 이미지 업로드
+      // 이미지 업로드
       let uploadedImageUrls = [];
       if (images.length > 0) {
         const formData = new FormData();
@@ -248,17 +281,17 @@ function ProductForm({ mode = 'create' }) {
 
               </div>
             </li>
+
             {/* 상품 상태 */}
             <li className="form-group">
               <div className="form-label">상품 상태</div>
               <div className="form-content">
                 <div className="radio-group">
                   {[
-                    { label: "새 상품 (미사용)", value: "LIKE_NEW" },
-                    { label: "사용감 없음", value: "USED_GOOD" },
-                    { label: "사용감 적음", value: "USED" },
-                    { label: "사용감 많음", value: "DAMAGED" },
-                    { label: "고장/파손 상품", value: "BROKEN" }
+                    { label: "새 상품 (미사용)", value: "NEW" },
+                    { label: "사용감 거의 없음", value: "USED_LIKE_NEW" },
+                    { label: "사용감 있음", value: "USED" },
+                    { label: "고장/파손 상품", value: "DAMAGED" }
                   ].map((item) => (
                     <label key={item.value} className="radio-label">
                       <input

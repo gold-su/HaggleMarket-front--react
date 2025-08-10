@@ -26,7 +26,7 @@ function ProductCard({ product }) {
       />
       <div className="product-info">
         <div className="product-title">{product.title}</div>
-        <div className="product-description">{product.content}</div>
+        <div className="product-description">{product.content || ''}</div>
         <div className="product-price-row">
           <div className="product-price">{product.price}</div>
           <svg

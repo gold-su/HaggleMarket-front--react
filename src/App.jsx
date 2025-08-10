@@ -13,11 +13,10 @@ import AuctionAdSection from './MainPages/AuctionAdSection';
 import EditProfile from './editPage/EditProfile'; // 프로필 수정 컴포넌트 임포트
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LikeBox from "./components/LikeBox";
-import Product from './oldMVP/ProductRegister';
 import "./App.css";
 import ProductDetail from './Product/ProductDetail';
-import ProductEdit from './oldMVP/ProductEdit';
 import ProductForm from './Product/ProductForm';
+import CategoryPostList from './Category/CategoryPostList';
 
 
 function App() {
@@ -199,6 +198,25 @@ function App() {
                 frequentKeywords={frequentKeywords}
               />
               <ProductForm mode="edit" />
+              <MenuBox
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                frequentKeywords={frequentKeywords}
+              />
+            </>
+          }
+        />
+        <Route
+          path="/category/:categoryId"
+          element={
+            <>
+              <TopBar />
+              <Header
+                onMenuToggle={handleMenuToggle}
+                onSearch={handleSearch}
+                frequentKeywords={frequentKeywords}
+              />
+              <CategoryPostList />
               <MenuBox
                 isOpen={isMenuOpen}
                 onClose={() => setIsMenuOpen(false)}

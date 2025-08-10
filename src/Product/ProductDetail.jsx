@@ -12,11 +12,11 @@ function ProductDetail() {
   const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
 
-  const statusMap = {
-    LIKE_NEW: '새 상품',
-    USED_GOOD: '사용감 적음',
-    USED: '사용감 많음',
-    DAMAGED: '고장/파손 상품',
+  const statusLabelMap = {
+    NEW: "새상품",
+    USED_LIKE_NEW: "사용감 거의 없음",
+    USED: "사용감 있음",
+    DAMAGED: "고장/파손 상품"
   };
 
   useEffect(() => {
@@ -50,17 +50,17 @@ function ProductDetail() {
   if (error) return <div>{error}</div>;
   if (!product) return <div>로딩 중...</div>;
 
-let currentUserNo = null;
+  let currentUserNo = null;
 
-if (token) {
-  try {
-    const decoded = jwtDecode(token);
-    console.log("토큰 payload:", decoded);
-    currentUserNo = decoded.userNo; // 숫자 userNo 사용
-  } catch (err) {
-    console.error("JWT 파싱 실패", err);
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      console.log("토큰 payload:", decoded);
+      currentUserNo = decoded.userNo; // 숫자 userNo 사용
+    } catch (err) {
+      console.error("JWT 파싱 실패", err);
+    }
   }
-}
 
   console.log(product.seller)
 
@@ -89,7 +89,7 @@ if (token) {
           <div className="price">{product.cost.toLocaleString()}원</div>
           <div className="stats">❤️ 6 👁 {product.hit} 📅 {product.createdAt?.slice(0, 10)}</div>
           <ul className="details">
-            <li><strong>상품상태:</strong> {statusMap[product.productStatus] || product.productStatus}</li>
+            <li><strong>상품상태:</strong> {statusLabelMap[product.productStatus] || product.productStatus}</li>
             <li><strong>설명:</strong> {product.content}</li>
             <li><strong>배송비:</strong> {product.deliveryFee ? '있음' : '없음'}</li>
             <li><strong>직거래지역:</strong> {product.seller.address}</li>
@@ -123,7 +123,7 @@ if (token) {
           </div>
           <div className="card">
             <div className="card-title">📂 카테고리</div>
-            <div className="card-content">{product.category || '-'}</div>
+            <div className="card-content">{product.categoryPath || '-'}</div>
           </div>
           <div className="card">
             <div className="card-title">🏷️ 상품태그</div>
