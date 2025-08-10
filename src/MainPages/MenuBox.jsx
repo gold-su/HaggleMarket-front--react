@@ -19,7 +19,6 @@ function MenuBox({ isOpen, onClose, frequentKeywords }) {
   const handleCategoryClick = (category) => {
     alert(`선택한 카테고리: ${category}`); // 실제로는 페이지 이동 또는 검색 기능 연결
     onClose(); // 메뉴 닫기
-    // 예: window.location.href = `/search?category=${encodeURIComponent(category)}`;
   };
 
   return (
