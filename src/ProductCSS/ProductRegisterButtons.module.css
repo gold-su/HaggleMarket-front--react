@@ -1,7 +1,7 @@
-<<<<<<< HEAD=======
 /* src/ProductCSS/ProductRegisterButtons.module.css */
 
->>>>>>>origin/Gwang-Pyo .register-footer .btn-draft,
+/* 기존 register-footer 스타일 */
+.register-footer .btn-draft,
 .register-footer .btn-submit {
   padding: 12px 30px;
   font-weight: 700;
@@ -31,10 +31,9 @@
 
 .register-footer .btn-submit:hover {
   background-color: var(--bunjang-red-dark);
-  <<<<<<< HEAD
 }
 
-
+/* 새로 추가된 모듈형 버튼 스타일 */
 .btnGroup {
   display: flex;
   justify-content: flex-end;
@@ -89,6 +88,4 @@
   .btnSubmit {
     width: 100%;
   }
-
-  =======>>>>>>>origin/Gwang-Pyo
 }

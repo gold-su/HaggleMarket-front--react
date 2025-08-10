@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import '../ProductCSS/ProductRegisterLayout.css';
-import '../ProductCSS/ProductRegisterForm.css';
-import '../ProductCSS/ProductRegisterButtons.css';
+import '../ProductCSS/ProductRegisterButtons.module.css';
+import '../ProductCSS/ProductRegisterForm.module.css';
+import '../ProductCSS/ProductRegisterLayout.module.css';
 
 function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
