@@ -1,56 +1,113 @@
-// src/components/MenuBox.js
-import React, { useEffect } from 'react';
-// import { Link } from 'react-router-dom'; // Link는 현재 MenuBox에서 직접 사용되지 않으므로 제거 가능
-import '../MainPagesCSS/menubox.css'; // CSS 파일 경로를 맞춰주세요
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import '../MainPagesCSS/menubox.css';
+
 function MenuBox({ isOpen, onClose, frequentKeywords }) {
-  // 메뉴가 열릴 때 body 스크롤 방지 (선택 사항)
+  const [categoryTree, setCategoryTree] = useState([]);
+  const [openLarge, setOpenLarge] = useState(null); // 열린 대분류 ID
+  const [openMiddle, setOpenMiddle] = useState(null); // 열린 중분류 ID
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+
+      axios.get('/api/categories/roots')
+        .then(async (res) => {
+          const roots = res.data;
+
+          const tree = await Promise.all(
+            roots.map(async (root) => {
+              const middleRes = await axios.get(`/api/categories/${root.id}`);
+              const middles = await Promise.all(
+                middleRes.data.map(async (middle) => {
+                  const smallRes = await axios.get(`/api/categories/${middle.id}`);
+                  return {
+                    ...middle,
+                    children: smallRes.data
+                  };
+                })
+              );
+              return {
+                ...root,
+                children: middles
+              };
+            })
+          );
+
+          setCategoryTree(tree);
+        })
+        .catch(err => console.error('카테고리 로딩 실패:', err));
     } else {
       document.body.style.overflow = 'unset';
     }
+
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
-  // 카테고리 클릭 핸들러
-  const handleCategoryClick = (category) => {
-    alert(`선택한 카테고리: ${category}`); // 실제로는 페이지 이동 또는 검색 기능 연결
-    onClose(); // 메뉴 닫기
-    // 예: window.location.href = `/search?category=${encodeURIComponent(category)}`;
+  const handleCategoryClick = (categoryId) => {
+    navigate(`/category/${categoryId}`);
+    onClose();
+  };
+
+  const toggleLarge = (id) => {
+    setOpenLarge(prev => prev === id ? null : id);
+    setOpenMiddle(null); // 대분류 바뀌면 중분류 닫기
+  };
+
+  const toggleMiddle = (id) => {
+    setOpenMiddle(prev => prev === id ? null : id);
   };
 
   return (
-    <nav className={`menu-box ${isOpen ? 'active' : ''}`} id="menuBox" aria-label="사이트 메뉴">
-      {/* 전체 카테고리 */}
+    <nav className={`menu-box ${isOpen ? 'active' : ''}`} id="menuBox">
       <div className="menu-category">
         <h3>전체 카테고리</h3>
-        <ul>
-          <li onClick={() => handleCategoryClick('의류')}>의류</li>
-          <li onClick={() => handleCategoryClick('가전제품')}>가전제품</li>
-          <li onClick={() => handleCategoryClick('뷰티')}>뷰티</li>
-          <li onClick={() => handleCategoryClick('가구')}>가구</li>
-          <li onClick={() => handleCategoryClick('스포츠')}>스포츠</li>
-          <li onClick={() => handleCategoryClick('생활')}>생활</li>
-          <li onClick={() => handleCategoryClick('도서')}>도서</li>
-          {/* 추가된 항목 */}
-          <li onClick={() => handleCategoryClick('식품')}>식품</li>
-          <li onClick={() => handleCategoryClick('유아용품')}>유아용품</li>
-          <li onClick={() => handleCategoryClick('자동차용품')}>자동차용품</li>
-          <li onClick={() => handleCategoryClick('취미/수집')}>취미/수집</li>
-          <li onClick={() => handleCategoryClick('디지털기기')}>디지털기기</li>
+        <ul className="category-tree">
+          {categoryTree.map((large) => (
+            <li key={large.id}>
+              <div className="category-large" onClick={() => toggleLarge(large.id)}>
+                ▸ {large.name}
+              </div>
+              {openLarge === large.id && (
+                <ul>
+                  {large.children.map((middle) => (
+                    <li key={middle.id}>
+                      <div className="category-middle" onClick={() => toggleMiddle(middle.id)}>
+                        └▸ {middle.name}
+                      </div>
+                      {openMiddle === middle.id && (
+                        <ul>
+                          {middle.children.map((small) => (
+                            <li key={small.id}>
+                              <div
+                                className="category-small"
+                                onClick={() => handleCategoryClick(small.id)}
+                              >
+                                &nbsp;&nbsp;&nbsp;&nbsp;└ {small.name}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
         </ul>
       </div>
 
-      {/* 인기 카테고리 */}
       <div className="menu-category">
         <h3>인기 카테고리</h3>
-        <ul id="popularCategoryList">
+        <ul>
           {frequentKeywords.map((keyword, index) => (
-            <li key={index} onClick={() => handleCategoryClick(keyword)}>
-              {keyword}
+            <li key={index} onClick={() => handleCategoryClick(keyword.categoryId)}>
+              {keyword.name}
             </li>
           ))}
         </ul>
