@@ -7,87 +7,37 @@
 
 .product-detail {
   display: flex;
-  align-items: stretch; /* 높이를 양쪽 요소에 맞춤 */
+  align-items: flex-start;
   gap: 40px;
 }
 
-/* 대표 이미지와 썸네일 전체 컨테이너 */
-.product-image-box {
-  width: 375px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.main-image img {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: contain; /* 여백 생겨도 자르지 않음 */
+.product-image {
+  width: 375px;          /* ✅ 원하는 가로폭 고정 */
+  height: 375px;         /* ✅ 세로도 고정! */
+  overflow: hidden;
   border-radius: 12px;
   background: #f0f0f0;
 }
 
-.thumbnail-list {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 20px; /* ✅ 썸네일과 선 사이 여백 */
-}
-
-.thumbnail-image {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 6px;
-  background: #eee;
-  cursor: pointer;
-}
-
-.thumbnail-image.selected {
-  border: 2px solid #007bff;
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* ✅ 박스를 꽉 채우게 */
+  display: block;
 }
 
 .product-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /*  위에서부터 정렬 */
-  gap: 12px; /*  요소 간 간격 일정하게 */
 }
 
 /* 기존 정보 영역 스타일 그대로 */
 .product-info .price { font-size: 28px; font-weight: bold; margin-bottom: 15px; }
 .product-info .stats { margin-bottom: 15px; color: #555; }
-.product-info ul.details {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.product-info ul.details li {
-  font-size: 15px;
-  color: #333;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  line-height: 1.6;
-}
-
-.product-info ul.details li strong {
-  font-weight: 600;
-  min-width: 85px; /* ✅ 제목 길이 고정하여 줄 정렬 맞춤 */
-  color: #222;
-}
-
-.product-info .buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: auto; 
-  width: 100%;
-}
+.product-info ul.details { list-style: none; padding: 0; margin: 0 0 20px 0; }
+.product-info ul.details li { margin-bottom: 8px; }
+.product-info .buttons { display: flex; gap: 10px; margin-top: auto; }
 .product-info .buttons button {
   flex: 1; padding: 12px 16px; border: none; border-radius: 6px;
   font-size: 16px; cursor: pointer;
@@ -116,8 +66,8 @@
 }
 
 .product-extra-info .divider {
-  border-top: 1px solid #ddd;
-  margin: 30px 0 20px;  /* ✅ 위 여백을 10 → 30으로 증가 */
+  border-top: 1px solid #ddd;  
+  margin: 10px 0 20px;         
 }
 
 .product-extra-cards {

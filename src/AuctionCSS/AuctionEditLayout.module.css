@@ -1,0 +1,128 @@
+/* src/AuctionCSS/AuctionEditLayout.module.css */
+
+/* 이 파일은 AuctionRegisterLayout.module.css와 동일한 내용을 가집니다. */
+/* =========================
+   전역 변수 (색상 등) - 이곳에서 관리합니다.
+   ========================= */
+:root {
+  --main-bg-color: #fff;
+  --accent-color: #3E7AEF;
+  --accent-color-dark: #2f65c0;
+  --border-color: #ddd;
+  --text-color: #111;
+  --text-muted: #666;
+  --input-bg: #fff;
+  --input-border: #ccc;
+  --input-radius: 6px;
+  --shadow-light: rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   페이지 전체 레이아웃
+   ========================= */
+.auctionRegisterPage { /* 이 클래스명은 AuctionRegister에서 그대로 사용하며, AuctionEdit에서도 동일한 구조를 가짐 */
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--main-bg-color);
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-color);
+}
+
+.mainContent {
+  width: 100%;
+  flex-grow: 1;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.section {
+  background-color: #ffffff;
+  padding: 20px 40px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pageTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 20px 0;
+  text-align: left;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+/* =========================
+   폼 그룹 (ul/li 구조) 공통 스타일 (폼과 레이아웃 모두에 걸치지만, 편의상 Layout에 둡니다)
+   ========================= */
+.formGroups {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.formGroup {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.formGroup:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.formLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.formLabel small {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-left: 5px;
+}
+
+.formContent {
+  color: var(--text-muted);
+  margin-left: 0px; /* 초기화 또는 적절한 값 설정 */
+}
+
+/* =========================
+   반응형 미디어 쿼리 (레이아웃 관련)
+   ========================= */
+@media (max-width: 768px) {
+  .auctionRegisterPage {
+    padding: 0;
+  }
+  .mainContent {
+    padding: 0;
+  }
+  .section {
+    padding: 15px;
+  }
+  .formGroup {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+  .formLabel {
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+  }
+  .formLabel small {
+    font-size: 0.75rem;
+  }
+}

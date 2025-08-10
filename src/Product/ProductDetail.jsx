@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import '../ProductCSS/ProductDetail.css';
-import { useParams, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import '../ProductCSS/ProductDetail.css'
 
 function ProductDetail() {
   const { id } = useParams();
@@ -21,30 +20,11 @@ function ProductDetail() {
 
   useEffect(() => {
     axios.get(`/api/products/detail/${id}`)
-      .then((res) => {
-        console.log(" 불러온 상품:", res.data);
-        setProduct(res.data);
-      })
+      .then((res) => setProduct(res.data))
       .catch((err) => {
         console.error(err);
         setError('상품 정보를 불러오지 못했습니다.');
       });
-  }, [id]);
-
-  useEffect(() => {
-    if (product?.images?.length > 0) {
-      setMainImage(product.images[0]);
-    }
-  }, [product]);
-
-  useEffect(() => {
-    axios.post(`/api/products/${id}/hit`, null, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("jwtToken")}`
-      }
-    })
-      .then(() => console.log("조회수 증가됨"))
-      .catch(err => console.error("조회수 증가 실패", err));
   }, [id]);
 
   if (error) return <div>{error}</div>;
@@ -67,21 +47,12 @@ function ProductDetail() {
   return (
     <div className="product-page">
       <div className="product-detail">
-        <div className="product-image-box">
-          <div className="main-image">
-            <img src={`http://localhost:8080${mainImage}`} alt="대표 이미지" />
-          </div>
-          <div className="thumbnail-list">
-            {product.images?.map((img, idx) => (
-              <img
-                key={idx}
-                src={`http://localhost:8080${img}`}
-                alt={`썸네일-${idx}`}
-                className={`thumbnail-image ${mainImage === img ? 'selected' : ''}`}
-                onClick={() => setMainImage(img)}
-              />
-            ))}
-          </div>
+        <div className="product-image">
+          <img
+            src={`http://localhost:8080${product.imageUrl}`}
+            alt={product.title}
+            onError={(e) => { e.target.src = '/images/default.jpg'; }}
+          />
         </div>
 
         <div className="product-info">
@@ -99,14 +70,6 @@ function ProductDetail() {
             <button className="wish">찜 6</button>
             <button className="chat">해글톡</button>
             <button className="buy">즉시구매</button>
-            {currentUserNo && product.seller.userNo === currentUserNo && (
-              <button
-                className="edit"
-                onClick={() => navigate(`/products/edit/${id}`)}
-              >
-                수정하기
-              </button>
-            )}
           </div>
         </div>
       </div>

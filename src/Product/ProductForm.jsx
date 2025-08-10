@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import '../ProductCSS/ProductRegisterButtons.module.css';
-import '../ProductCSS/ProductRegisterForm.module.css';
-import '../ProductCSS/ProductRegisterLayout.module.css';
+import stylesLayout from '../ProductCSS/ProductFormLayout.module.css'; // 파일명 변경 반영
+import stylesForm from '../ProductCSS/ProductFormInputs.module.css';     // 파일명 변경 반영
+import stylesButtons from '../ProductCSS/ProductFormButtons.module.css'; // 파일명 변경 반영
 
 function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
@@ -180,17 +180,23 @@ function ProductForm({ mode = 'create' }) {
   };
 
   return (
-    <div className="product-register-page">
-      <main className="register-main-content">
-        <section className="register-section">
-          <h1 className="register-title">{mode === 'edit' ? '상품 수정' : '상품 등록'}</h1>
-          <ul className="form-groups">
-            <li className="form-group">
-              <div className="form-label">상품이미지 <small>({imagePreviews.length}/12)</small></div>
-              <div className="form-content">
-                <ul className="image-upload-list">
-                  <li className="image-upload-item add-image">
-                    <label htmlFor="image-upload-input"><span>이미지 등록</span></label>
+    <div className={stylesLayout.productRegisterPage}>
+      <main className={stylesLayout.registerMainContent}>
+        <section className={stylesLayout.registerSection}>
+          <h1 className={stylesLayout.registerTitle}>{mode === 'edit' ? '상품 수정' : '상품 등록'}</h1>
+          <ul className={stylesLayout.formGroups}>
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>상품이미지 <small>({imagePreviews.length}/12)</small></div>
+              <div className={stylesLayout.formContent}>
+                <ul className={stylesForm.imageUploadList}>
+                  <li className={`${stylesForm.imageUploadItem} ${stylesForm.addImage}`}>
+                    <label htmlFor="image-upload-input">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                      </svg>
+                      <span>이미지 등록</span>
+                    </label>
                     <input
                       id="image-upload-input"
                       type="file"
@@ -200,89 +206,131 @@ function ProductForm({ mode = 'create' }) {
                       style={{ display: 'none' }}
                     />
                   </li>
-                  {imagePreviews.map((url, i) => (
-                    <li key={i} className="image-upload-item image-preview-item">
-                      <img src={url} alt={`미리보기 ${i + 1}`} />
-                      <button type="button" className="remove-image-button" onClick={() => handleRemoveImage(i)}>X</button>
+                  {images.map((imageSrc, index) => ( // ✅ imagePreviews 대신 images 사용
+                    <li key={index} className={`${stylesForm.imageUploadItem} ${stylesForm.imagePreviewItem}`}>
+                      <img src={imageSrc} alt={`미리보기 ${index + 1}`} />
+                      <button type="button" className={stylesForm.removeImageButton} onClick={() => handleRemoveImage(index)}>X</button>
                     </li>
                   ))}
                 </ul>
-                <div className="form-hint">PC 1:1, 모바일 1:1.23 비율로 보여집니다.</div>
+                <div className={stylesForm.formHint}>상품 이미지는 PC에서는 1:1, 모바일에서는 1:1.23 비율로 보여져요.</div>
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">상품명</div>
-              <div className="form-content">
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="상품명을 입력해 주세요."
-                  maxLength={40}
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  required
-                />
-                <div className="char-counter">{productName.length}/40</div>
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>상품명</div>
+              <div className={stylesLayout.formContent}>
+                <div className={stylesForm.productNameInputWrapper}>
+                  <input
+                    type="text"
+                    className={stylesForm.formInput}
+                    placeholder="상품명을 입력해 주세요."
+                    maxLength={40}
+                    value={productName}
+                    onChange={(e) => setProductName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={stylesForm.charCounter}>{productName.length}/40</div>
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">카테고리</div>
-              <div className="form-content category-selection-area">
-                <div className="category-column">
-                  <ul>
-                    {largeCategories.map(cat => (
-                      <li key={cat.id}>
-                        <button type="button" onClick={() => handleLargeChange(cat.id)}>
-                          {cat.name}
-                        </button>
-                      </li>
-                    ))}
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>카테고리</div>
+              <div className={`${stylesLayout.formContent} ${stylesForm.categorySelectionArea}`}>
+                {/* 대분류 컬럼 */}
+                <div className={stylesForm.categoryColumn}>
+                  <ul className={stylesForm.categoryList}>
+                    {largeCategories.length === 0 ? (
+                      <li className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>카테고리 불러오는 중...</li>
+                    ) : (
+                      largeCategories.map((cat) => (
+                        <li
+                          key={cat.id}
+                          className={`${stylesForm.categoryItem} ${selectedLarge === cat.id ? stylesForm.active : ''}`}
+                        >
+                          <button
+                            type="button"
+                            className={stylesForm.categoryButton}
+                            onClick={() => handleLargeChange(cat.id)}
+                          >
+                            {cat.name}
+                          </button>
+                        </li>
+                      ))
+                    )}
                   </ul>
                 </div>
 
-                <div className="category-column">
-                  {selectedLarge && (
-                    <ul>
-                      {middleCategories.map(cat => (
-                        <li key={cat.id}>
-                          <button type="button" onClick={() => handleMiddleChange(cat.id)}>
-                            {cat.name}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                {/* 중분류 컬럼 */}
+                <div className={stylesForm.categoryColumn}>
+                  {selectedLarge ? (
+                    middleCategories.length === 0 ? (
+                      <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>중분류 없음</div>
+                    ) : (
+                      <ul className={stylesForm.categoryList}>
+                        {middleCategories.map((cat) => (
+                          <li
+                            key={cat.id}
+                            className={`${stylesForm.categoryItem} ${selectedMiddle === cat.id ? stylesForm.active : ''}`}
+                          >
+                            <button
+                              type="button"
+                              className={stylesForm.categoryButton}
+                              onClick={() => handleMiddleChange(cat.id)}
+                            >
+                              {cat.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  ) : (
+                    <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>중분류 선택</div>
                   )}
                 </div>
 
-                <div className="category-column">
-                  {selectedMiddle && (
-                    <ul>
-                      {smallCategories.map(cat => (
-                        <li key={cat.id}>
-                          <button type="button" onClick={() => handleSmallChange(cat.id)}>
-                            {cat.name}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                {/* 소분류 컬럼 */}
+                <div className={stylesForm.categoryColumn}>
+                  {selectedMiddle ? (
+                    smallCategories.length === 0 ? (
+                      <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>소분류 없음</div>
+                    ) : (
+                      <ul className={stylesForm.categoryList}>
+                        {smallCategories.map((cat) => (
+                          <li
+                            key={cat.id}
+                            className={`${stylesForm.categoryItem} ${selectedSmall === cat.id ? stylesForm.active : ''}`}
+                          >
+                            <button
+                              type="button"
+                              className={stylesForm.categoryButton}
+                              onClick={() => handleSmallChange(cat.id)}
+                            >
+                              {cat.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  ) : (
+                    <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>소분류 선택</div>
                   )}
                 </div>
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">상품 상태</div>
-              <div className="form-content">
-                <div className="radio-group">
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>상품 상태</div>
+              <div className={stylesLayout.formContent}>
+                <div className={stylesForm.radioGroup}>
                   {[
                     { label: "새 상품 (미사용)", value: "LIKE_NEW" },
-                    { label: "사용감 적음", value: "USED_GOOD" },
-                    { label: "사용감 많음", value: "USED" },
+                    { label: "사용감 없음", value: "USED_GOOD" },
+                    { label: "사용감 적음", value: "USED" },
                     { label: "고장/파손 상품", value: "DAMAGED" }
                   ].map(item => (
-                    <label key={item.value} className="radio-label">
+                    <label key={item.value} className={stylesForm.radioLabel}>
                       <input
                         type="radio"
                         name="productStatus"
@@ -297,10 +345,10 @@ function ProductForm({ mode = 'create' }) {
               </div>
             </li>
 
-            <li className="form-group price-group">
-              <div className="form-label">가격</div>
-              <div className="form-content">
-                <div className="price-input-wrapper">
+            <li className={`${stylesLayout.formGroup} ${stylesForm.priceGroup}`}> {/* ✅ stylesForm.priceGroup 추가 */}
+              <div className={stylesLayout.formLabel}>가격</div>
+              <div className={stylesLayout.formContent}>
+                <div className={stylesForm.priceInputWrapper}>
                   <input
                     type="number"
                     className="form-input price-input"
@@ -310,9 +358,9 @@ function ProductForm({ mode = 'create' }) {
                     required
                     min="0"
                   />
-                  <span className="currency">원</span>
+                  <span className={stylesForm.currency}>원</span>
                 </div>
-                <label className="checkbox-label">
+                <label className={stylesForm.checkboxLabel}>
                   <input
                     type="checkbox"
                     checked={negotiable}
@@ -323,10 +371,10 @@ function ProductForm({ mode = 'create' }) {
               </div>
             </li>
 
-            <li className="form-group toggle-group">
-              <div className="form-label">교환</div>
-              <div className="form-content">
-                <label className="toggle-label">
+            <li className={`${stylesLayout.formGroup} ${stylesForm.toggleGroup}`}> {/* ✅ stylesForm.toggleGroup 추가 */}
+              <div className={stylesLayout.formLabel}>교환</div>
+              <div className={stylesLayout.formContent}>
+                <label className={stylesForm.toggleLabel}>
                   <input
                     type="checkbox"
                     checked={exchangeable}
@@ -338,12 +386,12 @@ function ProductForm({ mode = 'create' }) {
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">배송비</div>
-              <div className="form-content">
-                <div className="radio-group">
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>배송비</div>
+              <div className={stylesLayout.formContent}>
+                <div className={stylesForm.radioGroup}>
                   {['포함', '별도'].map(fee => (
-                    <label key={fee} className="radio-label">
+                    <label key={fee} className={stylesForm.radioLabel}>
                       <input
                         type="radio"
                         name="deliveryFee"
@@ -358,9 +406,9 @@ function ProductForm({ mode = 'create' }) {
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">상품 설명</div>
-              <div className="form-content">
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>상품 설명</div>
+              <div className={stylesLayout.formContent}>
                 <textarea
                   className="form-textarea"
                   value={description}
@@ -370,13 +418,26 @@ function ProductForm({ mode = 'create' }) {
                   required
                   minLength={10}
                 />
-                <div className="char-counter">{description.length}/2000</div>
+                <div className={stylesForm.charCounter}>{description.length}/2000</div>
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">태그 (선택)</div>
-              <div className="form-content">
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>태그 (선택)</div>
+              <div className={stylesLayout.formContent}>
+                <input
+                  type="text"
+                  className={stylesForm.formInput}
+                  value={tags} // ✅ tags 상태가 있다고 가정
+                  onChange={(e) => setTags(e.target.value)} // ✅ setTags 상태 업데이트 함수 있다고 가정
+                  placeholder="쉼표로 구분해 입력"
+                />
+              </div>
+            </li>
+
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>연락처 (선택)</div>
+              <div className={stylesLayout.formContent}>
                 <input
                   type="text"
                   className="form-input"
@@ -400,9 +461,9 @@ function ProductForm({ mode = 'create' }) {
               </div>
             </li>
 
-            <li className="form-group">
-              <div className="form-label">거래지역 (선택)</div>
-              <div className="form-content">
+            <li className={stylesLayout.formGroup}>
+              <div className={stylesLayout.formLabel}>거래지역 (선택)</div>
+              <div className={stylesLayout.formContent}>
                 <input
                   type="text"
                   className="form-input"
@@ -416,11 +477,16 @@ function ProductForm({ mode = 'create' }) {
         </section>
       </main>
 
-      <footer className="register-footer">
-        <div className="inner">
-          <button className="btn-submit" onClick={handleSubmit}>
-            {mode === 'edit' ? '수정하기' : '등록하기'}
-          </button>
+      <footer className={stylesLayout.registerFooter}>
+        <div className={stylesLayout.inner}>
+          {/* ✅ 버튼 그룹은 ProductRegisterButtons.module.css에 btnGroup이므로 div로 묶고 className 적용 */}
+          <div className={stylesButtons.btnGroup}>
+            {/* 임시저장 버튼이 필요하다면 아래 주석 해제 */}
+            {/* <button className={stylesButtons.btnDraft} onClick={handleSaveDraft}>임시저장</button> */}
+            <button className={stylesButtons.btnSubmit} onClick={handleSubmit}>
+              {mode === 'edit' ? '수정하기' : '등록하기'}
+            </button>
+          </div>
         </div>
       </footer>
     </div>
