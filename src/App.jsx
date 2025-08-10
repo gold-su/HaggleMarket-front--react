@@ -14,7 +14,7 @@ import MyShop from './Shop/MyShop';
 import ProductManagementPage from './Shop/ProductManagementPage';
 import MyPage from './Shop/MyPage';
 import EditProfile from './editPage/EditProfile';
-import ProductRegister from './Product/ProductRegister';
+// import ProductRegister from './Product/ProductRegister';
 import ProductDetail from './Product/ProductDetail';
 import ProductForm from './Product/ProductForm';
 import ChatPage from './Chat/ChatPage';
@@ -159,19 +159,6 @@ function App() {
           }
         />
 
-        {/* 상품 등록 */}
-        <Route
-          path="/product-register"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <ProductRegister />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
-
         {/* 상품 상세 */}
         <Route
           path="/product-detail/:id"
@@ -204,9 +191,17 @@ function App() {
           element={
             <>
               <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+              <Header
+                onMenuToggle={handleMenuToggle}
+                onSearch={handleSearch}
+                frequentKeywords={frequentKeywords}
+              />
               <ProductForm mode="create" />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+              <MenuBox
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                frequentKeywords={frequentKeywords}
+              />
             </>
           }
         />
@@ -217,9 +212,17 @@ function App() {
           element={
             <>
               <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+              <Header 
+              onMenuToggle={handleMenuToggle} 
+              onSearch={handleSearch} 
+              frequentKeywords={frequentKeywords} 
+              />
               <ProductForm mode="edit" />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+              <MenuBox 
+              isOpen={isMenuOpen} 
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords} 
+              />
             </>
           }
         />

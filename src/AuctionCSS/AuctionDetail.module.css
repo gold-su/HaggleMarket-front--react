@@ -1,0 +1,314 @@
+/* src/AuctionCSS/AuctionDetail.module.css */
+
+/* =========================
+   공통 변수 (필요시 root에서 가져옴)
+   ========================= */
+:root {
+  --accent-color: #3E7AEF;
+  --accent-color-dark: #2f65c0;
+  --text-color-dark: #111;
+  --text-color-medium: #555;
+  --border-color: #eee;
+}
+
+/* =========================
+   페이지 전체 컨테이너
+   ========================= */
+.auctionPage {
+  max-width: 1000px; /* ProductDetail과 유사하게 */
+  margin: 30px auto;
+  padding: 40px 20px;
+  background-color: #fff; /* 배경색 통일 */
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-color-dark);
+}
+
+.loading, .error, .empty {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: var(--text-color-medium);
+}
+
+/* =========================
+   상품 이미지 및 정보 섹션
+   ========================= */
+.auctionDetail {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  margin-bottom: 40px;
+  flex-wrap: wrap; /* 반응형을 위해 추가 */
+}
+
+.auctionImage {
+  width: 450px; /* 이미지 영역 너비 조정 */
+  height: 350px; /* 이미지 영역 높이 조정 */
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f0f0f0;
+  flex-shrink: 0; /* 축소 방지 */
+}
+
+.auctionImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.auctionInfo {
+  flex: 1; /* 남은 공간을 채움 */
+  display: flex;
+  flex-direction: column;
+}
+
+.auctionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-color-dark);
+}
+
+.auctionPrices {
+  margin-bottom: 25px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 15px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.priceLabel {
+  font-weight: 600;
+  color: var(--text-color-medium);
+}
+
+.priceValue {
+  font-weight: 800;
+  color: var(--accent-color);
+  font-size: 1.3rem; /* 가격 글씨 크게 */
+}
+
+.currentBid {
+  color: #ff5a5f; /* 현재 입찰가 강조색 */
+  font-size: 1.5rem; /* 더 크게 */
+}
+
+.auctionTimer {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ff5a5f; /* 시간 강조색 */
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+}
+
+.stats {
+  margin-bottom: 20px;
+  color: var(--text-color-medium);
+  font-size: 0.9rem;
+  display: flex;
+  gap: 15px;
+}
+
+.details {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.details li {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--text-color-medium);
+}
+
+.details li strong {
+  color: var(--text-color-dark);
+}
+
+/* 입찰 섹션 */
+.bidSection {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.bidInputWrapper {
+  display: flex;
+  flex-grow: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bidInput {
+  border: none;
+  padding: 10px 12px;
+  font-size: 1.1rem;
+  outline: none;
+  flex-grow: 1;
+}
+
+.currency {
+  padding: 10px 12px;
+  background-color: #f5f5f5;
+  color: #888;
+  font-size: 1.1rem;
+  border-left: 1px solid var(--border-color);
+}
+
+.bidButton, .buyoutButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bidButton {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.bidButton:hover {
+  background-color: var(--accent-color-dark);
+}
+
+.buyoutButton {
+  background-color: #ff5a5f; /* 즉시 구매 버튼은 빨간색 계열 */
+  color: white;
+}
+
+.buyoutButton:hover {
+  background-color: #e04a4e;
+}
+
+.sellerShopButton {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--accent-color);
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sellerShopButton:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* =========================
+   하단 추가 정보 섹션
+   ========================= */
+.auctionExtraInfo {
+  border-top: 1px solid var(--border-color);
+  padding-top: 30px;
+  margin-top: 30px;
+}
+
+.sectionHeading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--text-color-dark);
+}
+
+.divider {
+  border-top: 1px solid var(--border-color);  
+  margin: 10px 0 20px;         
+}
+
+.auctionDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color-medium);
+  margin-bottom: 30px;
+  white-space: pre-line;
+}
+
+.extraCards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap; /* 반응형을 위해 추가 */
+}
+
+.card {
+  flex: 1;
+  min-width: 250px; /* 카드 최소 너비 */
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f9f9f9; /* 카드 배경 */
+}
+
+.cardTitle {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--accent-color);
+}
+
+.cardContent {
+  color: var(--text-color-dark);
+  font-size: 1.1rem;
+}
+
+/* =========================
+   반응형 미디어 쿼리
+   ========================= */
+@media (max-width: 768px) {
+  .auctionDetail {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .auctionImage {
+    width: 100%;
+    height: 300px; /* 모바일에서 이미지 높이 조정 */
+  }
+  .auctionInfo {
+    width: 100%;
+    padding: 0 10px; /* 정보 영역 좌우 패딩 */
+  }
+  .auctionTitle {
+    font-size: 1.7rem;
+    text-align: center;
+  }
+  .bidSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .bidInputWrapper {
+    width: 100%;
+  }
+  .bidButton, .buyoutButton {
+    width: 100%;
+  }
+  .extraCards {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .card {
+    width: 100%;
+    min-width: unset;
+  }
+  .auctionPage {
+    padding: 20px 10px; /* 모바일에서 페이지 좌우 패딩 */
+  }
+}
