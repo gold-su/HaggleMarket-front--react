@@ -1,7 +1,6 @@
-<<<<<<< HEAD=======
 /* src/ProductCSS/ProductRegisterButtons.module.css */
 
->>>>>>>origin/Gwang-Pyo .register-footer .btn-draft,
+.register-footer .btn-draft,
 .register-footer .btn-submit {
   padding: 12px 30px;
   font-weight: 700;
@@ -31,64 +30,4 @@
 
 .register-footer .btn-submit:hover {
   background-color: var(--bunjang-red-dark);
-  <<<<<<< HEAD
-}
-
-
-.btnGroup {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  width: 100%;
-  max-width: 1200px;
-}
-
-.btnDraft {
-  padding: 14px 0;
-  font-weight: 700;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  background-color: #f0f0f0;
-  color: var(--text-color-medium);
-  font-size: 1rem;
-  cursor: pointer;
-  white-space: nowrap;
-  width: 160px;
-}
-
-.btnDraft:hover {
-  background-color: #e6e6e6;
-}
-
-.btnSubmit {
-  padding: 14px 0;
-  font-weight: 700;
-  border-radius: 6px;
-  background-color: var(--bunjang-red);
-  color: white;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  white-space: nowrap;
-  width: 160px;
-}
-
-.btnSubmit:hover {
-  background-color: var(--bunjang-red-dark);
-}
-
-/* ✅ 모바일 대응 */
-@media (max-width: 768px) {
-  .btnGroup {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .btnDraft,
-  .btnSubmit {
-    width: 100%;
-  }
-
-  =======>>>>>>>origin/Gwang-Pyo
 }
