@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // 추가
 import '../MainPagesCSS/productcard.css';
+import LikeHeart from '../like/LikeHeart';
 
 function ProductCard({ product }) {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -14,8 +15,11 @@ function ProductCard({ product }) {
   const handleCardClick = () => {
     console.log("🔍 클릭된 product 객체:", product);
     console.log("➡️ 이동할 postId:", product.id);
-    navigate(`/products/detail/${product.id}`); // 상세 페이지 경로 이동
+    navigate(`/product/detail/${product.id}`); // 상세 페이지 경로 이동
   };
+
+  const initialLiked = product?.likedByMe ?? product?.liked ?? false;
+  const initialCount = product?.likeCount ?? 0;
 
   return (
     <div className="product-card" tabIndex="0" onClick={handleCardClick}>
@@ -29,27 +33,11 @@ function ProductCard({ product }) {
         <div className="product-description">{product.content || ''}</div>
         <div className="product-price-row">
           <div className="product-price">{product.price}</div>
-          <svg
-            className={`favorite-icon ${isFavorite ? 'active' : ''}`}
-            viewBox="0 0 24 24"
-            aria-label="찜하기"
-            role="button"
-            tabIndex="0"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            onClick={handleFavoriteClick}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleFavoriteClick(e);
-              }
-            }}
-          >
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-          </svg>
+          <LikeHeart
+            postId={product.id}
+            initialLiked={initialLiked}
+            initialCount={initialCount}
+          />
         </div>
       </div>
     </div>

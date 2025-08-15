@@ -1,0 +1,10 @@
+.heart-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid #e5e5e5;padding:6px 10px;border-radius:9999px;
+  background:#fff;cursor:pointer;font-size:14px;
+  transition:transform .12s ease, background-color .12s ease, border-color .12s ease;
+}
+.heart-btn .heart{font-size:16px;line-height:1}
+.heart-btn:hover{transform:scale(1.04)}
+.heart-btn.on{background:#ffe7eb;border-color:#ffb5c2}
+.heart-btn .count{min-width:16px;text-align:right}

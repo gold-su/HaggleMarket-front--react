@@ -51,7 +51,7 @@ function App() {
           description: productStatusMap[post.productStatus] || "기타",
           price: post.cost.toLocaleString() + '원',
           imageUrl: post.thumbnail,
-          detailUrl: `/detail/${post.postId}`
+          detailUrl: `/product/detail/${post.postId}`
         }));
 
         setProducts(items);
@@ -63,6 +63,12 @@ function App() {
     if (query) {
       window.location.href = `/search?query=${encodeURIComponent(query)}`;
     }
+  };
+
+  const fetchProducts = () => {
+    axios.get('/api/products')
+      .then(res => setProducts(res.data))
+      .catch(err => console.error(err));
   };
 
   const handleMenuToggle = () => {
@@ -106,7 +112,9 @@ function App() {
               />
               <AuctionAdSection />
               <main>
-                <ProductList products={products} />
+                <ProductList
+                  products={products}
+                  onReload={fetchProducts} />
               </main>
               <LikeBox likeCount={likeCount} />
               <MenuBox
@@ -162,7 +170,7 @@ function App() {
 
         {/* 상품 상세 */}
         <Route
-          path="/product-detail/:id"
+          path="/product/detail/:id"
           element={
             <>
               <TopBar />

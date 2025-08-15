@@ -12,23 +12,25 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const { token, nickname } = await login(userId, password);
+      const { token, nickname } = await login(userId, password);
 
-        // ✅ LocalStorage에 저장
-        localStorage.setItem("jwtToken", token);
-        localStorage.setItem("nickName", nickname);
+      // ✅ LocalStorage에 저장
+      localStorage.setItem("jwtToken", token);
+      localStorage.setItem("nickName", nickname);
 
-        console.log("토큰:", token);
-        console.log("닉네임:", nickname);
+      localStorage.setItem("jwtToken", res.data.accessToken);
+      window.dispatchEvent(new Event("auth:changed"));
+      console.log("토큰:", token);
+      console.log("닉네임:", nickname);
 
-        alert("로그인 성공");
-        navigate('/');
-        window.location.reload();
+      alert("로그인 성공");
+      navigate('/');
+      window.location.reload();
     } catch (error) {
-        alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
-        console.log(error);
+      alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
+      console.log(error);
     }
-};
+  };
 
 
   const handleLinkClick = (action) => {
@@ -36,28 +38,28 @@ function Login() {
   };
 
   return (
-  <div className="login-page-wrapper">
-    <div className="login-container">
-      <h1>
-      <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-        HAGGLE
-      </Link>
-    </h1>
-      <form onSubmit={handleSubmit}>
-        <input
-        type="text"
-        placeholder="아이디"
-        value={userId}
-        onChange={(e) => {
-          setUserId(e.target.value);
-          //한글 입력 제거
-          const filtered = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
-          setUserId(filtered);
-        }}
-        required
+    <div className="login-page-wrapper">
+      <div className="login-container">
+        <h1>
+          <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+            HAGGLE
+          </Link>
+        </h1>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="아이디"
+            value={userId}
+            onChange={(e) => {
+              setUserId(e.target.value);
+              //한글 입력 제거
+              const filtered = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
+              setUserId(filtered);
+            }}
+            required
           />
           <input
-          type="password"
+            type="password"
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -73,8 +75,8 @@ function Login() {
           <button type="submit">로그인</button>
         </form>
       </div>
-      </div>
-      );
+    </div>
+  );
 }
 
 export default Login;
