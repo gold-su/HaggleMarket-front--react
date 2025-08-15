@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Header from './components/Header';
@@ -21,6 +21,7 @@ import ChatPage from './Chat/ChatPage';
 import LikeBox from "./components/LikeBox";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import CategoryPostList from './Category/CategoryPostList';
+import { fetchUsedList, fetchAuctionList } from './services/productApi';
 import "./App.css";
 
 function App() {
@@ -28,6 +29,9 @@ function App() {
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
   const [likeCount, setLikeCount] = useState(5);
+  const [selectedCategory, setSelectedCategory] = useState("used");
+  const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'; //백엔드 URL
+
 
   useEffect(() => {
     setFrequentKeywords([
@@ -36,7 +40,7 @@ function App() {
     ]);
 
     axios
-      .get('http://localhost:8080/api/products?page=0&size=8&sort=createdAt,desc')
+      .get(`${BASE}/api/products?page=0&size=8&sort=createdAt,desc`)
       .then((res) => {
         const productStatusMap = {
           LIKE_NEW: "새 상품",
@@ -51,7 +55,7 @@ function App() {
           description: productStatusMap[post.productStatus] || "기타",
           price: post.cost.toLocaleString() + '원',
           imageUrl: post.thumbnail,
-          detailUrl: `/detail/${post.postId}`
+          detailUrl: `/product-detail/${post.postId}`
         }));
 
         setProducts(items);
@@ -85,6 +89,22 @@ function App() {
     return () => document.removeEventListener('click', handleClickOutsideMenu);
   }, []);
 
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const list =
+          selectedCategory === 'auction'
+            ? await fetchAuctionList()
+            : await fetchUsedList();
+
+        setProducts(list);
+      } catch (err) {
+        console.error('상품 로딩 실패', err);
+      }
+    };
+
+    loadProducts();
+  }, [selectedCategory]);
   return (
     <BrowserRouter>
       <Routes>
@@ -106,7 +126,11 @@ function App() {
               />
               <AuctionAdSection />
               <main>
-                <ProductList products={products} />
+                <ProductList
+                  products={products}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory} //변경 핸들러 전달
+                />
               </main>
               <LikeBox likeCount={likeCount} />
               <MenuBox
