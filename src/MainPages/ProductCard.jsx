@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom'; // 추가
 import '../MainPagesCSS/productcard.css';
 import LikeHeart from '../like/LikeHeart';
 
 function ProductCard({ product }) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const navigate = useNavigate(); // 훅 초기화
-
-  const handleFavoriteClick = (e) => {
-    e.stopPropagation();
-    setIsFavorite(prev => !prev);
-  };
 
   const handleCardClick = () => {
     console.log("🔍 클릭된 product 객체:", product);

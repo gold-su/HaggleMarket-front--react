@@ -14,24 +14,20 @@ function Login() {
     try {
       const { token, nickname } = await login(userId, password);
 
-      // ✅ LocalStorage에 저장
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("nickName", nickname);
 
-      localStorage.setItem("jwtToken", res.data.accessToken);
+      // 🔔 로그인 상태 변경 브로드캐스트
       window.dispatchEvent(new Event("auth:changed"));
-      console.log("토큰:", token);
-      console.log("닉네임:", nickname);
 
       alert("로그인 성공");
-      navigate('/');
+      navigate("/");
       window.location.reload();
     } catch (error) {
       alert("로그인 실패: 아이디나 비밀번호를 확인하세요");
       console.log(error);
     }
   };
-
 
   const handleLinkClick = (action) => {
     alert(`${action} 기능은 아직 구현되지 않았습니다.`);

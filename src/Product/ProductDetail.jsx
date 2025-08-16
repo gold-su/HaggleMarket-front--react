@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import useLike from '../like/useLike';
+import LikeHeart from '../like/LikeHeart';
 import '../ProductCSS/ProductDetail.css';
 
 function ProductDetail() {
@@ -12,11 +12,8 @@ function ProductDetail() {
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(null);
 
-  // 🔹 항상 호출 (조건 X). product가 아직 없으면 false/0으로 초기화됨.
   const initialLiked = product?.likedByMe ?? false;
   const initialCount = product?.likeCount ?? 0;
-  const { liked, count, toggle } = useLike(postId, initialLiked, initialCount);
-
   // 상품 상세 조회
   useEffect(() => {
     axios.get(`/api/products/detail/${postId}`)
@@ -87,7 +84,7 @@ function ProductDetail() {
 
           {/* 상단 통계에 찜 수 표시 */}
           <div className="stats">
-            ❤️ {count} &nbsp; 👁 {product.hit} &nbsp; 📅 {createdAtText}
+            ❤️ {product.likeCount ?? 0} &nbsp; 👁 {product.hit} &nbsp; 📅 {createdAtText}
           </div>
 
           <ul className="details">
@@ -98,16 +95,12 @@ function ProductDetail() {
           </ul>
 
           <div className="buttons">
-            {/* 찜 버튼: 숫자 보이게 + 토글 */}
-            <button
-              className={`wish ${liked ? 'on' : ''}`}
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggle(); }}
-              aria-pressed={liked}
-              title={liked ? '찜 해제' : '찜하기'}
-            >
-              {liked ? '♥' : '♡'} 찜 {count}
-            </button>
-
+            <LikeHeart
+              postId={postId}
+              initialLiked={initialLiked}
+              initialCount={initialCount}
+              showCount
+            />
             <button className="chat">해글톡</button>
             <button className="buy">즉시구매</button>
           </div>
