@@ -1,3 +1,4 @@
+// src/Shop/MyPage.jsx
 import React, { useState } from 'react';
 import '../ShopCSS/MyPage.css'; // MyPage 전용 CSS 파일 임포트
 
@@ -37,7 +38,7 @@ function MyPage() {
 
       <form className="mypage-form" onSubmit={handleSubmit}>
 
-        <label>
+        <label className="mypage-label">
           이메일
           <input
             type="email"
@@ -48,7 +49,7 @@ function MyPage() {
           />
         </label>
 
-        <label>
+        <label className="mypage-label">
           아이디
           <input
             type="text"
@@ -60,7 +61,7 @@ function MyPage() {
           />
         </label>
 
-        <label>
+        <label className="mypage-label">
           비밀번호
           <input
             type="password"
@@ -71,7 +72,7 @@ function MyPage() {
           />
         </label>
 
-        <label>
+        <label className="mypage-label">
           이름
           <input
             type="text"
@@ -82,7 +83,7 @@ function MyPage() {
           />
         </label>
 
-        <label>
+        <label className="mypage-label">
           닉네임
           <input
             type="text"
@@ -93,7 +94,7 @@ function MyPage() {
           />
         </label>
 
-        <label>
+        <label className="mypage-label">
           전화번호
           <input
             type="tel"
@@ -104,7 +105,7 @@ function MyPage() {
           />
         </label>
 
-        <label>
+        <label className="mypage-label">
           주소
           <input
             type="text"

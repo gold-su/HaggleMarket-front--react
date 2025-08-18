@@ -32,7 +32,8 @@
   object-fit: cover;
 }
 
-label {
+/* ✅ MyPage 내부에서만 라벨 스타일 */
+.mypage-container .mypage-label {
   display: flex;
   flex-direction: column;
   font-weight: 600;
@@ -40,7 +41,9 @@ label {
   color: #555;
 }
 
-input, textarea { /* textarea 추가 */
+/* ✅ 인풋/텍스트에어리어도 MyPage 범위로 한정 */
+.mypage-container input,
+.mypage-container textarea {
   margin-top: 6px;
   padding: 8px 12px;
   font-size: 1rem;
@@ -50,11 +53,13 @@ input, textarea { /* textarea 추가 */
   transition: border-color 0.3s ease;
 }
 
-input:focus, textarea:focus {
+.mypage-container input:focus,
+.mypage-container textarea:focus {
   border-color: #6497b1;
   box-shadow: 0 0 5px rgba(100, 151, 177, 0.5);
 }
 
+/* 버튼 */
 .save-button {
   margin-top: 20px;
   padding: 12px;

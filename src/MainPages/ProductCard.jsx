@@ -1,3 +1,4 @@
+// src/components/ProductCard.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // 추가
 import '../MainPagesCSS/productcard.css';

@@ -1,4 +1,4 @@
-/* Signup.css */
+/* src/pagesCSS/signup.css*/
 :root {
   --santorini-blue: #416d83;
   --santorini-light-blue: #6497b1;
@@ -12,6 +12,7 @@
   align-items: flex-start;
   /* ✅ 왼쪽 정렬로 수정 */
   margin-bottom: 1rem;
+  gap: 20px;
   width: 100%;
 }
 
@@ -98,14 +99,7 @@
   /* text-align: center; */
 }
 
-/* 라벨과 업로드 박스를 한 줄에 정렬 */
-.form-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 20px;
-  /* 라벨과 박스 사이 간격 */
-}
+
 
 /* 이미지 업로드 라벨 */
 .profile-label {
