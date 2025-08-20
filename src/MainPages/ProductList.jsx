@@ -4,7 +4,7 @@ import ProductCard from './ProductCard';
 import '../MainPagesCSS/productcard.css';
 
 function ProductList({
-  products,
+  products = [],
   selectedCategory = 'used',
   onCategoryChange
 }) {

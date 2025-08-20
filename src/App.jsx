@@ -33,41 +33,80 @@ function App() {
   const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'; //백엔드 URL
 
 
-  useEffect(() => {
-    setFrequentKeywords([
-      '재테크', '맛집', '카페', '소프트웨어 개발', '프로그래밍', '데이터 관리', 'IT 기술',
-      '여행', '건강', '영화', '음악', '독서', '운동', '요리'
-    ]);
-
-    axios
-      .get(`${BASE}/api/products?page=0&size=8&sort=createdAt,desc`)
-      .then((res) => {
-        const productStatusMap = {
-          LIKE_NEW: "새 상품",
-          USED_GOOD: "사용감 적음",
-          USED: "사용감 많음",
-          DAMAGED: "고장/파손"
-        };
-
-        const items = res.data.content.map((post) => ({
-          id: post.postId,
-          title: post.title,
-          description: productStatusMap[post.productStatus] || "기타",
-          price: post.cost.toLocaleString() + '원',
-          imageUrl: post.thumbnail,
-          detailUrl: `/product-detail/${post.postId}`
-        }));
-
-        setProducts(items);
-      })
-      .catch((err) => console.error('게시물 로딩 실패', err));
-  }, []);
-
+  //특정 단어로 검색
   const handleSearch = (query) => {
     if (query) {
       window.location.href = `/search?query=${encodeURIComponent(query)}`;
     }
   };
+
+  useEffect(() => {
+    setFrequentKeywords([
+      '재테크', '맛집', '카페', '소프트웨어 개발', '프로그래밍', '데이터 관리', 'IT 기술',
+      '여행', '건강', '영화', '음악', '독서', '운동', '요리'
+    ]);
+  }, []);
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        let data = [];
+
+        if (selectedCategory === 'auction') {
+          // ✅ 1) 경매 원본 응답 찍기
+          const raw = await fetchAuctionList(); // 배열 가정 (/api/auction/list)
+          console.log("📦 경매 원본 응답:", raw);
+
+          // ✅ 2) 프론트에서 쓰기 편하게 정규화 (ProductCard가 먹는 필드명으로)
+          data = (Array.isArray(raw) ? raw : []).map(a => ({
+            // 백엔드 DTO 키에 맞춰 안전하게 매핑
+            id: a.auctionId ?? a.id,
+            title: a.title ?? "",
+            content: a.content ?? "",
+            // 가격(경매 카드에선 currentPrice 우선 표시)
+            currentPrice: a.currentCost ?? a.currentPrice ?? a.startCost ?? 0,
+            price: a.buyoutCost ?? a.startCost ?? 0,
+            // 썸네일: 이미지 id만 주면 이미지 API 경로로 만들어줌
+            imageUrl:
+              a.thumbnailUrl
+              ?? (a.thumbnailImageId ? `/api/auction/images/${a.thumbnailImageId}` : null),
+            // 마감시간
+            endsAt: a.endTime ?? a.endsAt ?? null,
+          }));
+
+          // ✅ 3) 정규화 결과도 찍기
+          console.log("🧩 경매 정규화 결과:", data);
+        } else {
+          // 중고 상품 불러오기 (팀원 매핑 로직 유지)
+          const res = await axios.get(`${BASE}/api/products?page=0&size=8&sort=createdAt,desc`);
+          const productStatusMap = {
+            LIKE_NEW: "새 상품",
+            USED_GOOD: "사용감 적음",
+            USED: "사용감 많음",
+            DAMAGED: "고장/파손"
+          };
+          const items = (res.data?.content ?? []).map(post => ({
+            id: post.postId,
+            title: post.title,
+            description: productStatusMap[post.productStatus] || "기타",
+            price: post.cost.toLocaleString() + '원',
+            imageUrl: post.thumbnail,
+            detailUrl: `/product-detail/${post.postId}`
+          }));
+          data = items;
+        }
+
+        // ✅ 항상 한 번만 세팅 + 방어
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('상품 로딩 실패', err);
+        // ✅ 실패해도 렌더는 유지
+        setProducts([]);
+      }
+    };
+
+    loadProducts();
+  }, [selectedCategory, BASE]);
+
 
   const handleMenuToggle = () => {
     setIsMenuOpen(prev => !prev);
@@ -89,22 +128,6 @@ function App() {
     return () => document.removeEventListener('click', handleClickOutsideMenu);
   }, []);
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        const list =
-          selectedCategory === 'auction'
-            ? await fetchAuctionList()
-            : await fetchUsedList();
-
-        setProducts(list);
-      } catch (err) {
-        console.error('상품 로딩 실패', err);
-      }
-    };
-
-    loadProducts();
-  }, [selectedCategory]);
   return (
     <BrowserRouter>
       <Routes>

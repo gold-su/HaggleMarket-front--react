@@ -1,91 +1,219 @@
 // src/Auction/AuctionDetail.jsx
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // useNavigate 추가
-import axios from 'axios';
-import styles from '../AuctionCSS/AuctionDetail.module.css'; // ✅ 새로운 CSS Modules 임포트
+import React, { useEffect, useState, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchAuctionDetail, placeBid, buyout, BASE } from '../api/auction';
+import styles from '../AuctionCSS/AuctionDetail.module.css';
+
+
 
 function AuctionDetail() {
-  const { id } = useParams(); // 경매 상품 ID
-  const navigate = useNavigate();
+  const { id } = useParams(); //URL에서 경매 ID 추출
+  const navigate = useNavigate();//페이지 이동 훅
 
-  const [auction, setAuction] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [activeIdx, setActiveIdx] = useState(0)
+  const [auction, setAuction] = useState(null); //경매 데이텨 객체
+  const [errMsg, setErrorMsg] = useState('');     //에러 메시지
+  const [loading, setLoading] = useState(true); //로딩중 여부
 
-  // 입찰 관련 상태 (기능 구현을 위해 추가)
-  const [currentBid, setCurrentBid] = useState(0);
-  const [myBid, setMyBid] = useState(''); // 사용자가 입력할 입찰가
+  // 입찰 관련 상태 (기능 구현을 위해 추가) currentPrice : 현재 가격. 서버에서 오는 필드명이 달라질 수 있어서 여러 경우 (currentPrice, currentCost, startCost)를 대비.
+  const currentPrice = auction?.currentPrice ?? auction?.currentCost ?? auction?.startCost ?? 0; // 현재 입찰가 (경매 시작가로 초기화)
+  const [myBid, setMyBid] = useState(''); // myBid : 사용자가 입력할 입찰가
 
-  // ✅ 더미 데이터 사용 (실제로는 API 호출)
+
+  // auction.images가 숫자 id 배열일 수도 있고, url 배열일 수도 있음.
+  // id면 ${BASE}/api/auction/images/{id} 형태로 변환.
+  // url이 있으면 그대로 사용.
+  // useMemo: auction 바뀔 때만 계산 → 불필요한 연산 방지.
+  // mainImage: 대표 이미지 (첫 번째 이미지).
+  //이미지 src들 만들기 (imageId 배열인 경우)
+  const imageSrcList = useMemo(() => Array.isArray(auction?.images) ? auction.images : [], [auction]);
+  // 총 이미지 개수
+  const total = imageSrcList.length;
+
+  useEffect(() => { setActiveIdx(0); }, [total]);
+
+  const goPrev = () => setActiveIdx((i) => (i - 1 + total) % total);
+  const goNext = () => setActiveIdx((i) => (i + 1) % total);
+  // 키보드 네비게이션(좌/우)
   useEffect(() => {
-    const fetchAuctionDetail = async () => {
+    const onKey = (e) => {
+      if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [total]);
+
+  // 간단한 터치 스와이프
+  const [touchX, setTouchX] = useState(null);
+  const onTouchStart = (e) => setTouchX(e.touches[0].clientX);
+  const onTouchEnd = (e) => {
+    if (touchX == null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) (dx > 0 ? goPrev() : goNext());
+    setTouchX(null);
+  };
+
+  const mainImage = imageSrcList[activeIdx] ?? '/images/default.jpg';  //첫 번째 이미지 또는 기본 이미지
+  useEffect(() => {
+    console.log('🖼 imageSrcList changed', imageSrcList, 'count=', imageSrcList.length);
+  }, [imageSrcList]);
+  //남은 시간 표시용, 남은 시간을 초 단위로 갱신, 종료 시간이 지나면 "경매 종료" 표시
+  const [leftText, setLeftText] = useState(''); //남은 시간 표시용 텍스트
+  useEffect(() => {
+    if (!auction?.endTime) return setLeftText('');
+    const tick = () => {
+      const left = new Date(auction.endTime).getTime() - Date.now(); //남은 시간 계산
+      if (left <= 0) {
+        setLeftText('경매 종료');
+        return;
+      }
+      const d = Math.floor(left / 86400000);
+      const h = Math.floor((left % 86400000) / 3600000);
+      const m = Math.floor((left % 3600000) / 60000);
+      const s = Math.floor((left % 60000) / 1000);
+      setLeftText(`${d}일 ${h}시 ${m}분 ${s}초 남음`);
+    };
+    tick(); //초기값 설정
+    const t = setInterval(tick, 1000); // 1초마다 tick 호출
+    return () => clearInterval(t);
+  }, [auction?.endTime]);
+
+
+  // 상세 불러오기
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setErrorMsg('');
       try {
-        // 실제 API 호출: axios.get(`http://localhost:8080/api/auctions/${id}`)
-        // 지금은 더미 데이터로 대체
-        const dummyAuction = {
-          id: id,
-          imageUrl: 'https://via.placeholder.com/600x400?text=Auction+Item', // 이미지
-          title: `빈티지 시계 #${id}`,
-          content: `오랜 역사를 간직한 수동 와인딩 시계입니다. 생활 기스 있으며, 작동에 이상 없습니다. 소장가치 높은 아이템입니다. \n\n시작가: 10,000원 \n\n추가 정보: 박스, 보증서 없음`, // 상품 설명
-          hit: 1234, // 조회수
-          createdAt: '2024-07-25T14:30:00', // 등록일
-          productStatus: '사용감 없음',
-          startCost: 10000, // 시작가
-          currentBid: 15000, // 현재 최고 입찰가
-          buyoutCost: 50000, // 즉시 구매가
-          auctionEndTime: '2024-08-01T23:59:59', // 경매 종료 시간
-          seller: { address: '서울 강남구' },
-          category: '시계',
-          tag: '#빈티지 #시계 #레트로',
+        const data = await fetchAuctionDetail(id); //경매 상세 API 호출
+        const rawUrls = data.imagesUrls ?? data.imageUrls ?? [];
+        const images = Array.isArray(rawUrls)
+          ? rawUrls.map(u => (u.startsWith('http') ? u : `${BASE}${u}`)) // 절대 URL로
+          : [];
+        console.log("📦 서버 응답 데이터:", data);   // ✅ 콘솔 확인용
+        console.log("🖼 정규화 전 rawUrls:", rawUrls);
+        console.log('🖼️ normalized images:', images);
+        //백엔드 DTO를 안전하게 정규화, 상황에 따라 다를 수 있으므로 여러 케이스를 ?? 연산자로 정규화
+        const normalized = {
+          id: data.id ?? data.auctionId ?? Number(id),
+          title: data.title ?? '',
+          content: data.content ?? '',
+          startCost: data.startCost ?? data.startPrice ?? 0,
+          currentPrice: data.currentPrice ?? data.currentCost ?? data.highestBid ?? 0,
+          buyoutCost: data.buyoutCost ?? data.buyoutPrice ?? data.buyNowPrice ?? null,
+          endTime: data.endTime ?? data.endsAt ?? null,
+          hit: data.hit ?? 0,
+          createdAt: data.createdAt ?? data.createdDate ?? '',
+          bidCount: data.bidCount ?? data.bids ?? 0,
+          // 이미지: 숫자/문자 id 배열 혹은 url 배열 둘 다 허용
+          // 서버 키 오타 대응(imagesUrls) + 절대 URL로 보정
+          images,
+          seller: data.seller ?? { address: data.sellerAddress ?? '-' },
+          category: data.category ?? '',
+          tag: data.tag ?? '',
         };
-        setAuction(dummyAuction);
-        setCurrentBid(dummyAuction.currentBid); // 현재 입찰가를 초기값으로 설정
-        setLoading(false);
-      } catch (err) {
-        console.error("경매 정보 불러오기 실패:", err);
-        setError("경매 정보를 불러오지 못했습니다.");
+        setAuction(normalized); //정규화된 데이터 저장하여 UI에서 바로 사용 가능하도록 함
+      } catch (e) {
+        if (e?.response?.status === 404) {
+          setErrorMsg('존재하지 않는 경매입니다.');
+          navigate('/'); // 존재하지 않는 경매라면 자동 이동
+        } else {
+          setErrorMsg('경매 정보를 불러오는 데 실패했습니다.');
+        }
+      } finally {
         setLoading(false);
       }
     };
-    fetchAuctionDetail();
-  }, [id]);
-
-  // 경매 종료까지 남은 시간 계산 함수 (선택 사항: 나중에 타이머 기능 추가 가능)
-  const calculateTimeLeft = () => {
-    if (!auction || !auction.auctionEndTime) return '종료 시간 없음';
-    const now = new Date();
-    const endDate = new Date(auction.auctionEndTime);
-    const difference = endDate - now;
-
-    if (difference <= 0) return '경매 종료';
-
-    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-    return `${days}일 ${hours}시 ${minutes}분 ${seconds}초 남음`;
-  };
+    load(); //경매 상세 불러오기 함수 호출
+  }, [id]); //id가 바뀔 때마다 호출
 
   // 입찰 버튼 핸들러
-  const handleBid = () => {
-    const bidAmount = parseInt(myBid);
-    if (isNaN(bidAmount) || bidAmount <= currentBid) {
-      alert(`입찰가는 현재 최고 입찰가(${currentBid}원)보다 높아야 합니다.`);
+  const handleBid = async () => {
+    const bidAmount = Number(myBid);
+    if (!bidAmount || bidAmount <= currentPrice) {
+      alert(`입찰가는 현재가(${currentPrice.toLocaleString()}원)보다 높아야 합니다.`);
       return;
     }
-    // 실제로는 API로 입찰 요청을 보냅니다.
-    alert(`${bidAmount}원으로 입찰하셨습니다!`);
-    setCurrentBid(bidAmount); // 더미 업데이트
-    setMyBid(''); // 입력 초기화
+    try {
+      const res = await placeBid(id, bidAmount);
+      if (res?.success) {
+        alert(res.message ?? '입찰이 완료되었습니다.');
+        setAuction((prev) =>
+          prev
+            ? {
+              ...prev,
+              currentPrice: res.currentHighestBid ?? bidAmount,
+              bidCount: (prev.bidCount ?? 0) + 1,
+            }
+            : prev
+        );
+        setMyBid('');
+      } else {
+        alert(res?.message ?? '입찰에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('입찰 요청 중 오류가 발생했습니다.');
+    }
   };
+  const isEnded = leftText === '경매 종료';
+  // 값 정규화
+  const rawBuyout =
+    auction?.buyoutCost ?? auction?.buyoutPrice ?? null; // 둘 중 들어오는 걸 사용
+  const buyoutCost =
+    rawBuyout == null ? null : Number(rawBuyout);
+
+  // 0 또는 음수는 '불가'로 간주
+  const hasBuyout = buyoutCost != null && buyoutCost > 0;
+
+  // 텍스트: 항상 노출
+  const buyoutText = hasBuyout
+    ? `${buyoutCost.toLocaleString()}원`
+    : '즉시구매 불가';
+
+  // 버튼 활성 조건(정책에 맞게 조정)
+  // - 즉시구매가 존재
+  // - 현재가 이상(백엔드 검증도 있지만 프론트도 방어)
+  // - 종료 아님
+  // - (선택) 진행중일 때만 허용하려면 status 체크도 추가
+  const status = auction?.status; // READY/ONGOING/ENDED 내려오면 사용
+  const canBuyNow =
+    hasBuyout &&
+    buyoutCost >= currentPrice &&
+    !isEnded; // && status === 'ONGOING'  // 필요시 활성 조건 강화
+
+  // 비활성 사유 툴팁(옵션)
+  const disabledReason = !hasBuyout
+    ? '즉시구매가 미설정'
+    : isEnded
+      ? '경매가 종료되어 즉시구매 불가'
+      : buyoutCost < currentPrice
+        ? '즉시구매가가 현재가보다 낮아 불가'
+        : undefined;
+
+  function handleBuyoutClick() {
+    if (!canBuyNow) return; // 방어코드
+    handleBuyout();         // 기존 로직 호출
+  }
 
   // 즉시 구매 버튼 핸들러
-  const handleBuyout = () => {
-    if (window.confirm(`${auction.buyoutCost}원에 즉시 구매하시겠습니까?`)) {
-      alert('즉시 구매가 완료되었습니다!');
-      // 실제로는 API로 즉시 구매 요청을 보내고, 페이지를 이동시키거나 상태를 업데이트합니다.
-      navigate('/'); // 예시로 홈으로 이동
+  const handleBuyout = async () => {
+    const price = auction?.buyoutCost ?? auction?.buyoutPrice;
+    if (price == null) return;
+    if (!window.confirm(`${Number(price).toLocaleString()}원에 즉시 구매하시겠습니까?`))
+      return;
+    try {
+      const res = await buyout(id);            // 먼저 호출/대기
+      if (res?.success) {
+        alert(res?.message ?? '즉시 구매가 완료되었습니다!');
+        navigate('/');                         // 성공 후 이동
+      } else {
+        alert(res?.message ?? '즉시 구매에 실패했습니다.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('즉시 구매 요청 중 오류가 발생했습니다.');
     }
   };
 
@@ -95,54 +223,108 @@ function AuctionDetail() {
     // navigate(`/shop/${auction.seller.id}`); // 실제 판매자 ID 기반 이동
   };
 
+
+
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
-  if (error) return <div className={styles.error}>{error}</div>;
+  if (errMsg) return <div className={styles.error}>{errMsg}</div>;
   if (!auction) return <div className={styles.empty}>상품 정보를 찾을 수 없습니다.</div>;
 
   return (
     <div className={styles.auctionPage}>
       <div className={styles.auctionDetail}>
         <div className={styles.auctionImage}>
-          <img
-            src={auction.imageUrl}
-            alt={auction.title}
-            onError={(e) => { e.target.src = '/images/default.jpg'; }} // 이미지 로드 실패 시 대체 이미지
-          />
+          <div
+            className={styles.mainWrapper}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <img
+              src={mainImage}
+              alt={`${auction.title} - ${activeIdx + 1}/${total}`}
+              onError={(e) => { e.currentTarget.src = '/images/default.jpg'; }}
+              className={styles.mainImg}
+              loading="eager"
+            />
+            {total > 1 && (
+              <>
+                <button
+                  type="button"
+                  className={`${styles.navBtn} ${styles.left}`}
+                  onClick={goPrev} aria-label="이전 이미지"     >‹</button>
+                <button
+                  type="button"
+                  className={`${styles.navBtn} ${styles.right}`}
+                  onClick={goNext}
+                  aria-label="다음 이미지"
+                >›</button>
+                <div className={styles.counter}>
+                  {activeIdx + 1} / {total}
+                </div>
+              </>
+            )}
+          </div>
+
+          {imageSrcList.length > 1 && (
+            <div className={styles.thumbRow}>
+              {imageSrcList.map((src, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`${styles.thumbBtn} ${idx === activeIdx ? styles.active : ''}`}
+                  onClick={() => setActiveIdx(idx)}
+                  aria-label={`${idx + 1}번 이미지 보기`}
+                  title={`${idx + 1}번 이미지`}
+                >
+                  <img
+                    src={src}
+                    alt={`thumbnail-${idx + 1}`}
+                    className={styles.thumb}
+                    onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
+                    loading="lazy"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className={styles.auctionInfo}>
           <h2 className={styles.auctionTitle}>{auction.title}</h2>
-          {/* 경매 정보 */}
+
           <div className={styles.auctionPrices}>
             <div className={styles.priceRow}>
               <span className={styles.priceLabel}>시작가:</span>
-              <span className={styles.priceValue}>{auction.startCost.toLocaleString()}원</span>
+              <span className={styles.priceValue}>{(auction.startCost ?? 0).toLocaleString()}원</span>
             </div>
             <div className={styles.priceRow}>
               <span className={styles.priceLabel}>현재 최고 입찰가:</span>
-              <span className={`${styles.priceValue} ${styles.currentBid}`}>{currentBid.toLocaleString()}원</span>
+              <span className={`${styles.priceValue} ${styles.currentBid}`}>
+                {currentPrice.toLocaleString()}원
+              </span>
             </div>
-            {auction.buyoutCost && (
-              <div className={styles.priceRow}>
-                <span className={styles.priceLabel}>즉시 구매가:</span>
-                <span className={styles.priceValue}>{auction.buyoutCost.toLocaleString()}원</span>
-              </div>
-            )}
+
+            <div className={styles.priceRow}>
+              <span className={styles.priceLabel}>즉시 구매가:</span>
+              <span className={!hasBuyout ? styles.priceValueUnavailable : styles.priceValue}>
+                {buyoutText}
+              </span>
+            </div>
+
           </div>
 
-          <div className={styles.auctionTimer}>{calculateTimeLeft()}</div> {/* 남은 시간 */}
+          <div className={styles.auctionTimer}>{leftText || '종료 시간 정보 없음'}</div>
           <div className={styles.stats}>
-            <span>❤️ 6</span>
-            <span>👁 {auction.hit}</span>
-            <span>📅 {auction.createdAt?.slice(0, 10)}</span>
+            <span>🔨 입찰 {auction.bidCount ?? 0}</span>
+            <span>👁 {auction.hit ?? 0}</span>
+            <span>📅 {(auction.createdAt ?? '').slice(0, 10)}</span>
           </div>
 
           <ul className={styles.details}>
-            <li><strong>상품상태:</strong> {auction.productStatus}</li>
-            <li><strong>직거래지역:</strong> {auction.seller.address}</li>
+            <li><strong>직거래지역:</strong> {auction.seller?.address ?? '-'}</li>
+            <li><strong>카테고리:</strong> {auction.category || '-'}</li>
+            <li><strong>태그:</strong> {auction.tag || '-'}</li>
           </ul>
 
-          {/* 입찰 및 구매 버튼 */}
           <div className={styles.bidSection}>
             <div className={styles.bidInputWrapper}>
               <input
@@ -151,40 +333,33 @@ function AuctionDetail() {
                 placeholder="입찰가 입력"
                 value={myBid}
                 onChange={(e) => setMyBid(e.target.value)}
-                min={currentBid + 1} // 현재가보다 1원이라도 높게
+                min={currentPrice + 1}
               />
               <span className={styles.currency}>원</span>
             </div>
-            <button className={styles.bidButton} onClick={handleBid}>입찰하기</button>
-            {auction.buyoutCost && (
-              <button className={styles.buyoutButton} onClick={handleBuyout}>즉시 구매</button>
-            )}
+            <button
+              className={styles.bidButton}
+              onClick={handleBid}
+              disabled={isEnded || !Number.isFinite(Number(myBid)) || Number(myBid) <= currentPrice}
+            > 입찰하기</button>
+            <button
+              className={styles.buyoutButton}
+              onClick={handleBuyoutClick}
+              disabled={!canBuyNow}
+              title={!canBuyNow ? disabledReason : undefined}
+            >
+              즉시 구매
+            </button>
           </div>
-          
+
           <button className={styles.sellerShopButton} onClick={goToSellerShop}>판매자 상점 보기</button>
         </div>
       </div>
 
-      {/* 하단 추가 정보 섹션 */}
       <div className={styles.auctionExtraInfo}>
         <h3 className={styles.sectionHeading}>상품정보</h3>
         <div className={styles.divider} />
-        <p className={styles.auctionDescription}>{auction.content}</p>
-        <div className={styles.divider} />
-        <div className={styles.extraCards}>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>📍 직거래지역</div>
-            <div className={styles.cardContent}>{auction.seller.address}</div>
-          </div>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>📂 카테고리</div>
-            <div className={styles.cardContent}>{auction.category || '-'}</div>
-          </div>
-          <div className={styles.card}>
-            <div className={styles.cardTitle}>🏷️ 상품태그</div>
-            <div className={styles.cardContent}>{auction.tag || '-'}</div>
-          </div>
-        </div>
+        <p className={styles.auctionDescription}>{auction.content || '-'}</p>
       </div>
     </div>
   );

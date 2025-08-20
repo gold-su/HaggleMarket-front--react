@@ -10,4 +10,4 @@ export const fetchUsedList = () =>
 //경매 목록 가져오기
 export const fetchAuctionList = () =>
     axios.get(`${BASE}/api/auction/list`)
-        .then(res => res.data.content);
+        .then(res => res.data);
