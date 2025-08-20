@@ -10,6 +10,7 @@ main {
   position: relative;
   width: auto;
 }
+
 .product-list-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -32,7 +33,6 @@ main {
   font-weight: 600;
   cursor: pointer;
 }
-
 
 .product-list-header {
   display: flex;

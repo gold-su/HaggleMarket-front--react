@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';         // 추가
 import LikeHeart from '../like/LikeHeart';
 import '../ProductCSS/ProductDetail.css';
 
 function ProductDetail() {
   const { id } = useParams();
   const postId = Number(id);
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(null);
 
-  const initialLiked = product?.likedByMe ?? false;
-  const initialCount = product?.likeCount ?? 0;
-  // 상품 상세 조회
-  useEffect(() => {
-    axios.get(`/api/products/detail/${postId}`)
-      .then(res => setProduct(res.data))
-      .catch(err => {
-        console.error(err);
-        setError('상품 정보를 불러오지 못했습니다.');
+  // 상세 조회 (항상 토큰 포함해서 요청)
+  const fetchDetail = async () => {
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const res = await axios.get(`/api/products/detail/${postId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-  }, [postId]);
+      setProduct(res.data);
+    } catch (e) {
+      console.error(e);
+      setError('상품 정보를 불러오지 못했습니다.');
+    }
+  };
+
+  useEffect(() => { fetchDetail(); }, [postId]);
 
   if (error) return <div>{error}</div>;
   if (!product) return <div>로딩 중...</div>;
@@ -34,7 +40,6 @@ function ProductDetail() {
     DAMAGED: '고장/파손',
   };
 
-  // 이미지 배열 구성
   const imageList = (product.images?.length ? product.images.map(p => `http://localhost:8080${p}`) : [])
     .concat(
       product.thumbnail ? [`http://localhost:8080${product.thumbnail}`] : [],
@@ -43,6 +48,16 @@ function ProductDetail() {
 
   const displayMain = mainImage || imageList[0] || '/images/default.jpg';
   const createdAtText = typeof product.createdAt === 'string' ? product.createdAt.slice(0, 10) : '';
+
+  // 소유자 판별: 서버 mine/isMine + 토큰 비교(백업)
+  const token = localStorage.getItem('jwtToken');
+  let myNo = null;
+  try { myNo = token ? jwtDecode(token)?.userNo : null; } catch { }
+  const isMineFromToken =
+    myNo != null &&
+    product?.seller?.userNo != null &&
+    Number(myNo) === Number(product.seller.userNo);
+  const canEdit = (product?.mine ?? product?.isMine ?? false) || isMineFromToken;
 
   return (
     <div className="product-page">
@@ -82,7 +97,7 @@ function ProductDetail() {
           <h2>{product.title}</h2>
           <div className="price">{Number(product.cost ?? 0).toLocaleString()}원</div>
 
-          {/* 상단 통계에 찜 수 표시 */}
+          {/* 상단 통계 - 항상 DB 값 */}
           <div className="stats">
             ❤️ {product.likeCount ?? 0} &nbsp; 👁 {product.hit} &nbsp; 📅 {createdAtText}
           </div>
@@ -95,14 +110,27 @@ function ProductDetail() {
           </ul>
 
           <div className="buttons">
+            {/* 텍스트 버튼, 버튼 자체엔 카운트 숨김, 토글 후 상세 재조회로 DB값 반영 */}
             <LikeHeart
               postId={postId}
-              initialLiked={initialLiked}
-              initialCount={initialCount}
-              showCount
+              initialLiked={product?.likedByMe ?? false}
+              initialCount={product?.likeCount ?? 0}
+              textMode
+              showCount={false}
+              onChanged={() => fetchDetail()}
             />
             <button className="chat">해글톡</button>
             <button className="buy">즉시구매</button>
+
+            {/* 수정하기: 서버 mine/isMine 또는 토큰비교가 true면 노출 */}
+            {canEdit && (
+              <button
+                className="edit"
+                onClick={() => navigate(`/products/edit/${postId}`)}
+              >
+                수정하기
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -1,10 +1,88 @@
-.heart-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  border:1px solid #e5e5e5;padding:6px 10px;border-radius:9999px;
-  background:#fff;cursor:pointer;font-size:14px;
-  transition:transform .12s ease, background-color .12s ease, border-color .12s ease;
+.like-btn-text,
+.heart-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
-.heart-btn .heart{font-size:16px;line-height:1}
-.heart-btn:hover{transform:scale(1.04)}
-.heart-btn.on{background:#ffe7eb;border-color:#ffb5c2}
-.heart-btn .count{min-width:16px;text-align:right}
+
+/* 활성화(찜됨) 상태일 때 */
+.like-btn-text.on,
+.heart-btn.on {
+  background: transparent;
+  /* 박스 배경 제거 */
+  border: none;
+}
+
+/* hover 시 아이콘 살짝 커짐 */
+.like-btn-text:hover .coin,
+.heart-btn:hover .coin {
+  transform: scale(1.08);
+}
+
+/* active 시 눌리는 느낌 */
+.like-btn-text:active .coin,
+.heart-btn:active .coin {
+  transform: scale(0.92);
+}
+
+.coin {
+  width: 28px;
+  height: 28px;
+  transition: transform .15s ease;
+}
+
+/* 찜 개수 텍스트 */
+.count {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+}
+
+/* 키보드 포커스 접근성 */
+.like-btn-text:focus-visible,
+.heart-btn:focus-visible {
+  outline: none;
+}
+
+/* 텍스트 모드 전용 버튼 */
+.like-text-btn {
+  border: 1px solid #38bdf8;
+  /* 하늘색 테두리 */
+  background: #e0f2fe;
+  /* 연한 하늘색 배경 */
+  color: #0369a1;
+  /* 진한 하늘색 글자 */
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 찜됨 상태 */
+.like-text-btn.on {
+  border-color: #0284c7;
+  /* 진한 하늘색 테두리 */
+  background: #bae6fd;
+  /* 중간 톤 하늘색 배경 */
+  color: #075985;
+  /* 더 진한 글자 */
+}
+
+/* hover 효과 */
+.like-text-btn:hover {
+  transform: scale(1.05);
+  background: #bae6fd;
+  /* hover 시 좀 더 진한 하늘색 */
+}
+
+/* active 눌림 효과 */
+.like-text-btn:active {
+  transform: scale(0.95);
+}
