@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import "../editPage/editProfile.css";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -230,13 +231,15 @@ const EditProfile = () => {
       {showPasswordModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>비밀번호 확인</h3>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="비밀번호 입력"
-            />
+            <div className="modal-header">
+              <h3>비밀번호 확인</h3>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="비밀번호 입력"
+              />
+            </div>
             <button onClick={handlePasswordCheck}>확인</button>
           </div>
         </div>
