@@ -9,6 +9,12 @@ export const api = axios.create({
     timeout: 15000,
 });
 
+export const publicApi = axios.create({
+    baseURL: BASE,
+    headers: { Accept: 'application/json' },
+    timeout: 15000,
+});
+
 export async function whoAmI() {
     const res = await api.get('/api/auth/me');
     return res.data;
@@ -29,10 +35,23 @@ api.interceptors.response.use(
     (res) => res,
     (error) => {
         const status = error?.response?.status;
+        const isOnLogin = window.location.pathname === '/login'
+        const reqUrl = error?.config?.url || '';
+        const isAuthCall = reqUrl.startsWith('/api/auth');
         if (status === 401) {
             window.location.href = '/login';
+            // 토큰 만료 등: 토큰 제거
+            localStorage.removeItem('jwtToken');
+            // 이미 로그인 페이지거나, 인증 API 호출이면 추가 리다이렉트 금지
+            if (!isOnLogin && !isAuthCall) {
+                // replace로 히스토리 누적 방지
+                window.location.replace('/login');
+            }
         } else if (status === 403) {
             alert('권한이 없습니다. 로그인 상태 또는 권한을 확인하세요.');
+            if (!isOnLogin) {
+                alert('권한이 없습니다. 로그인 상태 또는 권한을 확인하세요.');
+            }
         }
         return Promise.reject(error);
     }
@@ -80,8 +99,17 @@ export async function uploadAuctionImages(auctionId, files, sortOrder) {
 }
 
 export async function fetchAuctionDetail(auctionId) {
-    const res = await api.get(`/api/auction/${auctionId}`);
-    return res.data;
+    try {
+        const res = await api.get(`/api/auction/${auctionId}`);
+        return res.data;
+    } catch (e) {
+        console.error('[DETAIL FAIL]', {
+            status: e?.response?.status,
+            data: e?.response?.data,
+            url: `${BASE}/api/auction/${auctionId}`,
+        });
+        throw e;
+    }
 }
 
 export async function placeBid(auctionId, amount) {

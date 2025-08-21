@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Header from './components/Header';
@@ -19,9 +19,10 @@ import ProductDetail from './Product/ProductDetail';
 import ProductForm from './Product/ProductForm';
 import ChatPage from './Chat/ChatPage';
 import LikeBox from "./components/LikeBox";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import CategoryPostList from './Category/CategoryPostList';
 import { fetchUsedList, fetchAuctionList } from './services/productApi';
+import { publicApi } from './api/auction';
 import "./App.css";
 
 function App() {
@@ -29,8 +30,9 @@ function App() {
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
   const [likeCount, setLikeCount] = useState(5);
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
-  const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080'; //백엔드 URL
+  const BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080'; //백엔드 URL
 
 
   //특정 단어로 검색
@@ -47,6 +49,7 @@ function App() {
     ]);
   }, []);
   useEffect(() => {
+    if (location.pathname !== '/') return;
     const loadProducts = async () => {
       try {
         let data = [];
@@ -77,7 +80,9 @@ function App() {
           console.log("🧩 경매 정규화 결과:", data);
         } else {
           // 중고 상품 불러오기 (팀원 매핑 로직 유지)
-          const res = await axios.get(`${BASE}/api/products?page=0&size=8&sort=createdAt,desc`);
+          const res = await publicApi.get('/api/products', {
+            params: { page: 0, size: 8, sort: 'createdAt,desc' }
+          });
           const productStatusMap = {
             LIKE_NEW: "새 상품",
             USED_GOOD: "사용감 적음",
@@ -105,7 +110,7 @@ function App() {
     };
 
     loadProducts();
-  }, [selectedCategory, BASE]);
+  }, [selectedCategory, BASE, location.pathname]);
 
 
   const handleMenuToggle = () => {
@@ -129,226 +134,226 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* 로그인 & 회원가입 */}
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/editprofile" element={<EditProfile />} />
 
-        {/* 메인 페이지 */}
-        <Route
-          path="/"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
+    <Routes>
+      {/* 로그인 & 회원가입 */}
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/editprofile" element={<EditProfile />} />
+
+      {/* 메인 페이지 */}
+      <Route
+        path="/"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <AuctionAdSection />
+            <main>
+              <ProductList
+                products={products}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory} //변경 핸들러 전달
               />
-              <AuctionAdSection />
-              <main>
-                <ProductList
-                  products={products}
-                  selectedCategory={selectedCategory}
-                  onCategoryChange={setSelectedCategory} //변경 핸들러 전달
-                />
-              </main>
-              <LikeBox likeCount={likeCount} />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
+            </main>
+            <LikeBox likeCount={likeCount} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
-        {/* 내 상점 */}
-        <Route
-          path="/myshop"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
-              />
-              <MyShop />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
+      {/* 내 상점 */}
+      <Route
+        path="/myshop"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <MyShop />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
-        {/* 마이페이지 */}
-        <Route
-          path="/mypage"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
-              />
-              <MyPage />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
+      {/* 마이페이지 */}
+      <Route
+        path="/mypage"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <MyPage />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
-        {/* 상품 상세 */}
-        <Route
-          path="/product-detail/:id"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <ProductDetail />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
+      {/* 상품 상세 */}
+      <Route
+        path="/product-detail/:id"
+        element={
+          <>
+            <TopBar />
+            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <ProductDetail />
+            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+          </>
+        }
+      />
 
-        {/* 상품 관리 */}
-        <Route
-          path="/myshop/products"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <ProductManagementPage />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
+      {/* 상품 관리 */}
+      <Route
+        path="/myshop/products"
+        element={
+          <>
+            <TopBar />
+            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <ProductManagementPage />
+            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+          </>
+        }
+      />
 
-        {/* 상품 폼 (새 등록) */}
-        <Route
-          path="/product"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
-              />
-              <ProductForm mode="create" />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
+      {/* 상품 폼 (새 등록) */}
+      <Route
+        path="/product"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <ProductForm mode="create" />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
-        {/* 상품 수정 */}
-        <Route
-          path="/products/edit/:id"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
-              />
-              <ProductForm mode="edit" />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
+      {/* 상품 수정 */}
+      <Route
+        path="/products/edit/:id"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <ProductForm mode="edit" />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
 
-        <Route
-          path="/category/:categoryId"
-          element={
-            <>
-              <TopBar />
-              <Header
-                onMenuToggle={handleMenuToggle}
-                onSearch={handleSearch}
-                frequentKeywords={frequentKeywords}
-              />
-              <CategoryPostList />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
-            </>
-          }
-        />
+      <Route
+        path="/category/:categoryId"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <CategoryPostList />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
-        {/* 경매 등록 */}
-        <Route
-          path="/register-auction"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <AuctionRegister />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
+      {/* 경매 등록 */}
+      <Route
+        path="/register-auction"
+        element={
+          <>
+            <TopBar />
+            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <AuctionRegister />
+            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+          </>
+        }
+      />
 
-        {/* 경매 수정 */}
-        <Route
-          path="/edit-auction"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <AuctionEdit />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
+      {/* 경매 수정 */}
+      <Route
+        path="/auction/edit/:id"
+        element={
+          <>
+            <TopBar />
+            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <AuctionEdit />
+            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+          </>
+        }
+      />
 
-        {/* 경매 상세 */}
-        <Route
-          path="/auction/detail/:id"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <AuctionDetail />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
+      {/* 경매 상세 */}
+      <Route
+        path="/auction/detail/:id"
+        element={
+          <>
+            <TopBar />
+            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <AuctionDetail />
+            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+          </>
+        }
+      />
 
-        {/* 채팅 */}
-        <Route
-          path="/chat"
-          element={
-            <>
-              <TopBar />
-              <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
-              <ChatPage />
-              <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
-            </>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+      {/* 채팅 */}
+      <Route
+        path="/chat"
+        element={
+          <>
+            <TopBar />
+            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <ChatPage />
+            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+          </>
+        }
+      />
+    </Routes>
+
   );
 }
 

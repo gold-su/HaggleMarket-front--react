@@ -5,7 +5,7 @@ import stylesLayout from '../AuctionCSS/AuctionEditLayout.module.css'; // ✅ �
 import stylesForm from '../AuctionCSS/AuctionEditForm.module.css';     // ✅ 새 폼 CSS
 import stylesButtons from '../AuctionCSS/AuctionEditButtons.module.css'; // ✅ 새 버튼 CSS
 
-// import { fetchAuctionDetail, updateAuctionPost, uploadAuctionImages, BASE } from '../api/auction';
+import { fetchAuctionDetail, updateAuctionPost, uploadAuctionImages, BASE } from '../api/auction';
 
 // ✅ 카테고리 데이터 정의 (AuctionRegister.jsx에서 가져오거나 공유)
 const categoriesData = {
@@ -68,7 +68,7 @@ function AuctionEdit() {
           // 카테고리는 프로젝트 정책 따라서 매핑
         } catch (e) {
           alert('경매 정보를 불러오는 데 실패했습니다.');
-          navigate(-1);
+          //navigate(-1);
         }
       };
 
