@@ -1,5 +1,4 @@
-/* src/ProductCSS/ProductRegisterLayout.module.css */
-
+/* src/ProductCSS/ProductFormLayout.module.css */
 :root {
   --main-bg-color: #fff;
   --accent-color: #3E7AEF;
@@ -10,7 +9,16 @@
   --text-color-dark: #111;
   --text-color-medium: #555;
   --text-color-light: #999;
-  --shadow-light: rgba(0, 0, 0, 0.06);
+  --shadow-light: rgba(0,0,0,0.06);
+
+  /* 컨테이너/여백 토큰 */
+  --container-max: 1200px;
+  --section-x: 40px;
+  --section-x-sm: 16px;
+
+  /* 라벨-콘텐츠 간격 토큰 */
+  --inline-gap: 12px;     /* 데스크톱 공통 간격 */
+  --inline-gap-sm: 8px;   /* 모바일 공통 간격 */
 }
 
 .productRegisterPage {
@@ -21,51 +29,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .registerMainContent {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--container-max);
   margin: 0 auto;
+  padding: 20px 0 calc(140px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
+}
+
+/* 전역 main 좌우 패딩 방어 */
+.productRegisterPage :global(main) {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .registerSection {
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 1px 4px var(--shadow-light);
-  padding: 24px;
+  padding: 24px var(--section-x);
   margin-bottom: 24px;
+  box-sizing: border-box;
 }
 
 .registerTitle {
   font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 24px;
+  margin: 0 0 24px;
   padding-bottom: 12px;
   border-bottom: 2px solid #ccc;
 }
 
-.sectionTitle {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #ccc;
-}
-
-.formGroups {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-bottom: 1px solid #ccc;
-}
+.formGroups { list-style: none; margin: 0; padding: 0; }
 
 .formGroup {
   margin-bottom: 24px;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--border-color);
-  /* ⬅ 각 formGroup 사이에 구분선 */
+}
+.formGroup:last-of-type {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .formLabel {
@@ -76,91 +85,74 @@
   align-items: center;
   color: var(--text-color-dark);
 }
+.formContent { color: var(--text-color-medium); }
 
-.formLabel small {
-  margin-left: 6px;
-  font-size: 0.85rem;
-  color: var(--text-color-light);
+/* 라벨 | 콘텐츠 인라인(가로) 배치 + 간격 통일 */
+.formGroupInline {
+  display: grid;
+  grid-template-columns: var(--label-w, 160px) 1fr; /* 라벨 고정폭(커스텀 가능) + 콘텐츠 */
+  align-items: center;
+  column-gap: var(--inline-gap);
+}
+.formGroupInline .formLabel { margin-bottom: 0; }
+.formGroupInline .formContent { min-width: 0; }
+
+/* 내부 기본 좌측/상단 여백 리셋 → 간격 왜곡 방지 */
+.formGroupInline .formContent > * { margin-left: 0; }
+.formGroupInline .formContent > *:first-child { margin-top: 0; }
+
+/* 대표 컨테이너 좌측 들여쓰기 제거(시각 간격 통일) */
+.formGroupInline .formContent > .imageUploadList,
+.formGroupInline .formContent > .categorySelectionArea,
+.formGroupInline .formContent > .priceRow,
+.formGroupInline .formContent > .radioGroup,
+.formGroupInline .formContent > .radioGroupVertical {
+  margin-left: 0;
 }
 
-.formContent {
-  color: var(--text-color-medium);
+/* 라벨 폭 프리셋 */
+.labelW140 { --label-w: 140px; }
+.labelW160 { --label-w: 160px; }
+.labelW180 { --label-w: 180px; }
+
+/* 섹션 타이틀(가격/택배거래/추가정보) */
+.formGroupTitle {
+  border: none;
+  padding: 8px 0 4px;
+  margin: 12px 0;
 }
 
 .registerFooter {
   position: fixed;
-  bottom: 0;
-  left: 0;
+  bottom: 0; left: 0; right: 0;
   width: 100%;
   background-color: #fff;
   border-top: 1px solid var(--border-color);
   box-shadow: 0 -1px 4px var(--shadow-light);
-  padding: 16px 24px;
+  padding: 16px var(--section-x);
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   display: flex;
   justify-content: center;
   z-index: 100;
   box-sizing: border-box;
 }
-
 .inner {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--container-max);
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+  box-sizing: border-box;
 }
 
-/* 버튼 */
-.registerButton {
-  padding: 12px 20px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.2s ease;
-  white-space: nowrap;
-}
-
-.registerButton.draft {
-  background-color: #f0f0f0;
-  color: var(--text-color-medium);
-}
-
-.registerButton.draft:hover {
-  background-color: #e0e0e0;
-}
-
-.registerButton.submit {
-  background-color: var(--bunjang-red);
-  color: white;
-}
-
-.registerButton.submit:hover {
-  background-color: var(--bunjang-red-dark);
-}
-
-/* 반응형 */
 @media (max-width: 768px) {
-  .registerMainContent {
-    padding: 16px 12px 120px;
-  }
+  .registerMainContent { padding: 16px 0 calc(120px + env(safe-area-inset-bottom, 0px)); }
+  .registerSection { padding: 16px var(--section-x-sm); }
+  .registerFooter { padding: 10px var(--section-x-sm); }
 
-  .registerSection {
-    padding: 16px 12px;
-  }
-
-  .registerFooter {
-    padding: 10px 12px;
-  }
-
-  .inner {
-    flex-direction: column;
-    gap: 10px;
-    align-items: stretch;
-  }
-
-  .registerButton {
-    width: 100%;
+  .formGroupInline {
+    grid-template-columns: 1fr;      /* 모바일에서는 세로 스택 */
+    align-items: flex-start;
+    row-gap: var(--inline-gap-sm);   /* 모바일 간격도 통일 */
   }
 }

@@ -1,5 +1,4 @@
 /* src/ShopCSS/MyShopNavigation.css */
-
 .myshop-nav ul {
   display: flex; /* 가로 배치 */
   gap: 30px; /* 버튼 사이 간격 */

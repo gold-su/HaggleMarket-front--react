@@ -1,5 +1,4 @@
-/* src/ProductCSS/ProductRegisterForm.module.css */
-
+/* src/ProductCSS/ProductFormInputs.module.css */
 :root {
   --main-bg-color: #fff;
   --accent-color: #3E7AEF;
@@ -11,9 +10,13 @@
   --input-border: #ccc;
   --input-radius: 6px;
   --shadow-light: rgba(0, 0, 0, 0.05);
+
+  /* 라벨-콘텐츠 간격 토큰(레이아웃과 동일) */
+  --inline-gap: 12px;
+  --inline-gap-sm: 8px;
 }
 
-/* 공통 인풋 */
+/* 공통 인풋/텍스트영역 */
 .formInput,
 .formTextarea {
   width: 100%;
@@ -26,15 +29,14 @@
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-
 .formInput:focus,
 .formTextarea:focus {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(62, 122, 239, 0.15);
+  box-shadow: 0 0 0 3px rgba(62,122,239,0.15);
 }
-
+/* 설명 입력칸 크기 조절 비활성 */
 .formTextarea {
-  resize: vertical;
+  resize: none;
   min-height: 120px;
 }
 
@@ -49,15 +51,14 @@
 .imageUploadList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--inline-gap);
   list-style: none;
   padding: 0;
   margin: 0;
 }
-
 .imageUploadItem {
-  width: 100px;
-  height: 100px;
+  width: 130px;
+  height: 130px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
@@ -68,13 +69,11 @@
   background-color: #fafafa;
   cursor: pointer;
 }
-
 .addImage {
   border: 1px dashed var(--accent-color);
   background-color: #f5f8ff;
   color: var(--accent-color);
 }
-
 .addImage label {
   display: flex;
   flex-direction: column;
@@ -83,19 +82,15 @@
   width: 100%;
   height: 100%;
 }
-
-.addImage svg {
-  width: 28px;
-  height: 28px;
-  margin-bottom: 4px;
-}
+.addImage svg { width: 28px; height: 28px; margin-bottom: 4px; }
+.addImage.disabled { opacity: 0.5; pointer-events: none; }
+.addImage.dragOver { border-color: var(--accent-color); background-color: rgba(62,122,239,0.06); }
 
 .imagePreviewItem img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
 .removeImageButton {
   position: absolute;
   top: 4px;
@@ -112,169 +107,221 @@
   justify-content: center;
   align-items: center;
 }
+.removeImageButton:hover { background-color: rgba(0,0,0,0.65); }
 
-/* 상품명 */
-.productNameInputWrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-/* 카테고리 선택 */
+/* 카테고리 선택(3열 버튼) – 컴팩트 + 배경 #fff */
 .categorySelectionArea {
   display: flex;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
-  height: 320px;
+  height: 240px;           /* 320px → 240px */
+  background-color: #fff;  /* 전체 배경 흰색 */
 }
-
 .categoryColumn {
   flex: 1;
   overflow-y: auto;
-  background-color: #f7f7f7;
+  background-color: #fff;  /* 컬럼 배경 흰색 */
   border-right: 1px solid var(--border-color);
 }
+.categoryColumn:last-child { border-right: none; }
 
-.categoryColumn:last-child {
-  border-right: none;
-}
+/* 스크롤바 */
+.categoryColumn { scrollbar-width: thin; scrollbar-color: #c7c7c7 transparent; }
+.categoryColumn::-webkit-scrollbar { width: 8px; }
+.categoryColumn::-webkit-scrollbar-thumb { background-color: #c7c7c7; border-radius: 8px; }
+.categoryColumn::-webkit-scrollbar-track { background: transparent; }
 
-.categoryList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+.categoryList { list-style: none; margin: 0; padding: 0; }
 
+/* 항목 버튼 크기 축소 */
 .categoryItem button {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 0.95rem;
+  padding: 8px 12px;      /* 12px 16px → 8px 12px */
+  font-size: 0.9rem;      /* 0.95rem → 0.9rem */
   text-align: left;
-  background-color: transparent;
+  background: transparent;
   border: none;
   cursor: pointer;
   transition: background 0.2s;
   color: var(--text-color);
 }
-
-.categoryItem button:hover {
-  background-color: #eee;
-}
-
+.categoryItem button:hover { background-color: #f4f6f8; }
 .categoryItem.active button {
   background-color: var(--accent-color);
   color: #fff;
   font-weight: 600;
 }
+.categoryItem.placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 8px 12px;      /* 버튼과 패딩 매칭 */
+  pointer-events: none;
+  background: #fff;
+}
 
-/* 라디오 버튼 카드형 */
+/* 라디오(상품 상태: 세로 + 한 줄 라벨) */
 .radioGroup {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--inline-gap);
+}
+.radioGroupVertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--inline-gap);
 }
 
 .radioLabel {
-  flex: 1 1 calc(50% - 6px);
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 14px 12px;
   background-color: #fff;
   cursor: pointer;
-  position: relative;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
+  user-select: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
 }
-
+/* 접근성: 기본 라디오 숨김 */
 .radioLabel input[type="radio"] {
-  display: none;
-}
-
-.radioLabel input[type="radio"]:checked+span {
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
-/* 가격 */
-.priceGroup {
-  margin-bottom: 20px;
-}
-
-.priceInputWrapper {
-  display: flex;
-  border: 1px solid var(--border-color);
-  border-radius: var(--input-radius);
+  position: absolute;
+  opacity: 0;
+  width: 1px; height: 1px;
   overflow: hidden;
-  align-items: center;
+  pointer-events: none;
+}
+/* 텍스트 + 커스텀 원형 */
+.radioLabel > span {
+  position: relative;
+  padding-left: 28px; /* 원형 자리 */
+  line-height: 1.2;
+}
+/* 외곽 원형 */
+.radioLabel > span::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  background: #fff;
+  box-sizing: border-box;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+/* 내부 점 */
+.radioLabel > span::after {
+  content: '';
+  position: absolute;
+  left: 3px; top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  transition: transform .15s ease;
+}
+/* 상태별 */
+.radioLabel:hover { border-color: #cfd4da; }
+.radioLabel:hover > span::before { border-color: #cfd4da; }
+.radioLabel input[type="radio"]:checked + span::before {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(62,122,239,0.15);
+}
+.radioLabel input[type="radio"]:checked + span::after {
+  transform: translateY(-50%) scale(1);
+}
+.radioLabel input[type="radio"]:checked + span {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+/* 포커스 링 */
+.radioLabel input[type="radio"]:focus-visible + span::before {
+  box-shadow: 0 0 0 3px rgba(62,122,239,0.25);
+  border-color: var(--accent-color);
 }
 
+/* 가격(한 줄 배치) */
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--inline-gap);
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+/* 입력 래퍼: 겹침 방지 + shrink 허용 + baseline 정렬 */
+.priceInputWrapper {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  overflow: visible;            /* '원' 가림 방지 */
+  flex: 0 1 240px;              /* 폭 축소 + 줄어듦 허용 */
+  max-width: 260px;
+  min-width: 160px;
+  width: 100%;
+}
+.priceInputWrapper:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(62,122,239,0.15);
+}
+/* 인풋/통화 */
 .priceInput {
   border: none;
-  flex: 1;
-  padding: 12px 14px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 12px 8px 12px 14px;
   font-size: 1rem;
   outline: none;
 }
-
 .currency {
+  flex: 0 0 auto;
+  white-space: nowrap;
   padding: 12px 14px;
   background-color: #f5f5f5;
   color: #888;
   font-size: 1rem;
 }
 
-/* 교환 토글 */
-.toggleGroup {
-  display: flex;
-  align-items: center;
+/* 체크박스 우측 배치 */
+.priceRow .checkboxLabel {
+  width: auto !important;
+  margin: 0;
+  justify-content: flex-start;
+  white-space: nowrap;
 }
-
-.toggleLabel {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 28px;
-}
-
-.toggleCheckbox {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggleSwitch {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  background-color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s;
-}
-
-.toggleCheckbox:checked+.toggleSwitch {
-  transform: translateX(22px);
-  background-color: var(--accent-color);
-}
-
-/* 체크박스 */
-.checkboxLabel {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;  /* 오른쪽 정렬 */
+.checkboxRight {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
-  font-size: 0.95rem;
-  color: var(--text-color-medium);
-  width: 100%;
+  margin-left: auto;            /* 우측 정렬 */
 }
 
-.checkboxLabel input[type="checkbox"] {
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
+/* (선택) 입력 위/체크박스 아래 스택 배치 */
+.priceStack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--inline-gap-sm);
+  min-width: 0;
+}
+.checkboxUnder {
+  width: auto !important;
+  margin: 0 !important;
+  white-space: nowrap;
+  justify-content: flex-start !important;
+  display: inline-flex !important;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .imageUploadList { gap: var(--inline-gap-sm); }
+  .radioGroup { gap: var(--inline-gap-sm); }
+  .radioGroupVertical { gap: var(--inline-gap-sm); }
+  .priceRow { gap: var(--inline-gap-sm); }
+  .priceInputWrapper { flex-basis: 200px; max-width: 200px; }
+
+  .categorySelectionArea {
+    height: auto;
+    max-height: 60vh;
+  }
 }

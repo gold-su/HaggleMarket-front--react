@@ -1,3 +1,4 @@
+// src/components/TopBar.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../componentCSS/topBar.css'; // CSS 파일 경로를 맞춰주세요

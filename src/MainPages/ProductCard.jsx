@@ -1,6 +1,6 @@
 // src/components/ProductCard.jsx
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 추가
 import '../MainPagesCSS/productcard.css';
 
 function ProductCard({ product, mode = 'used', link, endsAt }) { //product -> 상품 정보 객체 (제목, 가격, 이미지, 내용 등) / mode = 'used' 또는 'auction' / link -> 클릭 시 이동할 경로

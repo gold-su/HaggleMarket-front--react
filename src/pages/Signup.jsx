@@ -1,3 +1,4 @@
+// src/pages/Signup.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import "../pagesCSS/signup.css";
@@ -289,7 +290,7 @@ const Signup = () => {
         </div>
       </form>
       {showSuccessModal && (
-        <div className="modal-overlay-sginup">
+        <div className="modal-overlay-signup">
           <div className="modal-content-signup">
             <p>회원가입에 성공했습니다!</p>
           </div>

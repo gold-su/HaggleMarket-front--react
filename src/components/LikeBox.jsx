@@ -1,3 +1,4 @@
+// src/components/LikeBox.jsx
 import React from "react";
 import "../componentCSS/LikeBox.css"; // CSS 파일 경로를 맞춰주세요
 

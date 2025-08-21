@@ -1,16 +1,11 @@
-// src/components/Header.js
+// src/components/Header.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../componentCSS/Header.css'; // CSS 파일 경로를 맞춰주세요
-import { FaStore, FaUser, FaComments, FaTags } from 'react-icons/fa'; // FontAwesome 예시
+import '../componentCSS/Header.css'; // CSS 파일 경로 유지
+import { FaStore, FaComments, FaTags, FaGavel } from 'react-icons/fa'; // 경매 아이콘 추가
 
 function Header({ onMenuToggle, onSearch, frequentKeywords }) {
   const [searchInput, setSearchInput] = useState('');
-
-  // handleSearchIconClick 함수를 직접 onSearch prop으로 전달
-  // const handleSearchIconClick = () => {
-  //   onSearch(searchInput);
-  // };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
@@ -37,6 +32,7 @@ function Header({ onMenuToggle, onSearch, frequentKeywords }) {
             <rect y="18" width="24" height="2"></rect>
           </svg>
         </div>
+
         <div className="search-container">
           <div className="search-box-wrapper">
             <input
@@ -59,19 +55,41 @@ function Header({ onMenuToggle, onSearch, frequentKeywords }) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              onClick={() => onSearch(searchInput)} // <-- 직접 onSearch 호출
+              onClick={() => onSearch(searchInput)} // 직접 onSearch 호출
             >
               <circle cx="11" cy="11" r="8" fill="white" stroke="currentColor"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor"></line>
             </svg>
           </div>
         </div>
+
         <div className="auth-buttons">
-        <Link to="/product"><FaTags style={{ marginRight: '6px' }} />판매하기</Link>
-        <span className="divider">|</span>
-        <Link to="/myshop"><FaStore style={{ marginRight: '6px' }} />내상점</Link>
-        <span className="divider">|</span>
-        <Link to="/chat"><FaComments style={{ marginRight: '6px' }} />해글톡</Link>
+          {/* 중고 판매 등록 → /product */}
+          <Link to="/product">
+            <FaTags style={{ marginRight: '6px' }} />
+            판매하기
+          </Link>
+          <span className="divider">|</span>
+
+          {/* 경매 등록 → /register-auction */}
+          <Link to="/register-auction">
+            <FaGavel style={{ marginRight: '6px' }} />
+            경매 등록
+          </Link>
+          <span className="divider">|</span>
+
+          {/* 내 상점 */}
+          <Link to="/myshop">
+            <FaStore style={{ marginRight: '6px' }} />
+            내상점
+          </Link>
+          <span className="divider">|</span>
+
+          {/* 해글톡 */}
+          <Link to="/chat">
+            <FaComments style={{ marginRight: '6px' }} />
+            해글톡
+          </Link>
         </div>
       </div>
     </header>

@@ -1,3 +1,4 @@
+// src/Shop/MyPage.jsx
 import React, { useState } from 'react';
 import '../ShopCSS/MyPage.css'; // MyPage 전용 CSS 파일 임포트
 
