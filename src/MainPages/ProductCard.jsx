@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../MainPagesCSS/productcard.css';
+import LikeHeart from '../like/LikeHeart';
 
 function ProductCard({ product, mode = 'used', link, endsAt }) { //product -> 상품 정보 객체 (제목, 가격, 이미지, 내용 등) / mode = 'used' 또는 'auction' / link -> 클릭 시 이동할 경로
   const [isFavorite, setIsFavorite] = useState(false); //isFavorite -> 찜 상태 관리 
@@ -68,13 +69,23 @@ function ProductCard({ product, mode = 'used', link, endsAt }) { //product -> �
   }, [mode, endsAt]);
 
   return (
-    <div className="product-card" tabIndex="0" onClick={handleCardClick}>
+    <div
+      className="product-card"
+      tabIndex="0"
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') handleCardClick();
+      }}
+      role="button"
+      aria-label={`${product.title} 상세로 이동`}
+    >
       <img
         src={imageSrc}
         alt={product?.title ?? '상품 이미지'}
         className="product-image"
         loading="lazy"
       />
+
       <div className="product-info">
         <div className="product-title">{product?.title}</div>
         <div className="product-description">{product?.content || ''}</div>
@@ -108,9 +119,7 @@ function ProductCard({ product, mode = 'used', link, endsAt }) { //product -> �
                 handleFavoriteClick(e);
               }
             }}
-          >
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-          </svg>
+          />
         </div>
       </div>
     </div>

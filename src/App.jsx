@@ -113,6 +113,12 @@ function App() {
   }, [selectedCategory, BASE, location.pathname]);
 
 
+  const fetchProducts = () => {
+    axios.get('/api/products')
+      .then(res => setProducts(res.data))
+      .catch(err => console.error(err));
+  };
+
   const handleMenuToggle = () => {
     setIsMenuOpen(prev => !prev);
   };
@@ -214,7 +220,7 @@ function App() {
 
       {/* 상품 상세 */}
       <Route
-        path="/product-detail/:id"
+        path="/product/detail/:id"
         element={
           <>
             <TopBar />
