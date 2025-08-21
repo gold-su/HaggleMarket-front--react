@@ -1,0 +1,78 @@
+/* ✅ 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* ✅ 모달 박스 */
+.modal-content {
+  background-color: #ffffff;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: modalFadeIn 0.3s ease-out;
+  max-width: 400px;
+  width: 90%;
+}
+
+/* ✅ 타이틀과 인풋을 가로 정렬 */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 양쪽 끝 정렬 */
+  margin-bottom: 15px;
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #416d83;
+}
+
+/* ✅ 입력창 크기 줄이기 */
+.modal-content input {
+  width: 70%;
+  /* 가로 크기 줄임 */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* 버튼 스타일 */
+.modal-content button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background-color: #6497b1;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background-color: #416d83;
+}
+
+/* 애니메이션 */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
