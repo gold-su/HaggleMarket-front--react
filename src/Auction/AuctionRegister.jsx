@@ -22,7 +22,6 @@ const categoriesData = {
 
 function AuctionRegister() {
   const navigate = useNavigate();
-  const token = localStorage.getItem('jwtToken');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -305,17 +304,18 @@ function AuctionRegister() {
               <div className={stylesLayout.formContent}>
                 <div className={stylesForm.priceInputWrapper}>
                   <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="경매 제목을 입력해 주세요."
-                    maxLength={60}
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    type="number"
+                    className={`${stylesForm.formInput} ${stylesForm.priceInput}`}
+                    placeholder="경매 시작가를 입력해 주세요."
+                    value={startCost}
+                    onChange={(e) => setStartCost(e.target.value)}
+                    min="1"
                     required
                   />
                   <span className={stylesForm.currency}>원</span>
                 </div>
-              </li>
+              </div>
+            </li>
 
             {/* 즉시 구매가 (선택) */}
             <li className={stylesLayout.formGroup}>
@@ -332,7 +332,8 @@ function AuctionRegister() {
                   />
                   <span className={stylesForm.currency}>원</span>
                 </div>
-              </li>
+              </div>
+            </li>
 
             {/* 시간 */}
             <li className={stylesLayout.formGroup}>
@@ -377,127 +378,8 @@ function AuctionRegister() {
               </div>
             </li>
 
-              {/* 즉시구매가(선택) */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>즉시구매가(선택)</div>
-                <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.priceRow}>
-                    <div className={stylesForm.priceInputWrapper}>
-                      <input
-                        type="number"
-                        className={stylesForm.priceInput}
-                        placeholder="즉시구매가"
-                        value={buyNowPrice}
-                        onChange={(e) => setBuyNowPrice(e.target.value)}
-                        min={0}
-                        step={1000}
-                        inputMode="numeric"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        aria-label="즉시구매가"
-                      />
-                      <span className={stylesForm.currency}>원</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              {/* 입찰 단위 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>입찰 단위</div>
-                <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.priceRow}>
-                    <div className={stylesForm.priceInputWrapper}>
-                      <input
-                        type="number"
-                        className={stylesForm.priceInput}
-                        placeholder="입찰 단위"
-                        value={bidUnit}
-                        onChange={(e) => setBidUnit(e.target.value)}
-                        required
-                        min={1}
-                        step={1000}
-                        inputMode="numeric"
-                        onWheel={(e) => e.currentTarget.blur()}
-                        aria-label="입찰 단위"
-                      />
-                      <span className={stylesForm.currency}>원</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-
-              {/* 택배거래 타이틀 */}
-              <li className={stylesLayout.formGroupTitle}>
-                <h2 className={stylesLayout.registerTitle}>택배거래</h2>
-              </li>
-
-              {/* 배송비 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>배송비</div>
-                <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.radioGroup}>
-                    {['포함', '별도'].map(fee => (
-                      <label key={fee} className={stylesForm.radioLabel}>
-                        <input
-                          type="radio"
-                          name="deliveryFee"
-                          value={fee}
-                          checked={deliveryFee === fee}
-                          onChange={() => setDeliveryFee(fee)}
-                        />
-                        <span>{fee}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </li>
-
-              {/* 추가정보 타이틀 */}
-              <li className={stylesLayout.formGroupTitle}>
-                <h2 className={stylesLayout.registerTitle}>추가정보</h2>
-              </li>
-
-              {/* 직거래 지역 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>직거래 지역</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="예) 서울 강남구"
-                    value={tradeLocation}
-                    onChange={(e) => setTradeLocation(e.target.value)}
-                  />
-                </div>
-              </li>
-
-              {/* 연락(맨 아래) */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>연락</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="전화번호 또는 메신저 ID"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                  />
-                </div>
-              </li>
-            </ul>
-          </section>
-
-          <footer className={stylesLayout.registerFooter}>
-            <div className={stylesLayout.inner}>
-              <div className={stylesButtons.btnGroup}>
-                <button type="button" className={stylesButtons.btnDraft} onClick={handleSaveDraft} disabled={submitting}>임시저장</button>
-                <button type="submit" className={stylesButtons.btnSubmit} disabled={submitting}>
-                  {submitting ? '등록 중…' : '등록하기'}
-                </button>
-              </div>
-            </div>
-          </footer>
-        </form>
+          </ul>
+        </section>
       </main>
 
       <footer className={stylesButtons.footer}>
@@ -508,7 +390,7 @@ function AuctionRegister() {
           {submitting ? '등록 중…' : '경매 등록하기'}
         </button>
       </footer>
-    </div >
+    </div>
   );
 }
 

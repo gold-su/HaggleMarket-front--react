@@ -1,4 +1,3 @@
-// src/App.jsx
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup";
@@ -22,7 +21,7 @@ import ChatPage from './Chat/ChatPage';
 import LikeBox from "./components/LikeBox";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import CategoryPostList from './Category/CategoryPostList';
-import { fetchUsedList, fetchAuctionList } from './services/productApi';
+import { fetchUsedList, fetchAuctionList } from './services/productApi.js';
 import { publicApi } from './api/auction';
 import "./App.css";
 

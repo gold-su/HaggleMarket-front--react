@@ -224,6 +224,7 @@ function AuctionDetail() {
   };
 
 
+
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
   if (errMsg) return <div className={styles.error}>{errMsg}</div>;
   if (!auction) return <div className={styles.empty}>상품 정보를 찾을 수 없습니다.</div>;

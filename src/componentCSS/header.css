@@ -26,7 +26,7 @@
 .header-inner-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 10px 15px;
+  padding: 15px 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,9 +42,18 @@
   .header-inner-wrapper {
     gap: 40px;
   }
-  .logo { font-size: 1.4rem; }
-  .search-container { width: 400px; }
-  .auth-buttons { gap: 8px; }
+
+  .logo {
+    font-size: 1.4rem;
+  }
+
+  .search-container {
+    width: 400px;
+  }
+
+  .auth-buttons {
+    gap: 8px;
+  }
 }
 
 /* ✅ 반응형: 모바일 (767px 이하) */
@@ -53,15 +62,24 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
-    white-space: normal; /* 모바일에선 줄바꿈 허용 */
+    white-space: normal;
+    /* 모바일에선 줄바꿈 허용 */
   }
-  .logo { font-size: 1rem; }
-  .search-container { width: 100%; }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
   .auth-buttons {
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 10px;
   }
+
   .auth-buttons a {
     font-size: 0.85rem;
     padding: 4px 6px;
@@ -90,6 +108,7 @@
   fill: var(--santorini-light-blue);
   transition: fill 0.3s ease;
 }
+
 .menu-icon:hover {
   fill: var(--santorini-blue);
   text-decoration: none;
@@ -103,11 +122,13 @@
   flex-direction: column;
   flex-shrink: 1;
 }
+
 .search-box-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
+
 .search-box {
   width: 100%;
   padding: 6px 15px;
@@ -118,11 +139,16 @@
   background-color: #f8f8f8;
   color: #3E7AEF;
 }
-.search-box::placeholder { color: #9c9b9b; }
+
+.search-box::placeholder {
+  color: #9c9b9b;
+}
+
 .search-box:focus {
   border-color: var(--santorini-blue);
   box-shadow: 0 0 8px var(--santorini-light-blue);
 }
+
 .search-icon {
   position: absolute;
   right: 15px;
@@ -134,13 +160,17 @@
   color: var(--santorini-light-blue);
   transition: color 0.3s ease;
 }
-.search-icon:hover { color: var(--santorini-blue); }
+
+.search-icon:hover {
+  color: var(--santorini-blue);
+}
 
 .popular-search {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
+
 .popular-search button {
   background: none;
   box-shadow: none;
@@ -153,6 +183,7 @@
   border: 1.5px solid transparent;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
+
 .popular-search button:hover {
   color: var(--santorini-light-blue);
   border-color: var(--santorini-light-blue);
@@ -164,10 +195,12 @@
   gap: 12px;
   flex-shrink: 1;
 }
+
 .auth-buttons .divider {
   color: var(--santorini-blue);
   margin: 0 6px;
 }
+
 .auth-buttons a {
   color: var(--santorini-blue);
   text-decoration: none;
@@ -177,7 +210,10 @@
   transition: color 0.3s ease;
   white-space: nowrap;
 }
-.auth-buttons a:hover { color: var(--santorini-light-blue); }
+
+.auth-buttons a:hover {
+  color: var(--santorini-light-blue);
+}
 
 /* ===========================
    판매하기/경매 등록 전용 버튼
@@ -187,7 +223,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;             /* 데스크톱에서 10x14로 키워도 OK */
+  padding: 8px 12px;
+  /* 데스크톱에서 10x14로 키워도 OK */
   border-radius: 10px;
   font-weight: 800;
   text-decoration: none;
@@ -201,6 +238,7 @@
   color: var(--text);
   border: 1px solid #e2e8f0;
 }
+
 .btn-sell:hover {
   background: #f8fafc;
   border-color: #cfd8e3;
@@ -212,6 +250,7 @@
   color: #fff;
   border: 1px solid var(--primary);
 }
+
 .btn-auction:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
