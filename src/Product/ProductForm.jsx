@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { whoAmI } from '../api/auction';
-
+import { PRODUCT_STATUS } from '../Product/productStatus.js';
 import stylesLayout from '../ProductCSS/ProductFormLayout.module.css';
 import stylesForm from '../ProductCSS/ProductFormInputs.module.css';
 import stylesButtons from '../ProductCSS/ProductFormButtons.module.css';
@@ -40,7 +40,7 @@ function ProductForm({ mode = 'create' }) {
 
   // 폼 필드
   const [productName, setProductName] = useState('');
-  const [productStatus, setProductStatus] = useState('LIKE_NEW');
+  const [productStatus, setProductStatus] = useState(PRODUCT_STATUS.NEW);
   const [price, setPrice] = useState('');
   const [negotiable, setNegotiable] = useState(false);
   const [deliveryFee, setDeliveryFee] = useState('별도');
@@ -89,7 +89,7 @@ function ProductForm({ mode = 'create' }) {
         setProductName(data.title || '');
         setPrice(data.cost ?? '');
         setDescription(data.content || '');
-        setProductStatus(data.productStatus || 'LIKE_NEW');
+        setProductStatus(data.productStatus || PRODUCT_STATUS.NEW);
         setNegotiable(!!data.negotiable);
         setDeliveryFee(data.deliveryFee ? '포함' : '별도');
         setTags(data.tag || '');
@@ -388,11 +388,11 @@ function ProductForm({ mode = 'create' }) {
                 <div className={stylesLayout.formContent}>
                   <div className={`${stylesForm.radioGroup} ${stylesForm.radioGroupVertical}`}>
                     {[
-                      { label: '새 상품 (미사용)', value: 'NEW' },
-                      { label: '사용감 없음', value: 'USED_LIKE_NEW' },
-                      { label: '사용감 적음', value: 'USED_GOOD' },
-                      { label: '사용감 많음', value: 'USED' },
-                      { label: '고장/파손 상품', value: 'DAMAGED' },
+                      { label: '새 상품 (미사용)', value: PRODUCT_STATUS.NEW },
+                      { label: '사용감 없음', value: PRODUCT_STATUS.USED_LIKE_NEW },
+                      { label: '사용감 적음', value: PRODUCT_STATUS.USED_GOOD },
+                      { label: '사용감 많음', value: PRODUCT_STATUS.USED },
+                      { label: '고장/파손 상품', value: PRODUCT_STATUS.DAMAGED },
                     ].map(item => (
                       <label key={item.value} className={stylesForm.radioLabel}>
                         <input

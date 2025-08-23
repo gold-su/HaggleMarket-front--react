@@ -1,0 +1,15 @@
+export const PRODUCT_STATUS = {
+  NEW: 'NEW',
+  USED_LIKE_NEW: 'USED_LIKE_NEW',
+  USED_GOOD: 'USED_GOOD',
+  USED: 'USED',
+  DAMAGED: 'DAMAGED',
+};
+
+export const PRODUCT_STATUS_LABEL = {
+  [PRODUCT_STATUS.NEW]: '새 상품',
+  [PRODUCT_STATUS.USED_LIKE_NEW]: '사용감 없음',
+  [PRODUCT_STATUS.USED_GOOD]: '사용감 적음',
+  [PRODUCT_STATUS.USED]: '사용감 많음',
+  [PRODUCT_STATUS.DAMAGED]: '고장/파손',
+};

@@ -23,6 +23,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import CategoryPostList from './Category/CategoryPostList';
 import { fetchUsedList, fetchAuctionList } from './services/productApi.js';
 import { publicApi } from './api/auction';
+import { PRODUCT_STATUS_LABEL } from './Product/productStatus.js';
 import "./App.css";
 
 function App() {
@@ -83,16 +84,10 @@ function App() {
           const res = await publicApi.get('/api/products', {
             params: { page: 0, size: 8, sort: 'createdAt,desc' }
           });
-          const productStatusMap = {
-            LIKE_NEW: "새 상품",
-            USED_GOOD: "사용감 적음",
-            USED: "사용감 많음",
-            DAMAGED: "고장/파손"
-          };
           const items = (res.data?.content ?? []).map(post => ({
             id: post.postId,
             title: post.title,
-            description: productStatusMap[post.productStatus] || "기타",
+            description: PRODUCT_STATUS_LABEL[post.productStatus] || "기타",
             price: post.cost,
             imageUrl: post.thumbnail,
             detailUrl: `/products/detail/${post.postId}`

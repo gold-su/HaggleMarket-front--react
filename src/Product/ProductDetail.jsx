@@ -5,6 +5,7 @@ import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';         // 추가
 import LikeHeart from '../like/LikeHeart';
 import '../ProductCSS/ProductDetail.css';
+import { PRODUCT_STATUS_LABEL } from '../Product/productStatus.js';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -33,13 +34,6 @@ function ProductDetail() {
 
   if (error) return <div>{error}</div>;
   if (!product) return <div>로딩 중...</div>;
-
-  const statusLabelMap = {
-    LIKE_NEW: '새 상품',
-    USED_GOOD: '사용감 적음',
-    USED: '사용감 많음',
-    DAMAGED: '고장/파손',
-  };
 
   const imageList = (product.images?.length ? product.images.map(p => `http://localhost:8080${p}`) : [])
     .concat(
@@ -104,7 +98,7 @@ function ProductDetail() {
           </div>
 
           <ul className="details">
-            <li><strong>상품상태:</strong> {statusLabelMap[product.productStatus] || product.productStatus}</li>
+            <li><strong>상품상태:</strong> {PRODUCT_STATUS_LABEL[product.productStatus] || product.productStatus}</li>
             <li><strong>설명:</strong> {product.content}</li>
             <li><strong>배송비:</strong> {product.deliveryFee ? '있음' : '없음'}</li>
             <li><strong>직거래지역:</strong> {product.seller?.address || '-'}</li>

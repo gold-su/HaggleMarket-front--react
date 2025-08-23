@@ -11,17 +11,10 @@ function CategoryPostList() {
     useEffect(() => {
         axios.get(`/api/categories/${categoryId}/posts`)
             .then((res) => {
-                const productStatusMap = {
-                    LIKE_NEW: "새 상품",
-                    USED_GOOD: "사용감 적음",
-                    USED: "사용감 많음",
-                    DAMAGED: "고장/파손"
-                };
-
                 const mappedPosts = res.data.map(post => ({
                     id: post.postId,
                     title: post.title,
-                    content: productStatusMap[post.productStatus] || '',  // 상태 설명 → content로
+                    content: PRODUCT_STATUS_LABEL[post.productStatus] || '',  // 상태 설명 → content로
                     price: post.cost.toLocaleString() + '원',
                     imageUrl: post.thumbnail
                 }));
