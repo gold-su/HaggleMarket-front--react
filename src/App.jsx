@@ -93,7 +93,7 @@ function App() {
             id: post.postId,
             title: post.title,
             description: productStatusMap[post.productStatus] || "기타",
-            price: post.cost.toLocaleString() + '원',
+            price: post.cost,
             imageUrl: post.thumbnail,
             detailUrl: `/products/detail/${post.postId}`
           }));
@@ -220,7 +220,7 @@ function App() {
 
       {/* 상품 상세 */}
       <Route
-        path="/product/detail/:id"
+        path="/products/detail/:id"
         element={
           <>
             <TopBar />

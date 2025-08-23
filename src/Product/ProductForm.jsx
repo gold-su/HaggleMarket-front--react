@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { whoAmI } from '../api/auction';
 
 import stylesLayout from '../ProductCSS/ProductFormLayout.module.css';
 import stylesForm from '../ProductCSS/ProductFormInputs.module.css';
@@ -11,6 +12,18 @@ function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('jwtToken');
+
+  useEffect(() => {
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    whoAmI().catch(() => {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+    });
+  }, [token, navigate]);
 
   // 카테고리
   const [largeCategories, setLargeCategories] = useState([]);
@@ -151,7 +164,12 @@ function ProductForm({ mode = 'create' }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const headers = useMemo(() => (token ? { Authorization: `Bearer ${token}` } : undefined), [token]);
+  const headers = useMemo(() => {
+    if (!token) return undefined;
+    // 서버 인증 방식에 맞춰 Authorization 헤더를 조정하세요.
+    return { Authorization: `Bearer ${token}` };
+    // 예) return { Authorization: token }; 또는 { 'X-AUTH-TOKEN': token };
+  }, [token]);
 
   // 임시저장
   const draftKey = (mode === 'edit' && id) ? `productDraft:${id}` : 'productDraft:new';
@@ -177,6 +195,14 @@ function ProductForm({ mode = 'create' }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
+
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    console.log('headers', headers);
 
     if (!productName.trim()) return alert('상품명을 입력해 주세요.');
     if (!selectedSmall) return alert('카테고리를 선택해 주세요.');
@@ -362,7 +388,7 @@ function ProductForm({ mode = 'create' }) {
                 <div className={stylesLayout.formContent}>
                   <div className={`${stylesForm.radioGroup} ${stylesForm.radioGroupVertical}`}>
                     {[
-                      { label: '새 상품 (미사용)', value: 'LIKE_NEW' },
+                      { label: '새 상품 (미사용)', value: 'NEW' },
                       { label: '사용감 없음', value: 'USED_LIKE_NEW' },
                       { label: '사용감 적음', value: 'USED_GOOD' },
                       { label: '사용감 많음', value: 'USED' },
