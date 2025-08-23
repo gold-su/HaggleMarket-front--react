@@ -95,7 +95,7 @@ function App() {
             description: productStatusMap[post.productStatus] || "기타",
             price: post.cost.toLocaleString() + '원',
             imageUrl: post.thumbnail,
-            detailUrl: `/product-detail/${post.postId}`
+            detailUrl: `/products/detail/${post.postId}`
           }));
           data = items;
         }
