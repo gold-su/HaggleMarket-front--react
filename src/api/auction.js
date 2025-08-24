@@ -125,3 +125,9 @@ export async function buyout(auctionId) {
     const res = await api.post(`/api/auction/${auctionId}/buyout`);
     return res.data; // BidResponseDTO
 }
+
+export async function fetchHotAuctions({ page = 0, size = 12 } = {}) {
+    // 공개 목록이면 publicApi로 호출(토큰/401 리다이렉트 방지)
+    const res = await publicApi.get('/api/auction/hot', { params: { page, size } });
+    return res.data; // Spring Page<HotAuctionItemDTO>
+}
