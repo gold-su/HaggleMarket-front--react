@@ -1,3 +1,50 @@
+.editprofile-container {
+  position: absolute;
+  justify-content: space-between;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* 정확한 중앙 정렬 */
+  width: 100%;
+  max-width: 700px;
+  padding: 2rem;
+  background-color: #ffffff;
+  /* border: 1px solid #e0e0e0; */
+  border-radius: 0px;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+}
+
+.editprofile-title {
+  text-align: left;
+  font-size: 1.3rem;
+  color: #000000;
+  font-weight: bold;
+  margin-top: 0px;
+  /* 상단 여백 */
+  margin-bottom: 0px;
+  /* 하단 여백 */
+}
+
+.editprofile-form input {
+  width: 100%;
+  padding: 10px;
+  height: 80px;
+  /* margin-bottom: 1rem; */
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.editprofile-form button {
+  width: 100%;
+  padding: 10px;
+  background-color: #6497b1;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
 /* ✅ 모달 오버레이 */
 .modal-overlay {
   position: fixed;

@@ -137,9 +137,9 @@ const EditProfile = () => {
       </h1>
 
       {/* 내 정보 수정 폼 */}
-      <form onSubmit={handleSubmit} className="signup-form">
-        <div className="signup-container">
-          <h2 className="signup-title">내 정보 수정</h2>
+      <form onSubmit={handleSubmit} className="editprofile-form">
+        <div className="editprofile-container">
+          <h2 className="editprofile-title">내 정보 수정</h2>
 
           {/* 이메일 */}
           <div className="form-group">
