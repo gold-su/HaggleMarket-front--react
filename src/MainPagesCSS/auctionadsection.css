@@ -89,7 +89,7 @@
 .auction-item {
   flex-shrink: 0;
   /* 아이템 축소 방지 */
-  width: 280px;
+  width: var(--cardW);
   /* <-- 아이템 고정 너비 (250px에서 280px로 증가) */
   background-color: rgba(var(--santorini-bg-rgb), 0.7);
   /* 작고 반투명한 디자인 */
@@ -103,6 +103,14 @@
   cursor: pointer;
 
   scroll-snap-align: start;
+}
+
+.auction-item-countdown {
+  margin: 4px 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ef4444;
+  /* 빨간색 */
 }
 
 /* ⬅️➡️ 양쪽 스페이서: 카드 한 칸 */
@@ -182,8 +190,25 @@
   font-size: 1.4rem;
   /* <-- 폰트 크기 증가 */
   color: var(--santorini-blue);
-  text-align: right;
+  text-align: left;
   /* 가격 오른쪽 정렬 */
+}
+
+/* 가격/통계 푸터: 좌우 배치 */
+.auction-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  /* details가 column이라 바닥으로 밀착 */
+}
+
+/* 타이틀 아래 종료 시간 라벨 */
+.auction-item-endtime {
+  margin: 4px 0 8px;
+  font-size: 0.9rem;
+  color: #666;
 }
 
 .auction-item-meta {

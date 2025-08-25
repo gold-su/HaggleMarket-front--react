@@ -18,18 +18,35 @@ function AuctionAdSection() {
   const money = (n) => Number(n ?? 0).toLocaleString('ko-KR');
   const absUrl = (url) => (!url ? 'https://via.placeholder.com/280x180?text=No+Image'
     : url.startsWith('http') ? url : `${BASE}${url}`);
-  const timeLeft = (iso) => {
+  const formatEndTime = (iso) => {
     if (!iso) return '';
-    const diff = new Date(iso).getTime() - Date.now();
+    const d = new Date(iso);
+    const pad = (v) => String(v).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} `
+      + `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+  // 남은 시간 포맷터: D일 HH:mm:ss 남음 (초 단위)
+  const formatRemain = (endIso, nowMs) => {
+    if (!endIso) return '';
+    const diff = new Date(endIso).getTime() - nowMs;
     if (diff <= 0) return '종료';
-    const m = Math.floor(diff / 60000);
-    if (m < 60) return `${m}분 남음`;
-    const h = Math.floor(m / 60), rm = m % 60;
-    if (h < 24) return `${h}시간 ${rm}분 남음`;
-    const d = Math.floor(h / 24);
-    return `${d}일 남음`;
+    const total = Math.floor(diff / 1000);
+    const d = Math.floor(total / 86400);
+    const h = Math.floor((total % 86400) / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    const pad = (v) => String(v).padStart(2, '0');
+    return d > 0
+      ? `${d}일 ${pad(h)}:${pad(m)}:${pad(s)} 남음`
+      : `${pad(h)}:${pad(m)}:${pad(s)} 남음`;
   };
 
+  // 1초마다 다시 그리기 위한 현재 시각(ms)
+  const [nowTs, setNowTs] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNowTs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   // 찜 아이콘 클릭 핸들러
   const toggleFavorite = (id) => {
@@ -98,7 +115,7 @@ function AuctionAdSection() {
           description: '', // DTO에 설명 없으면 빈 값
           price: `${money(it.currentPrice)}원`,
           imageUrl: absUrl(it.thumbnailUrl),
-          daysAgo: timeLeft(it.endTime), // 라벨 영역 재활용
+          endIso: it.endTime,
           isFavorite: false,
           bidCount: Number(it.bidCount ?? 0),
         }));
@@ -167,12 +184,20 @@ function AuctionAdSection() {
               <img src={item.imageUrl} alt={item.title} className="auction-item-image" />
               <div className="auction-item-details">
                 <div className="auction-item-title">{item.title}</div>
+                <div className="auction-item-countdown">
+                  {formatRemain(item.endIso, nowTs)}
+                </div>
                 <div className="auction-item-description">{item.description}</div>
-                <div className="auction-item-price">{item.price}</div>
+                {/* 가격/통계 푸터 */}
+                <div className="auction-item-footer">
+                  <div className="auction-item-price">{item.price}</div>
+                  <div className="auction-item-stats">
+                    <span className="auction-item-bids">입찰 {item.bidCount}회</span>
+                  </div>
+                </div>
               </div>
+              {/* 상단 우측엔 찜만 남김 */}
               <div className="auction-item-meta">
-                <span className="auction-item-days-ago">{item.daysAgo}</span>
-                <span className="auction-item-bids">입찰 {item.bidCount}회</span>
                 <svg
                   className={`auction-favorite-icon ${item.isFavorite ? 'active' : ''}`}
                   viewBox="0 0 24 24"
@@ -187,12 +212,10 @@ function AuctionAdSection() {
                   onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      e.stopPropagation();
+                      e.preventDefault(); e.stopPropagation();
                       toggleFavorite(item.id);
                     }
-                  }}
-                >
+                  }}>
                   <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
                 </svg>
               </div>

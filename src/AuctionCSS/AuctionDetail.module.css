@@ -439,3 +439,128 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.statsLink {
+  cursor: pointer;
+  /* 파란색 */
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.statsLink:hover {
+  color: #1d4ed8;
+}
+
+.statsLink:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- 모달 레이어 --- */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modalCard {
+  width: min(720px, 92vw);
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+}
+
+.modalHeader,
+.modalFooter {
+  padding: 12px 16px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modalClose {
+  background: none;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modalBody {
+  padding: 8px 0;
+  /* 테이블 좌우는 자체 패딩으로 조절 */
+  overflow: auto;
+  /* 테이블이 커지면 스크롤 */
+}
+
+/* --- 테이블 --- */
+.bidTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.bidTable thead th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  z-index: 1;
+  font-weight: 700;
+  color: #111827;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.bidTable tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+  word-break: break-word;
+}
+
+.colAmount,
+.bidColAmount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bidColNick {
+  font-weight: 600;
+}
+
+.bidColDate,
+.bidColTime {
+  white-space: nowrap;
+}
+
+.emptyRow,
+.loadingRow {
+  text-align: center;
+  color: #6b7280;
+  padding: 18px 0;
+}
+
+.moreButton {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+.moreButton:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}

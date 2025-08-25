@@ -5,7 +5,7 @@ import stylesLayout from '../AuctionCSS/AuctionEditLayout.module.css'; // ✅ �
 import stylesForm from '../AuctionCSS/AuctionEditForm.module.css';     // ✅ 새 폼 CSS
 import stylesButtons from '../AuctionCSS/AuctionEditButtons.module.css'; // ✅ 새 버튼 CSS
 
-import { fetchAuctionDetail, updateAuctionPost, uploadAuctionImages, BASE } from '../api/auction';
+import { fetchAuctionDetail, updateAuctionPost, uploadAuctionImages, BASE, toLocalDateTimeString } from '../api/auction';
 
 // ✅ 카테고리 데이터 정의 (AuctionRegister.jsx에서 가져오거나 공유)
 const categoriesData = {
@@ -146,8 +146,8 @@ function AuctionEdit() {
       title: auctionTitle,
       content: auctionContent,
       buyoutCost: buyoutCost === '' ? null : Number(buyoutCost), // '' → null로
-      startTime, // "YYYY-MM-DDTHH:mm" 형식 OK (백엔드 LocalDateTime)
-      endTime,
+      startTime: toLocalDateTimeString(startTime), // "YYYY-MM-DDTHH:mm" 형식 OK (백엔드 LocalDateTime)
+      endTime: toLocalDateTimeString(endTime),
       // startCost는 보통 수정 금지. 정말 필요하면 백엔드가 허용하는지 확인하고 아래 라인 주석 해제.
       // startCost: Number(startCost),
     };
@@ -171,7 +171,7 @@ function AuctionEdit() {
       }
 
       alert(res?.message ?? '경매 상품이 수정되었습니다.');
-      navigate(-1);
+      navigate(`/auction/detail/${auctionId}`);
     } catch (err) {
       const status = err?.response?.status;
       const msg = err?.response?.data?.message || err?.message;

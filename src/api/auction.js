@@ -90,12 +90,37 @@ export async function updateAuctionPost(auctionId, payload) {
 /** 이미지 업로드 (최대 12장) + 정렬 순서 */
 export async function uploadAuctionImages(auctionId, files, sortOrder) {
     const fd = new FormData();
-    files.forEach((f) => fd.append('images', f));
-    if (Array.isArray(sortOrder) && sortOrder.length === files.length) {
+
+    // ✅ 디버그 로그: 전달 직전 무엇을 넣는지 확인
+    console.log('[uploadAuctionImages] auctionId=', auctionId);
+    console.log('[uploadAuctionImages] files=', files?.map(f => ({ name: f.name, size: f.size, type: f.type })));
+    console.log('[uploadAuctionImages] sortOrder=', sortOrder);
+
+
+    // ✅ 파일 반복 append (이름은 서버 DTO/컨트롤러와 꼭 동일!)
+    files.forEach((f, i) => {
+        fd.append('images', f, f.name);  // <-- 핵심
+    });
+
+    // ✅ 순서도 반복 append
+    if (Array.isArray(sortOrder)) {
         sortOrder.forEach((ord) => fd.append('sortOrder', String(ord)));
     }
-    const res = await api.post(`/api/auction/images/${auctionId}`, fd);
-    return res.data; // { count, images: [{imageId, imageUrl, ...}] }
+
+    // ✅ FormData 내부 최종 점검용 로그
+    for (const [k, v] of fd.entries()) {
+        console.log('[uploadAuctionImages] FD', k, v instanceof File ? `(file:${v.name}, ${v.size})` : v);
+    }
+
+    const res = await api.post(`/api/auction/images/${auctionId}`, fd, {
+        // 여기서 Content-Type 자동 설정되도록 절대 수동 지정하지 마세요.
+        onUploadProgress: (e) => {
+            // 진행률 로그(선택)
+            const percent = e.total ? Math.round((e.loaded / e.total) * 100) : null;
+            if (percent != null) console.log(`[upload] ${percent}%`);
+        },
+    });
+    return res.data;
 }
 
 export async function fetchAuctionDetail(auctionId) {
@@ -130,4 +155,11 @@ export async function fetchHotAuctions({ page = 0, size = 12 } = {}) {
     // 공개 목록이면 publicApi로 호출(토큰/401 리다이렉트 방지)
     const res = await publicApi.get('/api/auction/hot', { params: { page, size } });
     return res.data; // Spring Page<HotAuctionItemDTO>
+}
+
+export async function fetchBidHistory(auctionId, { page = 0, size = 20, sort = 'bidTime,DESC' } = {}) {
+    const res = await api.get(`/api/auction/${auctionId}/bids`, {
+        params: { page, size, sort },
+    });
+    return res.data; // Spring Page<BidHistoryItemDTO>
 }

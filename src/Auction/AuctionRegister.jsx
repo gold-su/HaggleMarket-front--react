@@ -18,8 +18,6 @@ const categoriesData = {
 };
 
 
-
-
 function AuctionRegister() {
   const navigate = useNavigate();
 

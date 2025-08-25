@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchAuctionDetail, placeBid, buyout, BASE } from '../api/auction';
 import styles from '../AuctionCSS/AuctionDetail.module.css';
-
+import BidHistoryModal from '../components/BidHistoryModal';
 
 
 function AuctionDetail() {
@@ -19,7 +19,17 @@ function AuctionDetail() {
   const currentPrice = auction?.currentPrice ?? auction?.currentCost ?? auction?.startCost ?? 0; // 현재 입찰가 (경매 시작가로 초기화)
   const [myBid, setMyBid] = useState(''); // myBid : 사용자가 입력할 입찰가
 
-
+  const [openBids, setOpenBids] = useState(false);
+  const openBidModal = () => {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      // 로그인 후 돌아오도록 next 파라미터(Optional)
+      navigate(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    setOpenBids(true);
+  };
+  const closeBidModal = () => setOpenBids(false);
   // auction.images가 숫자 id 배열일 수도 있고, url 배열일 수도 있음.
   // id면 ${BASE}/api/auction/images/{id} 형태로 변환.
   // url이 있으면 그대로 사용.
@@ -314,9 +324,30 @@ function AuctionDetail() {
 
           <div className={styles.auctionTimer}>{leftText || '종료 시간 정보 없음'}</div>
           <div className={styles.stats}>
-            <span>🔨 입찰 {auction.bidCount ?? 0}</span>
+            <span
+              className={styles.statsLink}
+              role="button"
+              tabIndex={0}
+              onClick={openBidModal}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openBidModal();
+                }
+              }}
+              aria-label="입찰 내역 보기"
+              title="입찰 내역 보기"
+            >
+              🔨입찰 {auction.bidCount ?? 0}
+            </span>
             <span>👁 {auction.hit ?? 0}</span>
             <span>📅 {(auction.createdAt ?? '').slice(0, 10)}</span>
+            {/* 입찰 내역 모달 */}
+            <BidHistoryModal
+              open={openBids}
+              onClose={closeBidModal}
+              auctionId={Number(id)}
+            />
           </div>
 
           <ul className={styles.details}>
@@ -361,7 +392,10 @@ function AuctionDetail() {
         <div className={styles.divider} />
         <p className={styles.auctionDescription}>{auction.content || '-'}</p>
       </div>
+
+
     </div>
+
   );
 }
 
