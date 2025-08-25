@@ -10,6 +10,7 @@
   padding: 12px 14px;
   font-size: 16px;
   border: 1px solid var(--input-border, #ccc);
+  /* 변수 없으면 기본값 사용 */
   border-radius: var(--input-radius, 6px);
   background-color: var(--input-bg, #fff);
   box-sizing: border-box;
@@ -25,8 +26,7 @@
 }
 
 .formTextarea {
-  resize: none;
-  /* 판매하기와 동일: 크기 조절 비활성 */
+  resize: vertical;
   min-height: 120px;
 }
 
@@ -38,23 +38,20 @@
 }
 
 /* =========================
-   이미지 업로드 (크기/간격만 정렬)
+   이미지 업로드
    ========================= */
 .imageUploadList {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  /* 판매하기와 동일 간격 */
+  gap: 8px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .imageUploadItem {
-  width: 130px;
-  /* 100px → 130px */
-  height: 130px;
-  /* 100px → 130px */
+  width: 100px;
+  height: 100px;
   border: 1px solid var(--border-color, #ddd);
   border-radius: 8px;
   overflow: hidden;
@@ -63,7 +60,6 @@
   justify-content: center;
   align-items: center;
   background-color: #fff;
-  /* 색상 톤 유지 */
   cursor: pointer;
 }
 
@@ -112,16 +108,14 @@
 }
 
 /* =========================
-   카테고리 선택(3열 버튼) – 크기만 판매하기 톤으로
+   카테고리 선택
    ========================= */
 .categorySelectionArea {
   display: flex;
   border: 1px solid var(--border-color, #ddd);
   border-radius: 8px;
   overflow: hidden;
-  height: 240px;
-  /* 320px → 240px */
-  background-color: #fff;
+  height: 320px;
 }
 
 .categoryColumn {
@@ -143,10 +137,8 @@
 
 .categoryItem button {
   width: 100%;
-  padding: 8px 12px;
-  /* 12px 16px → 8px 12px */
-  font-size: 0.9rem;
-  /* 0.95rem → 0.9rem */
+  padding: 12px 16px;
+  font-size: 0.95rem;
   text-align: left;
   background-color: transparent;
   border: none;
@@ -168,33 +160,18 @@
 .categoryItem.placeholder {
   color: var(--text-muted, #666);
   font-style: italic;
-  padding: 8px 12px;
-  /* 버튼 패딩과 동일 */
+  padding: 12px 16px;
 }
 
 /* =========================
-   가격 입력 필드 (시작가/즉시구매가)
-   - 두 인풋이 한 줄에 자연스럽게 보이도록 크기/간격만 조정
+   가격 입력 필드 (시작가, 즉시 구매가)
    ========================= */
-.priceRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
 .priceInputWrapper {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: flex;
   border: 1px solid var(--input-border, #ccc);
   border-radius: var(--input-radius, 6px);
   overflow: hidden;
-  background-color: #fff;
-  min-width: 160px;
-  max-width: 260px;
-  flex: 0 1 240px;
+  align-items: center;
 }
 
 .priceInput {
@@ -203,7 +180,6 @@
   padding: 12px 14px;
   font-size: 1rem;
   outline: none;
-  min-width: 0;
 }
 
 .currency {
@@ -212,11 +188,10 @@
   color: #888;
   font-size: 1rem;
   border-left: 1px solid var(--input-border, #ccc);
-  white-space: nowrap;
 }
 
 /* =========================
-   반응형
+   반응형 미디어 쿼리 (폼 관련)
    ========================= */
 @media (max-width: 768px) {
 
@@ -225,35 +200,5 @@
   .formSelect {
     padding: 10px 12px;
     font-size: 15px;
-  }
-
-  .imageUploadList {
-    gap: 8px;
-  }
-
-  .imageUploadItem {
-    width: 110px;
-    height: 110px;
-  }
-
-  .priceRow {
-    gap: 8px;
-  }
-
-  .priceInputWrapper {
-    flex-basis: 200px;
-    max-width: 200px;
-  }
-
-  .categorySelectionArea {
-    height: auto;
-    max-height: 60vh;
-  }
-}
-
-@media (max-width: 420px) {
-  .imageUploadItem {
-    width: 100px;
-    height: 100px;
   }
 }
