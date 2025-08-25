@@ -30,7 +30,7 @@ function ProductList({
             const link =
               selectedCategory === 'auction'
                 ? `/auction/detail/${id}`
-                : `/product-detail/${id}`;
+                : product.detailUrl || `/products/detail/${id}`;
             const badge = selectedCategory === 'auction' ? '경매' : undefined;
             const endsAt = product.endsAt ?? product.endTime ?? undefined;
 

@@ -2,7 +2,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-
+import { whoAmI } from '../api/auction';
+import { PRODUCT_STATUS } from '../Product/productStatus.js';
 import stylesLayout from '../ProductCSS/ProductFormLayout.module.css';
 import stylesForm from '../ProductCSS/ProductFormInputs.module.css';
 import stylesButtons from '../ProductCSS/ProductFormButtons.module.css';
@@ -11,6 +12,18 @@ function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('jwtToken');
+
+  useEffect(() => {
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    whoAmI().catch(() => {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+    });
+  }, [token, navigate]);
 
   // 카테고리
   const [largeCategories, setLargeCategories] = useState([]);
@@ -27,7 +40,7 @@ function ProductForm({ mode = 'create' }) {
 
   // 폼 필드
   const [productName, setProductName] = useState('');
-  const [productStatus, setProductStatus] = useState('LIKE_NEW');
+  const [productStatus, setProductStatus] = useState(PRODUCT_STATUS.NEW);
   const [price, setPrice] = useState('');
   const [negotiable, setNegotiable] = useState(false);
   const [deliveryFee, setDeliveryFee] = useState('별도');
@@ -76,7 +89,7 @@ function ProductForm({ mode = 'create' }) {
         setProductName(data.title || '');
         setPrice(data.cost ?? '');
         setDescription(data.content || '');
-        setProductStatus(data.productStatus || 'LIKE_NEW');
+        setProductStatus(data.productStatus || PRODUCT_STATUS.NEW);
         setNegotiable(!!data.negotiable);
         setDeliveryFee(data.deliveryFee ? '포함' : '별도');
         setTags(data.tag || '');
@@ -151,7 +164,12 @@ function ProductForm({ mode = 'create' }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const headers = useMemo(() => (token ? { Authorization: `Bearer ${token}` } : undefined), [token]);
+  const headers = useMemo(() => {
+    if (!token) return undefined;
+    // 서버 인증 방식에 맞춰 Authorization 헤더를 조정하세요.
+    return { Authorization: `Bearer ${token}` };
+    // 예) return { Authorization: token }; 또는 { 'X-AUTH-TOKEN': token };
+  }, [token]);
 
   // 임시저장
   const draftKey = (mode === 'edit' && id) ? `productDraft:${id}` : 'productDraft:new';
@@ -177,6 +195,14 @@ function ProductForm({ mode = 'create' }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
+
+    if (!token) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+
+    console.log('headers', headers);
 
     if (!productName.trim()) return alert('상품명을 입력해 주세요.');
     if (!selectedSmall) return alert('카테고리를 선택해 주세요.');
@@ -362,11 +388,11 @@ function ProductForm({ mode = 'create' }) {
                 <div className={stylesLayout.formContent}>
                   <div className={`${stylesForm.radioGroup} ${stylesForm.radioGroupVertical}`}>
                     {[
-                      { label: '새 상품 (미사용)', value: 'LIKE_NEW' },
-                      { label: '사용감 없음', value: 'USED_LIKE_NEW' },
-                      { label: '사용감 적음', value: 'USED_GOOD' },
-                      { label: '사용감 많음', value: 'USED' },
-                      { label: '고장/파손 상품', value: 'DAMAGED' },
+                      { label: '새 상품 (미사용)', value: PRODUCT_STATUS.NEW },
+                      { label: '사용감 없음', value: PRODUCT_STATUS.USED_LIKE_NEW },
+                      { label: '사용감 적음', value: PRODUCT_STATUS.USED_GOOD },
+                      { label: '사용감 많음', value: PRODUCT_STATUS.USED },
+                      { label: '고장/파손 상품', value: PRODUCT_STATUS.DAMAGED },
                     ].map(item => (
                       <label key={item.value} className={stylesForm.radioLabel}>
                         <input
