@@ -1,7 +1,7 @@
 /* src/AuctionCSS/AuctionRegisterLayout.module.css */
 
 /* =========================
-   전역 변수 (색상 등)
+   전역 변수 (색상 등) - 이곳에서 관리합니다.
    ========================= */
 :root {
   --main-bg-color: #fff;
@@ -14,13 +14,6 @@
   --input-border: #ccc;
   --input-radius: 6px;
   --shadow-light: rgba(0, 0, 0, 0.05);
-
-  --container-max: 1200px;
-  --section-x: 40px;
-  --section-x-sm: 16px;
-
-  --inline-gap: 12px;
-  --inline-gap-sm: 8px;
 }
 
 /* =========================
@@ -37,18 +30,10 @@
   color: var(--text-color);
 }
 
-.registerMainContent {
+.mainContent {
   width: 100%;
   flex-grow: 1;
-  /* 판매하기와 동일: 푸터와 겹침 방지 */
-  padding: 20px 0 calc(140px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
-}
-
-/* 전역 main 좌우 패딩 방어 */
-.auctionRegisterPage :global(main) {
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .section {
@@ -75,7 +60,7 @@
 }
 
 /* =========================
-   폼 그룹 (ul/li 구조)
+   폼 그룹 (ul/li 구조) 공통 스타일 (폼과 레이아웃 모두에 걸치지만, 편의상 Layout에 둡니다)
    ========================= */
 .formGroups {
   list-style: none;
@@ -83,24 +68,10 @@
   margin: 0;
 }
 
-/* li: 판매하기와 동일한 2열(라벨 160px / 콘텐츠 1fr) */
 .formGroup {
   padding: 15px 0;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 20px;
-
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  align-items: center;
-  column-gap: var(--inline-gap);
-}
-
-/* 섹션 타이틀(li)은 원형 유지 */
-.formGroup.formGroupTitle {
-  display: block;
-  border: none;
-  padding: 8px 0 4px;
-  margin: 12px 0;
 }
 
 .formGroup:last-of-type {
@@ -112,8 +83,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-color);
-  margin-bottom: 0;
-  /* 2열 정렬에 맞게 */
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
 }
@@ -126,37 +96,21 @@
 
 .formContent {
   color: var(--text-muted);
-  min-width: 0;
-  /* 그리드 수축 허용 */
-}
-
-/* 내부 들여쓰기 보정(시각 간격 통일) */
-.formContent>* {
-  margin-left: 0;
-}
-
-.formContent>*:first-child {
-  margin-top: 0;
-}
-
-.formContent>.imageUploadList,
-.formContent>.categorySelectionArea,
-.formContent>.priceRow,
-.formContent>.radioGroup,
-.formContent>.radioGroupVertical {
-  margin-left: 0;
+  /* productRegisterForm에서 margin-left를 주었다면 동일하게 적용 */
+  margin-left: 0px;
+  /* 초기화 또는 적절한 값 설정 */
 }
 
 /* =========================
-   반응형
+   반응형 미디어 쿼리 (레이아웃 관련)
    ========================= */
 @media (max-width: 768px) {
   .auctionRegisterPage {
     padding: 0;
   }
 
-  .registerMainContent {
-    padding: 10px 0 calc(120px + env(safe-area-inset-bottom, 0px));
+  .mainContent {
+    padding: 10px;
   }
 
   .section {
@@ -164,10 +118,6 @@
   }
 
   .formGroup {
-    grid-template-columns: 1fr;
-    /* 모바일에서는 세로 스택 */
-    align-items: flex-start;
-    row-gap: var(--inline-gap-sm);
     padding: 10px 0;
     margin-bottom: 10px;
   }
