@@ -1,3 +1,4 @@
+// src/components/BidHistoryModal.jsx
 import React, { useEffect, useState } from 'react';
 import { fetchBidHistory } from '../api/auction';
 import styles from '../AuctionCSS/AuctionDetail.module.css';

@@ -1,3 +1,4 @@
+// src/like/LikeHeart.jsx
 import useLike from "./useLike";
 import "./LikeHeart.css";
 

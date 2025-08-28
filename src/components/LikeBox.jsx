@@ -1,3 +1,4 @@
+// src/components/LikeBox.jsx
 import React, { useState } from "react";
 import "../componentCSS/LikeBox.css";
 

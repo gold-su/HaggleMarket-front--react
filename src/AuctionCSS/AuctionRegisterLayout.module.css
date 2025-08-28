@@ -1,133 +1,161 @@
 /* src/AuctionCSS/AuctionRegisterLayout.module.css */
-
-/* =========================
-   전역 변수 (색상 등) - 이곳에서 관리합니다.
-   ========================= */
 :root {
   --main-bg-color: #fff;
   --accent-color: #3E7AEF;
   --accent-color-dark: #2f65c0;
-  --border-color: #ddd;
-  --text-color: #111;
-  --text-muted: #666;
-  --input-bg: #fff;
-  --input-border: #ccc;
-  --input-radius: 6px;
-  --shadow-light: rgba(0, 0, 0, 0.05);
+  --border-color: #e0e0e0;
+  --text-color-dark: #111;
+  --text-color-medium: #555;
+  --shadow-light: rgba(0, 0, 0, 0.06);
+  --container-max: 1200px;
+  --section-x: 40px;
+  --section-x-sm: 16px;
+  --inline-gap: 12px;
+  --inline-gap-sm: 8px;
 }
 
-/* =========================
-   페이지 전체 레이아웃
-   ========================= */
-.auctionRegisterPage {
-  max-width: 1200px;
-  margin: 0 auto;
+/* 페이지 래퍼 */
+.registerPage {
+  background: var(--main-bg-color);
   min-height: 100vh;
+  color: var(--text-color-dark);
   display: flex;
   flex-direction: column;
-  background-color: var(--main-bg-color);
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text-color);
-}
-
-.mainContent {
+  align-items: center;
   width: 100%;
-  flex-grow: 1;
   box-sizing: border-box;
 }
 
-.section {
-  background-color: #ffffff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
+/* ✅ width:100% + max-width로 중앙 정렬 */
+.registerMainContent {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 20px 0 calc(140px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
 }
 
-.pageTitle {
-  font-size: 1.8rem;
+.registerPage :global(main) {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.registerSection {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px var(--shadow-light);
+  padding: 24px var(--section-x);
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.registerTitle {
+  font-size: 1.6rem;
   font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 20px 0;
-  text-align: left;
+  margin: 0 0 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #ccc;
 }
 
-.sectionTitle {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: var(--text-color);
-}
-
-/* =========================
-   폼 그룹 (ul/li 구조) 공통 스타일 (폼과 레이아웃 모두에 걸치지만, 편의상 Layout에 둡니다)
-   ========================= */
 .formGroups {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 .formGroup {
-  padding: 15px 0;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
   border-bottom: 1px solid var(--border-color);
-  margin-bottom: 20px;
 }
 
 .formGroup:last-of-type {
+  margin-bottom: 0;
+  padding-bottom: 0;
   border-bottom: none;
+}
+
+/* 라벨 | 콘텐츠 2열 */
+.formGroupInline {
+  display: grid;
+  grid-template-columns: var(--label-w, 160px) 1fr;
+  align-items: center;
+  column-gap: var(--inline-gap);
+}
+
+.formGroupInline .formLabel {
   margin-bottom: 0;
 }
 
-.formLabel {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin-bottom: 10px;
+.formGroupInline .formContent {
+  min-width: 0;
+}
+
+.formGroupInline .formContent>* {
+  margin-left: 0;
+}
+
+.formGroupInline .formContent>*:first-child {
+  margin-top: 0;
+}
+
+.labelW140 {
+  --label-w: 140px;
+}
+
+.labelW160 {
+  --label-w: 160px;
+}
+
+.labelW180 {
+  --label-w: 180px;
+}
+
+/* 하단 고정 버튼 바 */
+.registerFooter {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: #fff;
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -1px 4px var(--shadow-light);
+  padding: 16px var(--section-x);
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   display: flex;
-  align-items: center;
+  justify-content: center;   /* ✅ 가운데 정렬 */
+  z-index: 100;
+  box-sizing: border-box;
 }
 
-.formLabel small {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-left: 5px;
+.inner {
+  width: 100%;
+  max-width: var(--container-max);
+  display: flex;
+  justify-content: flex-end;   /* ✅ 컨테이너 안에서 오른쪽 정렬 */
+  gap: 12px;
+  box-sizing: border-box;
+  margin-right: 0;             /* ✅ 자동 여백 제거 */
 }
 
-.formContent {
-  color: var(--text-muted);
-  /* productRegisterForm에서 margin-left를 주었다면 동일하게 적용 */
-  margin-left: 0px;
-  /* 초기화 또는 적절한 값 설정 */
-}
 
-/* =========================
-   반응형 미디어 쿼리 (레이아웃 관련)
-   ========================= */
-@media (max-width: 768px) {
-  .auctionRegisterPage {
-    padding: 0;
+@media (max-width:768px) {
+  .registerMainContent {
+    padding: 16px 0 calc(120px + env(safe-area-inset-bottom, 0px));
   }
 
-  .mainContent {
-    padding: 10px;
+  .registerSection {
+    padding: 16px var(--section-x-sm);
   }
 
-  .section {
-    padding: 15px;
+  .registerFooter {
+    padding: 10px var(--section-x-sm);
   }
 
-  .formGroup {
-    padding: 10px 0;
-    margin-bottom: 10px;
-  }
-
-  .formLabel {
-    margin-bottom: 8px;
-    font-size: 0.85rem;
-  }
-
-  .formLabel small {
-    font-size: 0.75rem;
+  .formGroupInline {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    row-gap: var(--inline-gap-sm);
   }
 }

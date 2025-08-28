@@ -1,57 +1,55 @@
 /* src/AuctionCSS/AuctionRegisterButtons.module.css */
-
-/* =========================
-   푸터 버튼 (임시저장, 경매 등록하기)
-   ========================= */
-.footer {
-  position: sticky; /* 하단 고정, 필요에 따라 fixed로 변경 */
-  bottom: 0;
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #ffffff;
-  border-top: 1px solid var(--border-color, #ddd);
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
-  z-index: 1000;
+.btnGroup {
   display: flex;
-  justify-content: flex-end; /* 버튼 오른쪽 정렬 */
-  gap: 15px;
-  box-sizing: border-box;
-}
-
-.btnDraft, .btnSubmit {
-  padding: 12px 25px;
-  font-weight: 600;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  white-space: nowrap;
-  flex: none; /* 크기 고정 */
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .btnDraft {
-  background-color: #f0f0f0;
-  color: var(--text-muted, #666);
+  padding: 14px 0;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #f0f0f0;
+  color: #555;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 160px;
 }
 
 .btnDraft:hover {
-  background-color: #e0e0e0;
+  background: #e6e6e6;
 }
 
 .btnSubmit {
-  background-color: var(--accent-color, #3E7AEF);
-  color: white;
+  padding: 14px 0;
+  font-weight: 700;
+  border-radius: 6px;
+  background: #3E7AEF;
+  color: #fff;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 160px;
 }
 
 .btnSubmit:hover {
-  background-color: var(--accent-color-dark, #2f65c0);
+  background: #2f65c0;
 }
 
-/* =========================
-   반응형 미디어 쿼리 (버튼 관련)
-   ========================= */
-@media (max-width: 768px) {
-  .footer {
-    padding: 10px;
+@media (max-width:768px) {
+  .btnGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btnDraft,
+  .btnSubmit {
+    width: 100%;
   }
 }
