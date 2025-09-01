@@ -78,7 +78,7 @@ export async function createAuctionPost(payload) {
                 : null,
         startTime: toLocalDateTimeString(payload.startTime), // "YYYY-MM-DDTHH:mm:ss"
         endTime: toLocalDateTimeString(payload.endTime),
-        categoryId: payload.categoryId, // 핵심: 소분류 ID
+        categoryId: Number(payload.categoryId),
     };
 
     // 필요시 디버그

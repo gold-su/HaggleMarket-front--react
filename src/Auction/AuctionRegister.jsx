@@ -195,7 +195,7 @@ function AuctionRegister() {
         buyoutCost: buyoutCost ? Number(buyoutCost) : null,
         startTime,
         endTime,
-        categoryId: selectedSmall, // ✅ 소분류 id 전송
+        categoryId: Number(selectedSmall),
       });
 
       // 2) 이미지 업로드 (정렬 순서: 현재 배열 순서를 1부터 부여)
