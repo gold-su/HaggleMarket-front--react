@@ -1,10 +1,465 @@
 /* src/AuctionCSS/AuctionDetail.module.css */
+
+/* =========================
+   공통 변수 (필요시 root에서 가져옴)
+   ========================= */
 :root {
-  --container-max: 1000px;
-  --border: #ddd;
-  --shadow: rgba(0, 0, 0, .06);
+  --accent-color: #3E7AEF;
+  --accent-color-dark: #2f65c0;
+  --text-color-dark: #111;
+  --text-color-medium: #555;
+  --border-color: #eee;
 }
 
+/* =========================
+   페이지 전체 컨테이너
+   ========================= */
+.auctionPage {
+  max-width: 1200px;
+  /* ProductDetail과 유사하게 */
+  margin: 30px auto;
+  padding: 40px 20px;
+  background-color: #fff;
+  /* 배경색 통일 */
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-color-dark);
+}
+
+.loading,
+.error,
+.empty {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: var(--text-color-medium);
+}
+
+/* =========================
+   상품 이미지 및 정보 섹션
+   ========================= */
+.auctionDetail {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  /* 반응형을 위해 추가 */
+}
+
+.auctionImage {
+  width: 450px;
+  /* 이미지 영역 너비 조정 */
+  height: 450px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  /* 축소 방지 */
+}
+
+.auctionImage img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.auctionInfo {
+  flex: 1;
+  /* 남은 공간을 채움 */
+  display: flex;
+  flex-direction: column;
+}
+
+.auctionTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-color-dark);
+}
+
+.auctionPrices {
+  margin-bottom: 25px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 15px;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.priceLabel {
+  font-weight: 600;
+  color: var(--text-color-medium);
+}
+
+.priceValue {
+  font-weight: 800;
+  color: var(--accent-color);
+  font-size: 1.3rem;
+  /* 가격 글씨 크게 */
+}
+
+.currentBid {
+  color: #ff5a5f;
+  /* 현재 입찰가 강조색 */
+  font-size: 1.5rem;
+  /* 더 크게 */
+}
+
+.auctionTimer {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ff5a5f;
+  /* 시간 강조색 */
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+}
+
+.stats {
+  margin-bottom: 20px;
+  color: var(--text-color-medium);
+  font-size: 0.9rem;
+  display: flex;
+  gap: 15px;
+}
+
+.details {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.details li {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--text-color-medium);
+}
+
+.details li strong {
+  color: var(--text-color-dark);
+}
+
+/* 입찰 섹션 */
+.bidSection {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.bidInputWrapper {
+  display: flex;
+  flex-grow: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bidInput {
+  border: none;
+  padding: 10px 12px;
+  font-size: 1.1rem;
+  outline: none;
+  flex-grow: 1;
+}
+
+.currency {
+  padding: 10px 12px;
+  background-color: #f5f5f5;
+  color: #888;
+  font-size: 1.1rem;
+  border-left: 1px solid var(--border-color);
+}
+
+.bidButton,
+.buyoutButton {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bidButton {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.bidButton:hover {
+  background-color: var(--accent-color-dark);
+}
+
+.buyoutButton {
+  background-color: #ff5a5f;
+  /* 즉시 구매 버튼은 빨간색 계열 */
+  color: white;
+}
+
+.buyoutButton:hover {
+  background-color: #e04a4e;
+}
+
+.sellerShopButton {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--accent-color);
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sellerShopButton:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* =========================
+   하단 추가 정보 섹션
+   ========================= */
+.auctionExtraInfo {
+  border-top: 1px solid var(--border-color);
+  padding-top: 30px;
+  margin-top: 30px;
+}
+
+.sectionHeading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: var(--text-color-dark);
+}
+
+.divider {
+  border-top: 1px solid var(--border-color);
+  margin: 10px 0 20px;
+}
+
+.auctionDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color-medium);
+  margin-bottom: 30px;
+  white-space: pre-line;
+}
+
+.extraCards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  /* 반응형을 위해 추가 */
+}
+
+.card {
+  flex: 1;
+  min-width: 250px;
+  /* 카드 최소 너비 */
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f9f9f9;
+  /* 카드 배경 */
+}
+
+.cardTitle {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--accent-color);
+}
+
+.cardContent {
+  color: var(--text-color-dark);
+  font-size: 1.1rem;
+}
+
+/* =========================
+   반응형 미디어 쿼리
+   ========================= */
+@media (max-width: 768px) {
+  .auctionDetail {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .auctionImage {
+    width: 100%;
+    height: 300px;
+    /* 모바일에서 이미지 높이 조정 */
+  }
+
+  .auctionInfo {
+    width: 100%;
+    padding: 0 10px;
+    /* 정보 영역 좌우 패딩 */
+  }
+
+  .auctionTitle {
+    font-size: 1.7rem;
+    text-align: center;
+  }
+
+  .bidSection {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bidInputWrapper {
+    width: 100%;
+  }
+
+  .bidButton,
+  .buyoutButton {
+    width: 100%;
+  }
+
+  .extraCards {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .card {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .auctionPage {
+    padding: 20px 10px;
+    /* 모바일에서 페이지 좌우 패딩 */
+  }
+}
+
+.mainWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  /* 비율 고정(필요에 따라 수정) */
+  background: #f7f7f7;
+  border-radius: 16px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.mainImg {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 40px;
+  text-align: center;
+  user-select: none;
+}
+
+.navBtn:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.left {
+  left: 8px;
+}
+
+.right {
+  right: 8px;
+}
+
+.counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+}
+
+.thumbRow {
+  margin-top: 12px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(64px, 96px);
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.thumbBtn {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.thumbBtn.active {
+  border-color: #5b8cff;
+}
+
+.thumb {
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+
+/* 불가일 때 텍스트를 연하게 */
+.priceValueUnavailable {
+  opacity: 0.65;
+}
+
+/* 버튼 비활성 시 시각적 피드백 */
+.buyoutButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.statsLink {
+  cursor: pointer;
+  /* 파란색 */
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.statsLink:hover {
+  color: #1d4ed8;
+}
+
+.statsLink:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- 모달 레이어 --- */
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -12,257 +467,100 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .modalCard {
-  width: 100%;
-  max-width: 720px;
+  width: min(720px, 92vw);
+  max-height: 80vh;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, .2);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
 }
 
-.modalHeader {
+.modalHeader,
+.modalFooter {
+  padding: 12px 16px;
+  background: #f8fafc;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
 }
 
 .modalClose {
   background: none;
-  border: none;
-  font-size: 22px;
+  border: 0;
+  font-size: 20px;
   cursor: pointer;
 }
 
 .modalBody {
-  padding: 14px 18px;
-  max-height: 70vh;
+  padding: 8px 0;
+  /* 테이블 좌우는 자체 패딩으로 조절 */
   overflow: auto;
+  /* 테이블이 커지면 스크롤 */
 }
 
+/* --- 테이블 --- */
 .bidTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.bidTable th,
-.bidTable td {
-  border-bottom: 1px solid #eee;
-  padding: 10px 8px;
-  text-align: center;
+.bidTable thead th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  z-index: 1;
+  font-weight: 700;
+  color: #111827;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.colAmount {
-  width: 140px;
+.bidTable tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+  word-break: break-word;
+}
+
+.colAmount,
+.bidColAmount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .bidColNick {
-  text-align: left;
+  font-weight: 600;
 }
 
-.bidColAmount {
-  text-align: right;
+.bidColDate,
+.bidColTime {
+  white-space: nowrap;
 }
 
 .emptyRow,
 .loadingRow {
-  color: #777;
-  padding: 24px 0;
-}
-
-/* 상세 본문 컨테이너도 width:100% 고정 + max-width 제한 */
-.detailPage {
-  width: 100%;
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: 40px 20px;
-  box-sizing: border-box;
-}
-
-.detail {
-  display: flex;
-  align-items: stretch;
-  gap: 40px;
-}
-
-.media {
-  width: 375px;
-  display: flex;
-  flex-direction: column;
-}
-
-.mainImage {
-  width: 375px;
-  height: 375px;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #f0f0f0;
-}
-
-.mainImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.price {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-
-.stats {
-  margin-bottom: 15px;
-  color: #555;
-}
-
-.details {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 20px 0;
-}
-
-.details li {
-  margin-bottom: 8px;
-}
-
-.buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: auto;
-}
-
-.buttons button {
-  flex: 1;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-
-.buttons button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
-}
-
-.buttons .chat {
-  background: #ffb100;
-  color: #fff;
-}
-
-.buttons .buy {
-  background: #e60023;
-  color: #fff;
-}
-
-.buttons .edit {
-  background: #3E7AEF;
-  color: #fff;
-}
-
-.extra {
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
-  margin-top: 24px;
-}
-
-.extra h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.divider {
-  border-top: 1px solid var(--border);
-  margin: 10px 0 20px;
-}
-
-.extraCards {
-  display: flex;
-  gap: 20px;
-}
-
-.extraCards .card {
-  flex: 1;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 8px;
   text-align: center;
+  color: #6b7280;
+  padding: 18px 0;
 }
 
-.card-title {
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: #555;
-}
-
-.card-content {
-  color: #333;
-}
-
-.thumbs {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: auto;
-}
-
-.thumb {
-  width: 70px;
-  height: 70px;
-  padding: 0;
-  border: 1px solid #ddd;
+.moreButton {
+  padding: 8px 12px;
   border-radius: 8px;
-  overflow: hidden;
+  border: 1px solid #e5e7eb;
   background: #fff;
   cursor: pointer;
 }
 
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.thumb.active {
-  outline: 2px solid #ff4d4f;
-  border-color: transparent;
-}
-
-.thumb:hover {
-  outline: 2px solid #999;
-}
-
-@media (max-width:768px) {
-  .detail {
-    flex-direction: column;
-  }
-
-  .media {
-    width: 100%;
-  }
-
-  .mainImage {
-    width: 100%;
-    height: auto;
-  }
-
-  .mainImage img {
-    height: auto;
-  }
+.moreButton:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }

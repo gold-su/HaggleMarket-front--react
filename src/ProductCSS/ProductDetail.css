@@ -1,4 +1,3 @@
-/* src/ProductCSS/ProductDetail.css*/
 /* 전체 페이지 컨테이너 */
 .product-page {
   max-width: 1000px;
@@ -12,28 +11,25 @@
   gap: 40px;
 }
 
-
 .product-media {
   width: 375px;
   display: flex;
   flex-direction: column;
 }
 
-.product-image {
-  width: 375px;
-  /* 원하는 가로폭 고정 */
-  height: 375px;
-  /* 세로도 고정! */
+/* 🔁 기존 .product-image → .product-detail-image */
+.product-detail-image {
+  width: 375px;   /* 원하는 가로폭 고정 */
+  height: 375px;  /* 세로도 고정! */
   overflow: hidden;
   border-radius: 12px;
   background: #f0f0f0;
 }
 
-.product-image img {
+.product-detail-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  /* 박스를 꽉 채우게 */
+  object-fit: cover; /* 박스를 꽉 채우게 */
   display: block;
 }
 
@@ -41,8 +37,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  /* 버튼 하단 맞춤 */
+  justify-content: space-between; /* 버튼 하단 맞춤 */
 }
 
 /* 기존 정보 영역 스타일 그대로 */
@@ -70,8 +65,7 @@
 .product-info .buttons {
   display: flex;
   gap: 10px;
-  margin-top: auto;
-  /* 맨 아래로 */
+  margin-top: auto; /* 맨 아래로 */
 }
 
 .product-info .buttons button {
@@ -81,15 +75,12 @@
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* 부드러운 효과 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* 부드러운 효과 */
 }
 
 .product-info .buttons button:hover {
-  transform: scale(1.05);
-  /* 살짝 커지기 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  /* 입체감 */
+  transform: scale(1.05); /* 살짝 커지기 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 입체감 */
 }
 
 .product-info .buttons .wish {
@@ -116,10 +107,8 @@
   font-size: 14px;
   line-height: 1.6;
   color: #333;
-  margin-bottom: 30px;
-  /* 카드 영역과 간격 */
-  white-space: pre-line;
-  /* 개행 유지하려면 */
+  margin-bottom: 30px; /* 카드 영역과 간격 */
+  white-space: pre-line; /* 개행 유지하려면 */
 }
 
 .product-extra-info h3 {
@@ -201,12 +190,12 @@
     width: 100%;
   }
 
-  .product-image {
+  .product-detail-image {
     width: 100%;
     height: auto;
   }
 
-  .product-image img {
+  .product-detail-image img {
     height: auto;
   }
 }
