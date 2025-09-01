@@ -26,6 +26,8 @@ function AuctionDetail() {
     return raw.split('>').map((s) => s.trim()).filter(Boolean);
   }, [auction?.categoryPath, auction?.category]);
 
+  const categoryIds = auction?.categoryIds;
+
   // auction.images가 숫자 id 배열일 수도 있고, url 배열일 수도 있음.
   // id면 ${BASE}/api/auction/images/{id} 형태로 변환.
   // url이 있으면 그대로 사용.
@@ -357,7 +359,7 @@ function AuctionDetail() {
 
           <ul className={styles.details}>
             <li><strong>직거래지역:</strong> {auction.seller?.address ?? '-'}</li>
-            <li><strong>카테고리:</strong> {auction.category || '-'}</li>
+            <li><strong>카테고리:</strong> {categoryParts.length ? categoryParts.join(' > ') : '-'}</li>
             <li><strong>태그:</strong> {auction.tag || '-'}</li>
           </ul>
 
