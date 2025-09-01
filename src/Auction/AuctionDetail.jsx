@@ -305,30 +305,6 @@ function AuctionDetail() {
 
         <div className={styles.auctionInfo}>
           <h2 className={styles.auctionTitle}>{auction.title}</h2>
-          {categoryParts.length > 0 && (
-            <nav className={styles.breadcrumbs} aria-label="카테고리 경로">
-              {categoryParts.map((name, idx) => {
-                const clickable = categoryIds && categoryIds[idx];
-                return (
-                  <span key={idx} className={styles.crumb}>
-                    {clickable ? (
-                      <button
-                        type="button"
-                        className={styles.crumbBtn}
-                        onClick={() => onCrumbClick(idx)}
-                        title={`${name} 카테고리로 이동`}
-                      >
-                        {name}
-                      </button>
-                    ) : (
-                      <span className={styles.crumbText}>{name}</span>
-                    )}
-                    {idx < categoryParts.length - 1 && <span className={styles.sep}>›</span>}
-                  </span>
-                );
-              })}
-            </nav>
-          )}
           <div className={styles.auctionPrices}>
             <div className={styles.priceRow}>
               <span className={styles.priceLabel}>시작가:</span>
