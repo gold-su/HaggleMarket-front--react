@@ -19,6 +19,12 @@ function AuctionDetail() {
   const currentPrice = auction?.currentPrice ?? auction?.currentCost ?? auction?.startCost ?? 0; // 현재 입찰가 (경매 시작가로 초기화)
   const [myBid, setMyBid] = useState(''); // myBid : 사용자가 입력할 입찰가
 
+  //경로 문자열을 배열로 변환 (예: "여성의류 > 상의 > 티셔츠" → ["여성의류","상의","티셔츠"])
+  const categoryParts = useMemo(() => {
+    const raw = auction?.categoryPath ?? auction?.category ?? ''; // 백엔드에서 categoryPath 내려오면 우선 사용
+    if (!raw || typeof raw !== 'string') return [];
+    return raw.split('>').map((s) => s.trim()).filter(Boolean);
+  }, [auction?.categoryPath, auction?.category]);
 
   // auction.images가 숫자 id 배열일 수도 있고, url 배열일 수도 있음.
   // id면 ${BASE}/api/auction/images/{id} 형태로 변환.
@@ -110,6 +116,8 @@ function AuctionDetail() {
           // 서버 키 오타 대응(imagesUrls) + 절대 URL로 보정
           images,
           seller: data.seller ?? { address: data.sellerAddress ?? '-' },
+          categoryPath: data.categoryPath ?? data.category ?? '', // "대 > 중 > 소"
+          categoryIds: data.categoryIds ?? data.categoryIdPath ?? null, // [largeId, middleId, smallId]가 내려오면 활용
           category: data.category ?? '',
           tag: data.tag ?? '',
         };
@@ -223,7 +231,12 @@ function AuctionDetail() {
     // navigate(`/shop/${auction.seller.id}`); // 실제 판매자 ID 기반 이동
   };
 
-
+  //카테고리 빵부스러기 클릭(가능할 때만)
+  const onCrumbClick = (idx) => {
+    if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds[idx]) return;
+    const targetId = categoryIds[idx]; // large/middle/small 중 idx번째 ID
+    navigate(`/categories/${targetId}/posts`);
+  };
 
   if (loading) return <div className={styles.loading}>로딩 중...</div>;
   if (errMsg) return <div className={styles.error}>{errMsg}</div>;
@@ -290,7 +303,30 @@ function AuctionDetail() {
 
         <div className={styles.auctionInfo}>
           <h2 className={styles.auctionTitle}>{auction.title}</h2>
-
+          {categoryParts.length > 0 && (
+            <nav className={styles.breadcrumbs} aria-label="카테고리 경로">
+              {categoryParts.map((name, idx) => {
+                const clickable = categoryIds && categoryIds[idx];
+                return (
+                  <span key={idx} className={styles.crumb}>
+                    {clickable ? (
+                      <button
+                        type="button"
+                        className={styles.crumbBtn}
+                        onClick={() => onCrumbClick(idx)}
+                        title={`${name} 카테고리로 이동`}
+                      >
+                        {name}
+                      </button>
+                    ) : (
+                      <span className={styles.crumbText}>{name}</span>
+                    )}
+                    {idx < categoryParts.length - 1 && <span className={styles.sep}>›</span>}
+                  </span>
+                );
+              })}
+            </nav>
+          )}
           <div className={styles.auctionPrices}>
             <div className={styles.priceRow}>
               <span className={styles.priceLabel}>시작가:</span>

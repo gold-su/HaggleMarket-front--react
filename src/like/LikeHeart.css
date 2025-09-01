@@ -18,22 +18,18 @@
   border: none;
 }
 
-/* hover 시 아이콘 살짝 커짐 */
-.like-btn-text:hover .coin,
-.heart-btn:hover .coin {
-  transform: scale(1.08);
-}
-
-/* active 시 눌리는 느낌 */
-.like-btn-text:active .coin,
-.heart-btn:active .coin {
-  transform: scale(0.92);
-}
-
-.coin {
+.heart {
   width: 28px;
   height: 28px;
   transition: transform .15s ease;
+}
+
+.heart-btn:hover .heart {
+  transform: scale(1.08);
+}
+
+.heart-btn:active .heart {
+  transform: scale(0.92);
 }
 
 /* 찜 개수 텍스트 */

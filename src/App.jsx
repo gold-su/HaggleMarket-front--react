@@ -19,12 +19,13 @@ import ProductDetail from './Product/ProductDetail';
 import ProductForm from './Product/ProductForm';
 import ChatPage from './Chat/ChatPage';
 import LikeBox from "./components/LikeBox";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import CategoryPostList from './Category/CategoryPostList';
 import { fetchUsedList, fetchAuctionList } from './services/productApi.js';
 import { publicApi } from './api/auction';
 import { PRODUCT_STATUS_LABEL } from './Product/productStatus.js';
 import "./App.css";
+import SearchPage from './search/SearchPage.jsx';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,14 +35,16 @@ function App() {
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
   const BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080'; //백엔드 URL
+  const navigate = useNavigate();
 
-
-  //특정 단어로 검색
-  const handleSearch = (query) => {
-    if (query) {
-      window.location.href = `/search?query=${encodeURIComponent(query)}`;
-    }
-  };
+  //검색코딩
+  const handleSearch = (keyword) => {
+    const q = (keyword || "").trim();
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);      // 비우면 전체검색도 가능
+    params.set("page", "0");        // 새 검색 → 0페이지로
+    navigate(`/search?${params.toString()}`);
+  }
 
   useEffect(() => {
     setFrequentKeywords([
@@ -183,6 +186,26 @@ function App() {
               frequentKeywords={frequentKeywords}
             />
             <MyShop />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
+
+      <Route
+        path="/search"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <SearchPage/>
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}

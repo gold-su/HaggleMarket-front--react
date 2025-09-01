@@ -59,7 +59,7 @@ function ProductDetail() {
       <div className="product-detail">
         {/* 좌측 이미지 영역 */}
         <div className="product-media">
-          <div className="product-image">
+          <div className="product-detail-image">
             <img
               src={displayMain}
               alt={product.title}

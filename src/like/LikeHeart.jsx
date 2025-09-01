@@ -1,25 +1,15 @@
 import useLike from "./useLike";
 import "./LikeHeart.css";
 
-function CoinHIcon({ active }) {
-  const fillColor = active ? "#80DEEA" : "#E0F7FA"; // 파스텔 하늘색 계열
-  const strokeColor = "#26C6DA";                    // 조금 진한 파스텔톤
-
+function HeartIcon({ active }) {
   return (
-    <svg className="coin" width="28" height="28" viewBox="0 0 48 48">
-      {/* 바탕 원 */}
-      <circle cx="24" cy="24" r="20" fill={fillColor} stroke={strokeColor} strokeWidth="3" />
-      {/* 안쪽 링 */}
-      <circle cx="24" cy="24" r="15" fill="none" stroke={strokeColor} strokeWidth="3" />
-      {/* 중앙 H */}
-      <text
-        x="50%" y="50%"
-        textAnchor="middle" dominantBaseline="central"
-        fontSize="20" fontWeight="bold"
-        fill={strokeColor} fontFamily="Arial, sans-serif"
-      >
-        H
-      </text>
+    <svg className="heart" viewBox="0 0 24 24">
+      <path
+        d="M12 21s-6.5-4.35-9.2-7.05C-1 11.35.2 6.5 4 6.5c2.2 0 3.7 1.7 4 2.2.3-.5 1.8-2.2 4-2.2 3.8 0 5 4.85 1.2 7.45C18.5 16.65 12 21 12 21z"
+        fill={active ? '#e0245e' : 'none'}
+        stroke="#e0245e"
+        strokeWidth="2"
+      />
     </svg>
   );
 }
@@ -64,7 +54,7 @@ export default function LikeHeart({
       onKeyDown={onKeyDown}
       title={liked ? "찜취소" : "찜하기"}
     >
-      <CoinHIcon active={liked} />
+      <HeartIcon active={liked} />
       {showCount && <span className="count">{count}</span>}
     </button>
   );
