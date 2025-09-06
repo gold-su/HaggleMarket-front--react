@@ -15,17 +15,19 @@ import MyShop from './Shop/MyShop';
 import ProductManagementPage from './Shop/ProductManagementPage';
 import MyPage from './Shop/MyPage';
 import EditProfile from './editPage/EditProfile';
-// import ProductRegister from './Product/ProductRegister';
 import ProductDetail from './Product/ProductDetail';
 import ProductForm from './Product/ProductForm';
 import ChatPage from './Chat/ChatPage';
 import LikeBox from "./components/LikeBox";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import CategoryPostList from './Category/CategoryPostList';
-import { fetchUsedList, fetchAuctionList } from './services/productApi.js';
 import { publicApi } from './api/auction';
 import { PRODUCT_STATUS_LABEL } from './Product/productStatus.js';
 import "./App.css";
+
+// ✅ 추가: 비밀번호 찾기 2개 화면
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,7 +37,6 @@ function App() {
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
   const BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080'; //백엔드 URL
-
 
   //특정 단어로 검색
   const handleSearch = (query) => {
@@ -50,6 +51,7 @@ function App() {
       '여행', '건강', '영화', '음악', '독서', '운동', '요리'
     ]);
   }, []);
+
   useEffect(() => {
     if (location.pathname !== '/') return;
     const loadProducts = async () => {
@@ -57,31 +59,17 @@ function App() {
         let data = [];
 
         if (selectedCategory === 'auction') {
-          // ✅ 1) 경매 원본 응답 찍기
-          const raw = await fetchAuctionList(); // 배열 가정 (/api/auction/list)
-          console.log("📦 경매 원본 응답:", raw);
-
-          // ✅ 2) 프론트에서 쓰기 편하게 정규화 (ProductCard가 먹는 필드명으로)
+          const raw = await publicApi.get('/api/auction/list').then(r => r.data ?? []);
           data = (Array.isArray(raw) ? raw : []).map(a => ({
-            // 백엔드 DTO 키에 맞춰 안전하게 매핑
             id: a.auctionId ?? a.id,
             title: a.title ?? "",
             content: a.content ?? "",
-            // 가격(경매 카드에선 currentPrice 우선 표시)
             currentPrice: a.currentCost ?? a.currentPrice ?? a.startCost ?? 0,
             price: a.buyoutCost ?? a.startCost ?? 0,
-            // 썸네일: 이미지 id만 주면 이미지 API 경로로 만들어줌
-            imageUrl:
-              a.thumbnailUrl
-              ?? (a.thumbnailImageId ? `/api/auction/images/${a.thumbnailImageId}` : null),
-            // 마감시간
+            imageUrl: a.thumbnailUrl ?? (a.thumbnailImageId ? `/api/auction/images/${a.thumbnailImageId}` : null),
             endsAt: a.endTime ?? a.endsAt ?? null,
           }));
-
-          // ✅ 3) 정규화 결과도 찍기
-          console.log("🧩 경매 정규화 결과:", data);
         } else {
-          // 중고 상품 불러오기 (팀원 매핑 로직 유지)
           const res = await publicApi.get('/api/products', {
             params: { page: 0, size: 8, sort: 'createdAt,desc' }
           });
@@ -96,18 +84,15 @@ function App() {
           data = items;
         }
 
-        // ✅ 항상 한 번만 세팅 + 방어
         setProducts(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error('상품 로딩 실패', err);
-        // ✅ 실패해도 렌더는 유지
         setProducts([]);
       }
     };
 
     loadProducts();
   }, [selectedCategory, BASE, location.pathname]);
-
 
   const fetchProducts = () => {
     axios.get('/api/products')
@@ -136,12 +121,51 @@ function App() {
   }, []);
 
   return (
-
     <Routes>
       {/* 로그인 & 회원가입 */}
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/editprofile" element={<EditProfile />} />
+
+      {/* ✅ 비밀번호 찾기 / 재설정 */}
+      <Route
+        path="/forgot"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <ForgotPassword />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
+      <Route
+        path="/reset"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <ResetPassword />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
       {/* 메인 페이지 */}
       <Route
@@ -159,7 +183,7 @@ function App() {
               <ProductList
                 products={products}
                 selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory} //변경 핸들러 전달
+                onCategoryChange={setSelectedCategory}
               />
             </main>
             <LikeBox likeCount={likeCount} />
@@ -282,7 +306,6 @@ function App() {
         }
       />
 
-
       <Route
         path="/category/:categoryId"
         element={
@@ -355,7 +378,6 @@ function App() {
         }
       />
     </Routes>
-
   );
 }
 

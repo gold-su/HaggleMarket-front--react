@@ -6,7 +6,6 @@ import { login } from "../api/auth";
 
 function Login() {
   const navigate = useNavigate();
-  // 값 저장을 위한 상태 변수들
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
@@ -17,8 +16,6 @@ function Login() {
 
       localStorage.setItem("jwtToken", token);
       localStorage.setItem("nickName", nickname);
-
-      // 🔔 로그인 상태 변경 브로드캐스트
       window.dispatchEvent(new Event("auth:changed"));
 
       alert("로그인 성공");
@@ -42,19 +39,20 @@ function Login() {
             HAGGLE
           </Link>
         </h1>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="아이디"
             value={userId}
             onChange={(e) => {
-              setUserId(e.target.value);
-              //한글 입력 제거
-              const filtered = e.target.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, '');
-              setUserId(filtered);
+              const val = e.target.value;
+              const filtered = val.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, ''); 
+              setUserId(filtered); // ✅ 중복 setUserId 제거 + 한글 제거 처리 통합
             }}
             required
           />
+
           <input
             type="password"
             placeholder="비밀번호"
@@ -62,13 +60,24 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+
           <div className="links">
             <Link to="/signup" style={{ color: '#aaaaaa' }}>회원가입</Link>
             <div>
-              <span onClick={() => handleLinkClick('계정찾기')} style={{ cursor: 'pointer', color: '#aaaaaa' }}>계정찾기</span> |
-              <span onClick={() => handleLinkClick('비밀번호 찾기')} style={{ cursor: 'pointer', color: '#aaaaaa' }}> 비밀번호 찾기</span>
+              <span
+                onClick={() => handleLinkClick('계정찾기')}
+                style={{ cursor: 'pointer', color: '#aaaaaa' }}
+              >
+                계정찾기
+              </span>
+              {' | '}
+              {/* ✅ 기존 onClick → handleLinkClick 대신 /forgot 경로로 연결 */}
+              <Link to="/forgot" style={{ color: '#aaaaaa' }}>
+                비밀번호 찾기
+              </Link>
             </div>
           </div>
+
           <button type="submit">로그인</button>
         </form>
       </div>
