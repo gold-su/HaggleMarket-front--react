@@ -26,6 +26,10 @@ import { publicApi } from "./api/auction";
 import { PRODUCT_STATUS_LABEL } from "./Product/productStatus.js";
 import "./App.css";
 
+// ✅ 추가: 비밀번호 찾기 2개 화면
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [frequentKeywords, setFrequentKeywords] = useState([]);
@@ -156,6 +160,46 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/editprofile" element={<EditProfile />} />
+
+      {/* ✅ 비밀번호 찾기 / 재설정 */}
+      <Route
+        path="/forgot"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <ForgotPassword />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
+      <Route
+        path="/reset"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <ResetPassword />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
 
       {/* 메인 페이지 */}
       <Route

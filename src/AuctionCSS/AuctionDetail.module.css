@@ -4,7 +4,7 @@
    공통 변수 (필요시 root에서 가져옴)
    ========================= */
 :root {
-  --accent-color: #3E7AEF;
+  --accent-color: #3e7aef;
   --accent-color-dark: #2f65c0;
   --text-color-dark: #111;
   --text-color-medium: #555;
@@ -21,7 +21,7 @@
   padding: 40px 20px;
   background-color: #fff;
   /* 배경색 통일 */
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
   color: var(--text-color-dark);
 }
 
@@ -463,7 +463,7 @@
 .modalBackdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -478,7 +478,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .modalHeader,
@@ -561,6 +561,6 @@
 }
 
 .moreButton:disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }

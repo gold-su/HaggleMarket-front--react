@@ -21,7 +21,9 @@
   white-space: nowrap;
   width: 160px;
 }
-.btnDraft:hover { background-color: #e6e6e6; }
+.btnDraft:hover {
+  background-color: #e6e6e6;
+}
 
 /* 수정하기 */
 .btnSubmit {
@@ -36,7 +38,9 @@
   white-space: nowrap;
   width: 160px;
 }
-.btnSubmit:hover { background-color: var(--bunjang-red-dark); }
+.btnSubmit:hover {
+  background-color: var(--bunjang-red-dark);
+}
 
 /* 모바일 */
 @media (max-width: 768px) {

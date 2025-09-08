@@ -1,15 +1,15 @@
 /* src/AuctionCSS/AuctionEditLayout.module.css */
 :root {
   --main-bg-color: #fff;
-  --accent-color: #3E7AEF;
+  --accent-color: #3e7aef;
   --accent-color-dark: #2f65c0;
-  --bunjang-red: #3E7AEF;
+  --bunjang-red: #3e7aef;
   --bunjang-red-dark: #2f65c0;
   --border-color: #e0e0e0;
   --text-color-dark: #111;
   --text-color-medium: #555;
   --text-color-light: #999;
-  --shadow-light: rgba(0,0,0,0.06);
+  --shadow-light: rgba(0, 0, 0, 0.06);
 
   /* 컨테이너/여백 토큰 */
   --container-max: 1200px;
@@ -25,7 +25,7 @@
 .editPage {
   background-color: var(--main-bg-color);
   min-height: 100vh;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
   color: var(--text-color-dark);
   display: flex;
   flex-direction: column;
@@ -68,7 +68,11 @@
 }
 
 /* 그룹 리스트 */
-.formGroups { list-style: none; margin: 0; padding: 0; }
+.formGroups {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
 .formGroup {
   margin-bottom: 24px;
@@ -88,12 +92,20 @@
   align-items: center;
   column-gap: var(--inline-gap);
 }
-.formGroupInline .formLabel { margin-bottom: 0; }
-.formGroupInline .formContent { min-width: 0; }
+.formGroupInline .formLabel {
+  margin-bottom: 0;
+}
+.formGroupInline .formContent {
+  min-width: 0;
+}
 
 /* 내부 기본 좌측/상단 여백 리셋 */
-.formGroupInline .formContent > * { margin-left: 0; }
-.formGroupInline .formContent > *:first-child { margin-top: 0; }
+.formGroupInline .formContent > * {
+  margin-left: 0;
+}
+.formGroupInline .formContent > *:first-child {
+  margin-top: 0;
+}
 
 /* 대표 컨테이너 좌측 들여쓰기 제거(시각 간격 통일) */
 .formGroupInline .formContent > .imageUploadList,
@@ -105,9 +117,15 @@
 }
 
 /* 라벨 폭 프리셋 */
-.labelW140 { --label-w: 140px; }
-.labelW160 { --label-w: 160px; }
-.labelW180 { --label-w: 180px; }
+.labelW140 {
+  --label-w: 140px;
+}
+.labelW160 {
+  --label-w: 160px;
+}
+.labelW180 {
+  --label-w: 180px;
+}
 
 /* 하단 고정 푸터 */
 .editFooter {
@@ -122,7 +140,7 @@
   padding: 16px var(--section-x);
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   display: flex;
-  justify-content: center;   /* ✅ 가운데 정렬 */
+  justify-content: center; /* ✅ 가운데 정렬 */
   z-index: 100;
   box-sizing: border-box;
 }
@@ -131,18 +149,23 @@
   width: 100%;
   max-width: var(--container-max);
   display: flex;
-  justify-content: flex-end;   /* ✅ 컨테이너 안에서 오른쪽 정렬 */
+  justify-content: flex-end; /* ✅ 컨테이너 안에서 오른쪽 정렬 */
   gap: 12px;
   box-sizing: border-box;
-  margin-right: 0;             /* ✅ 자동 여백 제거 */
+  margin-right: 0; /* ✅ 자동 여백 제거 */
 }
-
 
 /* 모바일 */
 @media (max-width: 768px) {
-  .editMainContent { padding: 16px 0 calc(120px + env(safe-area-inset-bottom, 0px)); }
-  .editSection { padding: 16px var(--section-x-sm); }
-  .editFooter { padding: 10px var(--section-x-sm); }
+  .editMainContent {
+    padding: 16px 0 calc(120px + env(safe-area-inset-bottom, 0px));
+  }
+  .editSection {
+    padding: 16px var(--section-x-sm);
+  }
+  .editFooter {
+    padding: 10px var(--section-x-sm);
+  }
 
   .formGroupInline {
     grid-template-columns: 1fr;

@@ -1,7 +1,7 @@
 /* src/AuctionCSS/AuctionRegisterLayout.module.css */
 :root {
   --main-bg-color: #fff;
-  --accent-color: #3E7AEF;
+  --accent-color: #3e7aef;
   --accent-color-dark: #2f65c0;
   --border-color: #e0e0e0;
   --text-color-dark: #111;
@@ -91,11 +91,11 @@
   min-width: 0;
 }
 
-.formGroupInline .formContent>* {
+.formGroupInline .formContent > * {
   margin-left: 0;
 }
 
-.formGroupInline .formContent>*:first-child {
+.formGroupInline .formContent > *:first-child {
   margin-top: 0;
 }
 
@@ -124,7 +124,7 @@
   padding: 16px var(--section-x);
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   display: flex;
-  justify-content: center;   /* ✅ 가운데 정렬 */
+  justify-content: center; /* ✅ 가운데 정렬 */
   z-index: 100;
   box-sizing: border-box;
 }
@@ -133,14 +133,13 @@
   width: 100%;
   max-width: var(--container-max);
   display: flex;
-  justify-content: flex-end;   /* ✅ 컨테이너 안에서 오른쪽 정렬 */
+  justify-content: flex-end; /* ✅ 컨테이너 안에서 오른쪽 정렬 */
   gap: 12px;
   box-sizing: border-box;
-  margin-right: 0;             /* ✅ 자동 여백 제거 */
+  margin-right: 0; /* ✅ 자동 여백 제거 */
 }
 
-
-@media (max-width:768px) {
+@media (max-width: 768px) {
   .registerMainContent {
     padding: 16px 0 calc(120px + env(safe-area-inset-bottom, 0px));
   }

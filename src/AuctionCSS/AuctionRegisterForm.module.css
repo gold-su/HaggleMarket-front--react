@@ -1,12 +1,12 @@
 /* src/AuctionCSS/AuctionRegisterForm.module.css */
 :root {
-  --accent-color: #3E7AEF;
+  --accent-color: #3e7aef;
   --border-color: #ddd;
   --text-muted: #666;
   --input-bg: #fff;
   --input-border: #ccc;
   --input-radius: 6px;
-  --shadow: rgba(62, 122, 239, .15);
+  --shadow: rgba(62, 122, 239, 0.15);
   --inline-gap: 12px;
   --inline-gap-sm: 8px;
 }
@@ -22,7 +22,7 @@
   background: var(--input-bg);
   box-sizing: border-box;
   outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .formInput:focus,
@@ -37,7 +37,7 @@
 }
 
 .charCounter {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   text-align: right;
   margin-top: 6px;
@@ -89,7 +89,7 @@
 }
 
 .addImage.disabled {
-  opacity: .5;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -107,7 +107,7 @@
   height: 20px;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 14px;
   cursor: pointer;
@@ -117,7 +117,7 @@
 }
 
 .removeImageButton:hover {
-  background: rgba(0, 0, 0, .65);
+  background: rgba(0, 0, 0, 0.65);
 }
 
 /* 3단 카테고리/기간 등 */
@@ -150,12 +150,12 @@
 .categoryItem button {
   width: 100%;
   padding: 8px 12px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   text-align: left;
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: background .2s;
+  transition: background 0.2s;
   color: #111;
 }
 
@@ -199,7 +199,7 @@
   background: #fff;
   cursor: pointer;
   user-select: none;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .radioLabel input[type="radio"] {
@@ -211,14 +211,14 @@
   pointer-events: none;
 }
 
-.radioLabel>span {
+.radioLabel > span {
   position: relative;
   padding-left: 28px;
   line-height: 1.2;
 }
 
-.radioLabel>span::before {
-  content: '';
+.radioLabel > span::before {
+  content: "";
   position: absolute;
   left: 0;
   top: 50%;
@@ -228,11 +228,11 @@
   border: 2px solid var(--border-color);
   border-radius: 50%;
   background: #fff;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.radioLabel>span::after {
-  content: '';
+.radioLabel > span::after {
+  content: "";
   position: absolute;
   left: 3px;
   top: 50%;
@@ -241,19 +241,19 @@
   height: 12px;
   border-radius: 50%;
   background: var(--accent-color);
-  transition: transform .15s;
+  transition: transform 0.15s;
 }
 
-.radioLabel input[type="radio"]:checked+span::before {
+.radioLabel input[type="radio"]:checked + span::before {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 3px var(--shadow);
 }
 
-.radioLabel input[type="radio"]:checked+span::after {
+.radioLabel input[type="radio"]:checked + span::after {
   transform: translateY(-50%) scale(1);
 }
 
-.radioLabel input[type="radio"]:checked+span {
+.radioLabel input[type="radio"]:checked + span {
   color: var(--accent-color);
   font-weight: 700;
 }
@@ -303,7 +303,7 @@
   margin-left: auto;
 }
 
-@media (max-width:768px) {
+@media (max-width: 768px) {
   .imageUploadList {
     gap: var(--inline-gap-sm);
   }

@@ -1,7 +1,7 @@
 /* src/AuctionCSS/AuctionEditForm.module.css */
 :root {
   --main-bg-color: #fff;
-  --accent-color: #3E7AEF;
+  --accent-color: #3e7aef;
   --accent-color-dark: #2f65c0;
   --border-color: #ddd;
   --text-color: #111;
@@ -31,7 +31,7 @@
 .formInput:focus,
 .formTextarea:focus {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(62,122,239,0.15);
+  box-shadow: 0 0 0 3px rgba(62, 122, 239, 0.15);
 }
 .formTextarea {
   resize: none;
@@ -73,13 +73,26 @@
   color: var(--accent-color);
 }
 .addImage label {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
-.addImage svg { width: 28px; height: 28px; margin-bottom: 4px; }
-.addImage.disabled { opacity: 0.5; pointer-events: none; }
-.addImage.dragOver { border-color: var(--accent-color); background-color: rgba(62,122,239,0.06); }
+.addImage svg {
+  width: 28px;
+  height: 28px;
+  margin-bottom: 4px;
+}
+.addImage.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.addImage.dragOver {
+  border-color: var(--accent-color);
+  background-color: rgba(62, 122, 239, 0.06);
+}
 
 .imagePreviewItem img {
   width: 100%;
@@ -88,13 +101,23 @@
 }
 .removeImageButton {
   position: absolute;
-  top: 4px; right: 4px;
+  top: 4px;
+  right: 4px;
   background-color: rgba(0, 0, 0, 0.5);
-  color: #fff; border: none; border-radius: 50%;
-  width: 20px; height: 20px; font-size: 14px; cursor: pointer;
-  display: flex; justify-content: center; align-items: center;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.removeImageButton:hover { background-color: rgba(0,0,0,0.65); }
+.removeImageButton:hover {
+  background-color: rgba(0, 0, 0, 0.65);
+}
 
 /* 카테고리 선택(3열) */
 .categorySelectionArea {
@@ -111,15 +134,31 @@
   background-color: #fff;
   border-right: 1px solid var(--border-color);
 }
-.categoryColumn:last-child { border-right: none; }
+.categoryColumn:last-child {
+  border-right: none;
+}
 
 /* 스크롤바 */
-.categoryColumn { scrollbar-width: thin; scrollbar-color: #c7c7c7 transparent; }
-.categoryColumn::-webkit-scrollbar { width: 8px; }
-.categoryColumn::-webkit-scrollbar-thumb { background-color: #c7c7c7; border-radius: 8px; }
-.categoryColumn::-webkit-scrollbar-track { background: transparent; }
+.categoryColumn {
+  scrollbar-width: thin;
+  scrollbar-color: #c7c7c7 transparent;
+}
+.categoryColumn::-webkit-scrollbar {
+  width: 8px;
+}
+.categoryColumn::-webkit-scrollbar-thumb {
+  background-color: #c7c7c7;
+  border-radius: 8px;
+}
+.categoryColumn::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-.categoryList { list-style: none; margin: 0; padding: 0; }
+.categoryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
 .categoryItem button {
   width: 100%;
@@ -132,7 +171,9 @@
   transition: background 0.2s;
   color: var(--text-color);
 }
-.categoryItem button:hover { background-color: #f4f6f8; }
+.categoryItem button:hover {
+  background-color: #f4f6f8;
+}
 .categoryItem.active button {
   background-color: var(--accent-color);
   color: #fff;
@@ -147,8 +188,16 @@
 }
 
 /* 라디오(세로) */
-.radioGroup { display: flex; flex-wrap: wrap; gap: var(--inline-gap); }
-.radioGroupVertical { display: flex; flex-direction: column; gap: var(--inline-gap); }
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--inline-gap);
+}
+.radioGroupVertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--inline-gap);
+}
 
 .radioLabel {
   display: inline-flex;
@@ -159,11 +208,16 @@
   background-color: #fff;
   cursor: pointer;
   user-select: none;
-  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease;
 }
 .radioLabel input[type="radio"] {
-  position: absolute; opacity: 0;
-  width: 1px; height: 1px; overflow: hidden; pointer-events: none;
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
 }
 .radioLabel > span {
   position: relative;
@@ -171,35 +225,50 @@
   line-height: 1.2;
 }
 .radioLabel > span::before {
-  content: '';
-  position: absolute; left: 0; top: 50%;
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
   transform: translateY(-50%);
-  width: 18px; height: 18px;
+  width: 18px;
+  height: 18px;
   border: 2px solid var(--border-color);
   border-radius: 50%;
   background: #fff;
   box-sizing: border-box;
-  transition: border-color .15s ease, box-shadow .15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .radioLabel > span::after {
-  content: '';
-  position: absolute; left: 3px; top: 50%;
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 50%;
   transform: translateY(-50%) scale(0);
-  width: 12px; height: 12px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--accent-color);
-  transition: transform .15s ease;
+  transition: transform 0.15s ease;
 }
-.radioLabel:hover { border-color: #cfd4da; }
-.radioLabel:hover > span::before { border-color: #cfd4da; }
+.radioLabel:hover {
+  border-color: #cfd4da;
+}
+.radioLabel:hover > span::before {
+  border-color: #cfd4da;
+}
 .radioLabel input[type="radio"]:checked + span::before {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(62,122,239,0.15);
+  box-shadow: 0 0 0 3px rgba(62, 122, 239, 0.15);
 }
-.radioLabel input[type="radio"]:checked + span::after { transform: translateY(-50%) scale(1); }
-.radioLabel input[type="radio"]:checked + span { color: var(--accent-color); font-weight: 700; }
+.radioLabel input[type="radio"]:checked + span::after {
+  transform: translateY(-50%) scale(1);
+}
+.radioLabel input[type="radio"]:checked + span {
+  color: var(--accent-color);
+  font-weight: 700;
+}
 .radioLabel input[type="radio"]:focus-visible + span::before {
-  box-shadow: 0 0 0 3px rgba(62,122,239,0.25);
+  box-shadow: 0 0 0 3px rgba(62, 122, 239, 0.25);
   border-color: var(--accent-color);
 }
 
@@ -223,7 +292,7 @@
 }
 .priceInputWrapper:focus-within {
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(62,122,239,0.15);
+  box-shadow: 0 0 0 3px rgba(62, 122, 239, 0.15);
 }
 .priceInput {
   border: none;
@@ -251,11 +320,22 @@
 
 /* 모바일 */
 @media (max-width: 768px) {
-  .imageUploadList { gap: var(--inline-gap-sm); }
-  .radioGroup { gap: var(--inline-gap-sm); }
-  .radioGroupVertical { gap: var(--inline-gap-sm); }
-  .priceRow { gap: var(--inline-gap-sm); }
-  .priceInputWrapper { flex-basis: 200px; max-width: 200px; }
+  .imageUploadList {
+    gap: var(--inline-gap-sm);
+  }
+  .radioGroup {
+    gap: var(--inline-gap-sm);
+  }
+  .radioGroupVertical {
+    gap: var(--inline-gap-sm);
+  }
+  .priceRow {
+    gap: var(--inline-gap-sm);
+  }
+  .priceInputWrapper {
+    flex-basis: 200px;
+    max-width: 200px;
+  }
 
   .categorySelectionArea {
     height: auto;
