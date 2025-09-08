@@ -1,4 +1,4 @@
-// src/components/AuctionAdSection.jsx
+// src/MainPages/AuctionAdSection.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import '../MainPagesCSS/auctionadsection.css'; // CSS 파일 경로를 맞춰주세요
 import { fetchHotAuctions, BASE } from '../api/auction';

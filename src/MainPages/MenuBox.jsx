@@ -1,4 +1,4 @@
-// src/components/MenuBox.jsx
+// src/MainPages/MenuBox.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';

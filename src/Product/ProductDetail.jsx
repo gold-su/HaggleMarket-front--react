@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // 추가
+import { jwtDecode } from "jwt-decode";
 import LikeHeart from "../like/LikeHeart";
 import "../ProductCSS/ProductDetail.css";
 import { PRODUCT_STATUS_LABEL } from "../Product/productStatus.js";
@@ -16,7 +16,6 @@ function ProductDetail() {
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(null);
 
-  // 상세 조회 (항상 토큰 포함해서 요청)
   const fetchDetail = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -50,7 +49,6 @@ function ProductDetail() {
   const createdAtText =
     typeof product.createdAt === "string" ? product.createdAt.slice(0, 10) : "";
 
-  // 소유자 판별: 서버 mine/isMine + 토큰 비교(백업)
   const token = localStorage.getItem("jwtToken");
   let myNo = null;
   try {
@@ -68,7 +66,8 @@ function ProductDetail() {
       <div className="product-detail">
         {/* 좌측 이미지 영역 */}
         <div className="product-media">
-          <div className="product-image">
+          <div className="product-detail-image">
+            {/* 🔁 클래스명 변경 */}
             <img
               src={displayMain}
               alt={product.title}
@@ -109,7 +108,6 @@ function ProductDetail() {
             {Number(product.cost ?? 0).toLocaleString()}원
           </div>
 
-          {/* 상단 통계 - 항상 DB 값 */}
           <div className="stats">
             ❤️ {product.likeCount ?? 0} &nbsp; 👁 {product.hit} &nbsp; 📅{" "}
             {createdAtText}
@@ -133,7 +131,6 @@ function ProductDetail() {
           </ul>
 
           <div className="buttons">
-            {/* 텍스트 버튼, 버튼 자체엔 카운트 숨김, 토글 후 상세 재조회로 DB값 반영 */}
             <LikeHeart
               postId={postId}
               initialLiked={product?.likedByMe ?? false}
@@ -145,7 +142,6 @@ function ProductDetail() {
             <button className="chat">해글톡</button>
             <button className="buy">즉시구매</button>
 
-            {/* 수정하기: 서버 mine/isMine 또는 토큰비교가 true면 노출 */}
             {canEdit && (
               <button
                 className="edit"

@@ -1,3 +1,4 @@
+// src/hooks/useProducts.js
 import { useCallback, useEffect, useState } from "react";
 import { fetchUsedList, fetchAuctionList } from "../services/productsApi";
 
