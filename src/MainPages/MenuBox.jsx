@@ -1,8 +1,8 @@
-// src/MainPages/MenuBox.jsx
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import '../MainPagesCSS/menubox.css';
+// src/components/MenuBox.jsx
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "../MainPagesCSS/menubox.css";
 
 function MenuBox({ isOpen, onClose, frequentKeywords }) {
   const [categoryTree, setCategoryTree] = useState([]);
@@ -12,9 +12,10 @@ function MenuBox({ isOpen, onClose, frequentKeywords }) {
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
 
-      axios.get('/api/categories/roots')
+      axios
+        .get("/api/categories/roots")
         .then(async (res) => {
           const roots = res.data;
 
@@ -23,29 +24,31 @@ function MenuBox({ isOpen, onClose, frequentKeywords }) {
               const middleRes = await axios.get(`/api/categories/${root.id}`);
               const middles = await Promise.all(
                 middleRes.data.map(async (middle) => {
-                  const smallRes = await axios.get(`/api/categories/${middle.id}`);
+                  const smallRes = await axios.get(
+                    `/api/categories/${middle.id}`
+                  );
                   return {
                     ...middle,
-                    children: smallRes.data
+                    children: smallRes.data,
                   };
                 })
               );
               return {
                 ...root,
-                children: middles
+                children: middles,
               };
             })
           );
 
           setCategoryTree(tree);
         })
-        .catch(err => console.error('카테고리 로딩 실패:', err));
+        .catch((err) => console.error("카테고리 로딩 실패:", err));
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
@@ -55,29 +58,35 @@ function MenuBox({ isOpen, onClose, frequentKeywords }) {
   };
 
   const toggleLarge = (id) => {
-    setOpenLarge(prev => prev === id ? null : id);
+    setOpenLarge((prev) => (prev === id ? null : id));
     setOpenMiddle(null); // 대분류 바뀌면 중분류 닫기
   };
 
   const toggleMiddle = (id) => {
-    setOpenMiddle(prev => prev === id ? null : id);
+    setOpenMiddle((prev) => (prev === id ? null : id));
   };
 
   return (
-    <nav className={`menu-box ${isOpen ? 'active' : ''}`} id="menuBox">
+    <nav className={`menu-box ${isOpen ? "active" : ""}`} id="menuBox">
       <div className="menu-category">
         <h3>전체 카테고리</h3>
         <ul className="category-tree">
           {categoryTree.map((large) => (
             <li key={large.id}>
-              <div className="category-large" onClick={() => toggleLarge(large.id)}>
+              <div
+                className="category-large"
+                onClick={() => toggleLarge(large.id)}
+              >
                 ▸ {large.name}
               </div>
               {openLarge === large.id && (
                 <ul>
                   {large.children.map((middle) => (
                     <li key={middle.id}>
-                      <div className="category-middle" onClick={() => toggleMiddle(middle.id)}>
+                      <div
+                        className="category-middle"
+                        onClick={() => toggleMiddle(middle.id)}
+                      >
                         └▸ {middle.name}
                       </div>
                       {openMiddle === middle.id && (
@@ -107,7 +116,10 @@ function MenuBox({ isOpen, onClose, frequentKeywords }) {
         <h3>인기 카테고리</h3>
         <ul>
           {frequentKeywords.map((keyword, index) => (
-            <li key={index} onClick={() => handleCategoryClick(keyword.categoryId)}>
+            <li
+              key={index}
+              onClick={() => handleCategoryClick(keyword.categoryId)}
+            >
               {keyword.name}
             </li>
           ))}

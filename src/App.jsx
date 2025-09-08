@@ -1,29 +1,29 @@
-import axios from 'axios';
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Header from './components/Header';
-import MenuBox from './MainPages/MenuBox';
+import Header from "./components/Header";
+import MenuBox from "./MainPages/MenuBox";
 import TopBar from "./components/TopBar";
-import ProductList from './MainPages/ProductList';
-import AuctionAdSection from './MainPages/AuctionAdSection';
-import AuctionRegister from './Auction/AuctionRegister';
-import AuctionEdit from './Auction/AuctionEdit';
-import AuctionDetail from './Auction/AuctionDetail';
-import MyShop from './Shop/MyShop';
-import ProductManagementPage from './Shop/ProductManagementPage';
-import MyPage from './Shop/MyPage';
-import EditProfile from './editPage/EditProfile';
+import ProductList from "./MainPages/ProductList";
+import AuctionAdSection from "./MainPages/AuctionAdSection";
+import AuctionRegister from "./Auction/AuctionRegister";
+import AuctionEdit from "./Auction/AuctionEdit";
+import AuctionDetail from "./Auction/AuctionDetail";
+import MyShop from "./Shop/MyShop";
+import ProductManagementPage from "./Shop/ProductManagementPage";
+import MyPage from "./Shop/MyPage";
+import EditProfile from "./editPage/EditProfile";
 // import ProductRegister from './Product/ProductRegister';
-import ProductDetail from './Product/ProductDetail';
-import ProductForm from './Product/ProductForm';
-import ChatPage from './Chat/ChatPage';
+import ProductDetail from "./Product/ProductDetail";
+import ProductForm from "./Product/ProductForm";
+import ChatPage from "./Chat/ChatPage";
 import LikeBox from "./components/LikeBox";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import CategoryPostList from './Category/CategoryPostList';
-import { fetchUsedList, fetchAuctionList } from './services/productApi.js';
-import { publicApi } from './api/auction';
-import { PRODUCT_STATUS_LABEL } from './Product/productStatus.js';
+import CategoryPostList from "./Category/CategoryPostList";
+import { fetchUsedList, fetchAuctionList } from "./services/productApi.js";
+import { publicApi } from "./api/auction";
+import { PRODUCT_STATUS_LABEL } from "./Product/productStatus.js";
 import "./App.css";
 
 function App() {
@@ -33,8 +33,7 @@ function App() {
   const [likeCount, setLikeCount] = useState(5);
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
-  const BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080'; //백엔드 URL
-
+  const BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8080"; //백엔드 URL
 
   //특정 단어로 검색
   const handleSearch = (query) => {
@@ -45,23 +44,35 @@ function App() {
 
   useEffect(() => {
     setFrequentKeywords([
-      '재테크', '맛집', '카페', '소프트웨어 개발', '프로그래밍', '데이터 관리', 'IT 기술',
-      '여행', '건강', '영화', '음악', '독서', '운동', '요리'
+      "재테크",
+      "맛집",
+      "카페",
+      "소프트웨어 개발",
+      "프로그래밍",
+      "데이터 관리",
+      "IT 기술",
+      "여행",
+      "건강",
+      "영화",
+      "음악",
+      "독서",
+      "운동",
+      "요리",
     ]);
   }, []);
   useEffect(() => {
-    if (location.pathname !== '/') return;
+    if (location.pathname !== "/") return;
     const loadProducts = async () => {
       try {
         let data = [];
 
-        if (selectedCategory === 'auction') {
+        if (selectedCategory === "auction") {
           // ✅ 1) 경매 원본 응답 찍기
           const raw = await fetchAuctionList(); // 배열 가정 (/api/auction/list)
           console.log("📦 경매 원본 응답:", raw);
 
           // ✅ 2) 프론트에서 쓰기 편하게 정규화 (ProductCard가 먹는 필드명으로)
-          data = (Array.isArray(raw) ? raw : []).map(a => ({
+          data = (Array.isArray(raw) ? raw : []).map((a) => ({
             // 백엔드 DTO 키에 맞춰 안전하게 매핑
             id: a.auctionId ?? a.id,
             title: a.title ?? "",
@@ -71,8 +82,10 @@ function App() {
             price: a.buyoutCost ?? a.startCost ?? 0,
             // 썸네일: 이미지 id만 주면 이미지 API 경로로 만들어줌
             imageUrl:
-              a.thumbnailUrl
-              ?? (a.thumbnailImageId ? `/api/auction/images/${a.thumbnailImageId}` : null),
+              a.thumbnailUrl ??
+              (a.thumbnailImageId
+                ? `/api/auction/images/${a.thumbnailImageId}`
+                : null),
             // 마감시간
             endsAt: a.endTime ?? a.endsAt ?? null,
           }));
@@ -81,16 +94,16 @@ function App() {
           console.log("🧩 경매 정규화 결과:", data);
         } else {
           // 중고 상품 불러오기 (팀원 매핑 로직 유지)
-          const res = await publicApi.get('/api/products', {
-            params: { page: 0, size: 8, sort: 'createdAt,desc' }
+          const res = await publicApi.get("/api/products", {
+            params: { page: 0, size: 8, sort: "createdAt,desc" },
           });
-          const items = (res.data?.content ?? []).map(post => ({
+          const items = (res.data?.content ?? []).map((post) => ({
             id: post.postId,
             title: post.title,
             description: PRODUCT_STATUS_LABEL[post.productStatus] || "기타",
             price: post.cost,
             imageUrl: post.thumbnail,
-            detailUrl: `/products/detail/${post.postId}`
+            detailUrl: `/products/detail/${post.postId}`,
           }));
           data = items;
         }
@@ -98,7 +111,7 @@ function App() {
         // ✅ 항상 한 번만 세팅 + 방어
         setProducts(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error('상품 로딩 실패', err);
+        console.error("상품 로딩 실패", err);
         // ✅ 실패해도 렌더는 유지
         setProducts([]);
       }
@@ -107,35 +120,37 @@ function App() {
     loadProducts();
   }, [selectedCategory, BASE, location.pathname]);
 
-
   const fetchProducts = () => {
-    axios.get('/api/products')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error(err));
+    axios
+      .get("/api/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error(err));
   };
 
   const handleMenuToggle = () => {
-    setIsMenuOpen(prev => !prev);
+    setIsMenuOpen((prev) => !prev);
   };
 
   useEffect(() => {
     const handleClickOutsideMenu = (e) => {
-      const menuBox = document.getElementById('menuBox');
-      const menuToggle = document.getElementById('menuToggle');
+      const menuBox = document.getElementById("menuBox");
+      const menuToggle = document.getElementById("menuToggle");
 
-      if (menuBox && menuToggle &&
+      if (
+        menuBox &&
+        menuToggle &&
         !menuBox.contains(e.target) &&
-        !menuToggle.contains(e.target)) {
+        !menuToggle.contains(e.target)
+      ) {
         setIsMenuOpen(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutsideMenu);
-    return () => document.removeEventListener('click', handleClickOutsideMenu);
+    document.addEventListener("click", handleClickOutsideMenu);
+    return () => document.removeEventListener("click", handleClickOutsideMenu);
   }, []);
 
   return (
-
     <Routes>
       {/* 로그인 & 회원가입 */}
       <Route path="/signup" element={<Signup />} />
@@ -219,9 +234,17 @@ function App() {
         element={
           <>
             <TopBar />
-            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
             <ProductDetail />
-            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
           </>
         }
       />
@@ -232,9 +255,17 @@ function App() {
         element={
           <>
             <TopBar />
-            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
             <ProductManagementPage />
-            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
           </>
         }
       />
@@ -281,7 +312,6 @@ function App() {
         }
       />
 
-
       <Route
         path="/category/:categoryId"
         element={
@@ -308,9 +338,17 @@ function App() {
         element={
           <>
             <TopBar />
-            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
             <AuctionRegister />
-            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
           </>
         }
       />
@@ -321,9 +359,17 @@ function App() {
         element={
           <>
             <TopBar />
-            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
             <AuctionEdit />
-            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
           </>
         }
       />
@@ -334,9 +380,17 @@ function App() {
         element={
           <>
             <TopBar />
-            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
             <AuctionDetail />
-            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
           </>
         }
       />
@@ -347,14 +401,21 @@ function App() {
         element={
           <>
             <TopBar />
-            <Header onMenuToggle={handleMenuToggle} onSearch={handleSearch} frequentKeywords={frequentKeywords} />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
             <ChatPage />
-            <MenuBox isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} frequentKeywords={frequentKeywords} />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
           </>
         }
       />
     </Routes>
-
   );
 }
 

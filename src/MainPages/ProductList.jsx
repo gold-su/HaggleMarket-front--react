@@ -1,12 +1,12 @@
-// src/MainPages/ProductList.js
-import React from 'react';
-import ProductCard from './ProductCard';
-import '../MainPagesCSS/productcard.css';
+// src/components/ProductList.js
+import React from "react";
+import ProductCard from "./ProductCard";
+import "../MainPagesCSS/productcard.css";
 
 function ProductList({
   products = [],
-  selectedCategory = 'used',
-  onCategoryChange
+  selectedCategory = "used",
+  onCategoryChange,
 }) {
   return (
     <div className="product-list-wrapper">
@@ -28,10 +28,10 @@ function ProductList({
           products.map((product) => {
             const id = product.id ?? product.postId;
             const link =
-              selectedCategory === 'auction'
+              selectedCategory === "auction"
                 ? `/auction/detail/${id}`
                 : product.detailUrl || `/products/detail/${id}`;
-            const badge = selectedCategory === 'auction' ? '경매' : undefined;
+            const badge = selectedCategory === "auction" ? "경매" : undefined;
             const endsAt = product.endsAt ?? product.endTime ?? undefined;
 
             return (
