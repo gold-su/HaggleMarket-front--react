@@ -1,18 +1,42 @@
 import useLike from "./useLike";
 import "./LikeHeart.css";
 
-function HeartIcon({ active }) {
+function HeartIcon({ active, size = 28 }) {
   return (
-    <svg className="heart" viewBox="0 0 24 24">
-      <path
-        d="M12 21s-6.5-4.35-9.2-7.05C-1 11.35.2 6.5 4 6.5c2.2 0 3.7 1.7 4 2.2.3-.5 1.8-2.2 4-2.2 3.8 0 5 4.85 1.2 7.45C18.5 16.65 12 21 12 21z"
-        fill={active ? '#e0245e' : 'none'}
-        stroke="#e0245e"
-        strokeWidth="2"
-      />
+    <svg
+      className="heart"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {active ? (
+        <path
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+             2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+             C13.09 3.81 14.76 3 16.5 3
+             19.58 3 22 5.42 22 8.5
+             c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          fill="#e0245e"
+          stroke="#e0245e"
+          strokeWidth="2"
+        />
+      ) : (
+        <path
+          d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3
+             4.42 3 2 5.42 2 8.5
+             c0 3.78 3.4 6.86 8.55 11.54L12 21.35
+             l1.45-1.32C18.6 15.36 22 12.28 22 8.5
+             22 5.42 19.58 3 16.5 3z"
+          fill="none"
+          stroke="#e0245e"
+          strokeWidth="2"
+        />
+      )}
     </svg>
   );
 }
+
 
 export default function LikeHeart({
   postId,
@@ -54,7 +78,7 @@ export default function LikeHeart({
       onKeyDown={onKeyDown}
       title={liked ? "찜취소" : "찜하기"}
     >
-      <HeartIcon active={liked} />
+      <HeartIcon active={liked} size={22} />
       {showCount && <span className="count">{count}</span>}
     </button>
   );

@@ -1,11 +1,9 @@
-/* ===== 기본(데스크톱) ===== */
+/* ===== 기본(데스크톱 고정) ===== */
 .likebox {
   position: fixed;
   top: 120px;
-  /* 헤더 높이에 맞게 필요 시 조절 */
   right: 24px;
-  width: clamp(220px, 22vw, 300px);
-  /* 창이 줄면 자연스레 컴팩트 */
+  width: clamp(140px, 22vw, 170px);
   max-height: calc(100vh - 160px);
   background: #fff;
   border-radius: 14px;
@@ -22,7 +20,7 @@
   opacity: 0.9;
 }
 
-/* 접기/펼치기 버튼(사이드 핸들) */
+/* 접기/펼치기 버튼 */
 .likebox-toggle {
   position: absolute;
   left: -28px;
@@ -59,7 +57,7 @@
   color: #111827;
 }
 
-/* 본문(목록 스크롤) */
+/* 본문 */
 .likebox-body {
   overflow: auto;
   padding: 8px 8px 12px;
@@ -126,7 +124,7 @@
   color: #374151;
 }
 
-/* 삭제(해제) 버튼: 프레젠테이션만 */
+/* 삭제 버튼 */
 .likebox-unlike {
   width: 28px;
   height: 28px;
@@ -141,114 +139,34 @@
   transform: scale(1.05);
 }
 
-/* ===== 1280px 이하: 살짝 컴팩트 ===== */
-@media (max-width: 1280px) {
-  .likebox {
-    top: 104px;
-    width: 260px;
-    right: 16px;
-  }
-
-  .likebox-header {
-    padding: 10px 12px;
-  }
-
-  .likebox-header h3 {
-    font-size: 16px;
-  }
-
-  .likebox-item {
-    grid-template-columns: 52px 1fr 24px;
-    gap: 8px;
-    padding: 8px;
-    border-radius: 8px;
-  }
-
-  .likebox-thumb {
-    width: 52px;
-    height: 52px;
-    border-radius: 8px;
-  }
-
-  .likebox-title {
-    font-size: 13px;
-  }
-
-  .likebox-price {
-    font-size: 12px;
-  }
-
-  .likebox-unlike {
-    width: 24px;
-    height: 24px;
-  }
+/* 사진만 2열 모드 */
+.likebox-body--grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 64px);
+  gap: 10px;
+  padding: 8px 8px 12px;
 }
 
-/* ===== 1050px 이하: 더 슬림 + 카운트 배지화 ===== */
-@media (max-width: 1050px) {
-  .likebox {
-    width: 220px;
-    right: 12px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
-  }
-
-  .likebox-header {
-    padding: 8px 10px;
-  }
-
-  .likebox-header h3 {
-    font-size: 15px;
-  }
-
-  /* "현재 찜한 상품:" 문구 숨기고 숫자만 보이게 */
-  .likebox-count {
-    font-size: 0;
-  }
-
-  .likebox-count span {
-    font-size: 12px;
-    font-weight: 700;
-  }
-
-  .likebox-count::after {
-    content: "개";
-    font-size: 12px;
-    margin-left: 2px;
-    color: #374151;
-  }
-
-  .likebox-item {
-    padding: 6px;
-  }
+.likebox-thumb-only {
+  width: 64px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+  transition: transform .15s ease, box-shadow .15s ease;
 }
 
-/* ===== 900px 이하: 우하단 미니 패널 ===== */
-@media (max-width: 900px) {
-  .likebox {
-    top: auto;
-    bottom: 12px;
-    right: 12px;
-    width: min(88vw, 360px);
-    max-height: 56vh;
-    border-radius: 12px;
-  }
+.likebox-thumb-only:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .10);
+}
 
-  .likebox-toggle {
-    top: -44px;
-    left: auto;
-    right: 0;
-    width: 48px;
-    height: 36px;
-    border-radius: 10px;
-  }
-
-  .likebox.closed {
-    transform: translateY(120px);
-  }
-
-  /* 접으면 아래로 숨김 */
-  .likebox-item:hover {
-    transform: none;
-    background: #fafafa;
-  }
+.likebox-thumb-only img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
