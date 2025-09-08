@@ -67,7 +67,6 @@ function ProductDetail() {
         {/* 좌측 이미지 영역 */}
         <div className="product-media">
           <div className="product-detail-image">
-            {/* 🔁 클래스명 변경 */}
             <img
               src={displayMain}
               alt={product.title}

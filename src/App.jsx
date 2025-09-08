@@ -19,12 +19,19 @@ import ProductDetail from "./Product/ProductDetail";
 import ProductForm from "./Product/ProductForm";
 import ChatPage from "./Chat/ChatPage";
 import LikeBox from "./components/LikeBox";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import CategoryPostList from "./Category/CategoryPostList";
 import { fetchUsedList, fetchAuctionList } from "./services/productApi.js";
-import { publicApi } from "./api/auction";
+import { publicApi, api } from "./api/auction";
 import { PRODUCT_STATUS_LABEL } from "./Product/productStatus.js";
 import "./App.css";
+import SearchPage from "./search/SearchPage.jsx";
 
 // ✅ 추가: 비밀번호 찾기 2개 화면
 import ForgotPassword from "./auth/ForgotPassword";
@@ -34,16 +41,20 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
-  const [likeCount, setLikeCount] = useState(5);
+  const [likeItems, setLikeItems] = useState([]);
+  const [likeCount, setLikeCount] = useState(0);
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
   const BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8080"; //백엔드 URL
+  const navigate = useNavigate();
 
-  //특정 단어로 검색
-  const handleSearch = (query) => {
-    if (query) {
-      window.location.href = `/search?query=${encodeURIComponent(query)}`;
-    }
+  //검색코딩
+  const handleSearch = (keyword) => {
+    const q = (keyword || "").trim();
+    const params = new URLSearchParams();
+    if (q) params.set("q", q); // 비우면 전체검색도 가능
+    params.set("page", "0"); // 새 검색 → 0페이지로
+    navigate(`/search?${params.toString()}`);
   };
 
   useEffect(() => {
@@ -154,6 +165,24 @@ function App() {
     return () => document.removeEventListener("click", handleClickOutsideMenu);
   }, []);
 
+  useEffect(() => {
+    api
+      .get("/api/products/likes/sidebar", { params: { limit: 20 } })
+      .then((res) => {
+        const items = (res.data ?? []).map((d) => ({
+          id: d.postId,
+          title: d.title,
+          img: d.thumbnailUrl, // 백엔드 DTO 필드 그대로 매핑
+        }));
+        setLikeItems(items);
+        setLikeCount(items.length);
+      })
+      .catch(() => {
+        setLikeItems([]);
+        setLikeCount(0);
+      });
+  }, [location.pathname]); // 로그인/좋아요 변경 시 브로드캐스트로 다시 불러오면 더 좋음
+
   return (
     <Routes>
       {/* 로그인 & 회원가입 */}
@@ -220,7 +249,7 @@ function App() {
                 onCategoryChange={setSelectedCategory} //변경 핸들러 전달
               />
             </main>
-            <LikeBox likeCount={likeCount} />
+            <LikeBox likeCount={likeCount} items={likeItems} initiallyOpen />
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}
@@ -242,6 +271,26 @@ function App() {
               frequentKeywords={frequentKeywords}
             />
             <MyShop />
+            <MenuBox
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              frequentKeywords={frequentKeywords}
+            />
+          </>
+        }
+      />
+
+      <Route
+        path="/search"
+        element={
+          <>
+            <TopBar />
+            <Header
+              onMenuToggle={handleMenuToggle}
+              onSearch={handleSearch}
+              frequentKeywords={frequentKeywords}
+            />
+            <SearchPage />
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}

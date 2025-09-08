@@ -67,16 +67,26 @@ export function toLocalDateTimeString(datetimeLocalValue) {
 }
 
 /** 경매 글 생성 */
-export async function createAuctionPost({ title, content, startCost, buyoutCost, startTime, endTime, userNo }) {
+export async function createAuctionPost(payload) {
     const body = {
-        title,
-        content,
-        startCost: Number(startCost),
-        buyoutCost: buyoutCost ? Number(buyoutCost) : null,
-        startTime: toLocalDateTimeString(startTime),
-        endTime: toLocalDateTimeString(endTime),
+        title: payload.title,
+        content: payload.content,
+        startCost: Number(payload.startCost),
+        buyoutCost:
+            payload.buyoutCost !== undefined && payload.buyoutCost !== null && `${payload.buyoutCost}` !== ''
+                ? Number(payload.buyoutCost)
+                : null,
+        startTime: toLocalDateTimeString(payload.startTime), // "YYYY-MM-DDTHH:mm:ss"
+        endTime: toLocalDateTimeString(payload.endTime),
+        categoryId: Number(payload.categoryId),
     };
-    const res = await api.post('/api/auction/create', body);
+
+    // 필요시 디버그
+    // console.log('[createAuctionPost] body =', body);
+
+    const res = await api.post('/api/auction/create', body, {
+        headers: { 'Content-Type': 'application/json' },
+    });
     return res.data; // { auctionId, message }
 }
 

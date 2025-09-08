@@ -17,10 +17,11 @@
   flex-direction: column;
 }
 
-/* 🔁 기존 .product-image → .product-detail-image */
 .product-detail-image {
-  width: 375px; /* 원하는 가로폭 고정 */
-  height: 375px; /* 세로도 고정! */
+  width: 375px;
+  /* 원하는 가로폭 고정 */
+  height: 375px;
+  /* 세로도 고정! */
   overflow: hidden;
   border-radius: 12px;
   background: #f0f0f0;

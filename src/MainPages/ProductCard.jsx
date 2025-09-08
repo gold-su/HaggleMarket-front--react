@@ -108,26 +108,10 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
 
         <div className="product-price-row">
           <div className="product-price">{displayPrice}</div>
-
-          {/* 즐겨찾기(별/하트) 아이콘 */}
-          <svg
-            className={`favorite-icon ${isFavorite ? "active" : ""}`}
-            viewBox="0 0 24 24"
-            aria-label="찜하기"
-            role="button"
-            tabIndex="0"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            onClick={handleFavoriteClick}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleFavoriteClick(e);
-              }
-            }}
+          <LikeHeart
+            postId={product.id}
+            initialLiked={product.liked}
+            initialCount={product.likeCount}
           />
         </div>
       </div>

@@ -1,17 +1,30 @@
 // src/components/Header.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import '../componentCSS/Header.css'; // CSS 파일 경로 유지
 import { FaStore, FaComments, FaTags, FaGavel } from 'react-icons/fa'; // 경매 아이콘 추가
 
 function Header({ onMenuToggle, onSearch, frequentKeywords }) {
   const [searchInput, setSearchInput] = useState('');
+  const navigate = useNavigate();
+
+  const goSearch = () => {
+    const q = searchInput.trim();
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    params.set('page', '0');
+    navigate(`/search?${params.toString()}`);
+  };
 
   const handleKeyDown = (e) => {
+    // 한글 입력(조합) 중 엔터는 무시
+    if (e.nativeEvent.isComposing) return;
     if (e.key === 'Enter') {
-      onSearch(searchInput); // 엔터 키 입력 시 onSearch 호출
+      e.preventDefault();
+      goSearch();
     }
   };
+
 
   return (
     <header>
