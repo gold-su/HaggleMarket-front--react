@@ -1,19 +1,18 @@
 // src/Auction/AuctionRegister.jsx
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { whoAmI } from "../api/auction";
 import stylesLayout from "../AuctionCSS/AuctionRegisterLayout.module.css";
 import stylesForm from "../AuctionCSS/AuctionRegisterForm.module.css";
 import stylesButtons from "../AuctionCSS/AuctionRegisterButtons.module.css";
-
+import { createAuctionPost, uploadAuctionImages } from "../api/auction";
 import axios from "axios";
-import { whoAmI, createAuctionPost, uploadAuctionImages } from "../api/auction";
 
 function AuctionRegister() {
   const navigate = useNavigate();
 
-  // 인증 체크
   useEffect(() => {
-    const token = localStorage.getItem("jwtToken");
+    const token = localStorage.getItem("token");
     console.log("[auth] token present?", !!token);
 
     whoAmI()
@@ -21,15 +20,12 @@ function AuctionRegister() {
         console.log("[auth] /api/auth/me =>", me);
         if (!me?.authenticated) {
           alert("로그인이 필요합니다.");
-          navigate("/login");
         }
       })
       .catch((e) => {
         console.log("[auth] me error", e?.response?.status, e?.response?.data);
-        alert("로그인이 필요합니다.");
-        navigate("/login");
       });
-  }, [navigate]);
+  }, []);
 
   // 이미지: File과 미리보기 URL 둘 다 관리
   const [imageFiles, setImageFiles] = useState([]); // File[]
@@ -39,6 +35,13 @@ function AuctionRegister() {
   // 기본 정보
   const [auctionTitle, setAuctionTitle] = useState("");
   const [auctionContent, setAuctionContent] = useState("");
+  // ✅ 백엔드 카테고리 (루트→중→소)
+  const [largeCategories, setLargeCategories] = useState([]); // [{id, name}]
+  const [middleCategories, setMiddleCategories] = useState([]); // [{id, name}]
+  const [smallCategories, setSmallCategories] = useState([]); // [{id, name}]
+  const [selectedLarge, setSelectedLarge] = useState(null); // id
+  const [selectedMiddle, setSelectedMiddle] = useState(null); // id
+  const [selectedSmall, setSelectedSmall] = useState(null); // id
   // 경매 정보
   const [startCost, setStartCost] = useState("");
   const [buyoutCost, setBuyoutCost] = useState("");
@@ -48,14 +51,6 @@ function AuctionRegister() {
   // 상태
   const [submitting, setSubmitting] = useState(false);
 
-  // ✅ 카테고리 (ProductForm 방식: 루트 → 자식 로드)
-  const [largeCategories, setLargeCategories] = useState([]); // [{id, name}]
-  const [middleCategories, setMiddleCategories] = useState([]);
-  const [smallCategories, setSmallCategories] = useState([]);
-  const [selectedLarge, setSelectedLarge] = useState(null); // id
-  const [selectedMiddle, setSelectedMiddle] = useState(null); // id
-  const [selectedSmall, setSelectedSmall] = useState(null); // id
-
   // 대분류 로드
   useEffect(() => {
     axios
@@ -63,33 +58,6 @@ function AuctionRegister() {
       .then((res) => setLargeCategories(res.data || []))
       .catch(() => setLargeCategories([]));
   }, []);
-
-  // 클릭 핸들러
-  const handleLargeCategoryClick = async (categoryId) => {
-    setSelectedLarge(categoryId);
-    setSelectedMiddle(null);
-    setSelectedSmall(null);
-    setSmallCategories([]);
-    try {
-      const res = await axios.get(`/api/categories/${categoryId}`); // 중분류 로드
-      setMiddleCategories(res.data || []);
-    } catch {
-      setMiddleCategories([]);
-    }
-  };
-
-  const handleMiddleCategoryClick = async (categoryId) => {
-    setSelectedMiddle(categoryId);
-    setSelectedSmall(null);
-    try {
-      const res = await axios.get(`/api/categories/${categoryId}`); // 소분류 로드
-      setSmallCategories(res.data || []);
-    } catch {
-      setSmallCategories([]);
-    }
-  };
-
-  const handleSmallCategoryClick = (categoryId) => setSelectedSmall(categoryId);
 
   // 선택된 카테고리 경로 텍스트
   const categoryText = useMemo(() => {
@@ -108,11 +76,9 @@ function AuctionRegister() {
     selectedSmall,
   ]);
 
-  // 이미지 선택
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
-
     const MAX_SIZE = 5 * 1024 * 1024; // 5MB
     const allowed = files.filter(
       (f) => /image\/(png|jpeg|jpg)/i.test(f.type) && f.size <= MAX_SIZE
@@ -120,66 +86,60 @@ function AuctionRegister() {
     if (allowed.length < files.length) {
       alert("PNG/JPG만 가능하며, 파일당 5MB 이하만 업로드됩니다.");
     }
-
-    const totalNow = imageFiles.length;
-    const remain = maxImages - totalNow;
-    const next = allowed.slice(0, Math.max(0, remain));
-
-    const nextFiles = [...imageFiles, ...next];
-    const newPreviews = next.map((f) => URL.createObjectURL(f));
-    const nextPreviews = [...imagePreviews, ...newPreviews];
+    const nextFiles = [...imageFiles, ...allowed].slice(0, maxImages);
+    const newPreviews = nextFiles.map((f) => URL.createObjectURL(f));
 
     setImageFiles(nextFiles);
-    setImagePreviews(nextPreviews);
+    setImagePreviews(newPreviews);
   };
 
-  // 이미지 제거
   const handleRemoveImage = (idx) => {
     const nextFiles = imageFiles.filter((_, i) => i !== idx);
     const nextPreviews = imagePreviews.filter((_, i) => i !== idx);
+    setImageFiles(nextFiles);
+    setImagePreviews(nextPreviews);
+  };
 
-    // blob URL 정리
-    const removed = imagePreviews[idx];
-    if (removed && removed.startsWith("blob:")) {
-      try {
-        URL.revokeObjectURL(removed);
-      } catch (_) {}
+  // 클릭 핸들러 (백엔드 연동)
+  const handleLargeCategoryClick = async (categoryId) => {
+    setSelectedLarge(categoryId);
+    setSelectedMiddle(null);
+    setSelectedSmall(null);
+    setSmallCategories([]); // 소분류 비우기
+
+    try {
+      // 중분류 로드
+      const res = await axios.get(`/api/categories/${categoryId}`);
+      setMiddleCategories(res.data || []);
+    } catch {
+      setMiddleCategories([]);
     }
-
-    setImageFiles(nextFiles);
-    setImagePreviews(nextPreviews);
   };
 
-  // (선택) 간단 정렬: 썸네일 클릭으로 앞으로 보내기
-  const moveImageToFront = (idx) => {
-    if (idx <= 0) return;
-    const f = imageFiles[idx];
-    const p = imagePreviews[idx];
-    const nextFiles = [f, ...imageFiles.filter((_, i) => i !== idx)];
-    const nextPreviews = [p, ...imagePreviews.filter((_, i) => i !== idx)];
-    setImageFiles(nextFiles);
-    setImagePreviews(nextPreviews);
+  const handleMiddleCategoryClick = async (categoryId) => {
+    setSelectedMiddle(categoryId);
+    setSelectedSmall(null);
+
+    try {
+      // 소분류 로드
+      const res = await axios.get(`/api/categories/${categoryId}`);
+      setSmallCategories(res.data || []);
+    } catch {
+      setSmallCategories([]);
+    }
   };
 
-  // previews가 바뀔 때 이전 URL 해제
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((u) => {
-        if (typeof u === "string" && u.startsWith("blob:")) {
-          try {
-            URL.revokeObjectURL(u);
-          } catch (_) {}
-        }
-      });
-    };
-  }, [imagePreviews]);
+  const handleSmallCategoryClick = (categoryId) => {
+    setSelectedSmall(categoryId);
+  };
 
   // 프론트 유효성 검증
   const validate = () => {
     if (!auctionTitle.trim()) return "상품명을 입력해 주세요.";
     if (!auctionContent.trim() || auctionContent.trim().length < 10)
       return "상품 설명은 10자 이상 입력해 주세요.";
-    if (!selectedSmall) return "카테고리를 선택해 주세요."; // ✅ 소분류 필수
+    if (!selectedSmall) return "카테고리를 선택해 주세요.";
+    // if (!selectedLargeCategory) return '대분류를 선택해 주세요.'; 카테고리 임시로 빼둠
     if (!startCost || Number(startCost) <= 0)
       return "시작가를 올바르게 입력해 주세요.";
     if (buyoutCost && Number(buyoutCost) <= Number(startCost))
@@ -197,6 +157,9 @@ function AuctionRegister() {
     return null;
   };
 
+  // TODO: 실제 로그인/세션에서 userNo 받아오기
+  const userNo = 1; // 데모: 고정.
+
   const handleSubmitAuction = async (e) => {
     e.preventDefault();
     const err = validate();
@@ -211,7 +174,7 @@ function AuctionRegister() {
       // 1) 본문 생성
       const { auctionId, message } = await createAuctionPost({
         title: auctionTitle.trim(),
-        content: auctionContent.trim(),
+        content: auctionContent.trim(), //카테고리 임시 빼둠
         startCost: Number(startCost),
         buyoutCost: buyoutCost ? Number(buyoutCost) : null,
         startTime,
@@ -252,6 +215,13 @@ function AuctionRegister() {
     localStorage.setItem("auction_draft", JSON.stringify(draft));
     alert("임시 저장되었습니다.");
   };
+
+  // previews가 바뀔 때 이전 URL 해제
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, [imagePreviews]);
 
   return (
     <div className={stylesLayout.auctionRegisterPage}>
@@ -311,6 +281,63 @@ function AuctionRegister() {
                   {/* 안내 문구에서 '썸네일 클릭 → 1번 이동' 문구 제거 */}
                   <div className={stylesForm.formHint}>
                     최대 {maxImages}장, PNG/JPG만 가능.
+                  </div>
+                </div>
+              </li>
+
+              {/* 상품명 */}
+              <li className={stylesLayout.formGroup}>
+                <div className={stylesLayout.formLabel}>상품명</div>
+                <div className={stylesLayout.formContent}>
+                  <input
+                    type="text"
+                    className={stylesForm.formInput}
+                    placeholder="경매 상품명을 입력해 주세요."
+                    maxLength={50}
+                    value={auctionTitle}
+                    onChange={(e) => setAuctionTitle(e.target.value)}
+                    required
+                  />
+                  <div className={stylesForm.charCounter}>
+                    {auctionTitle.length}/50
+                  </div>
+                </div>
+              </li>
+
+              {/* 카테고리 */}
+              <li className={stylesLayout.formGroup}>
+                <div className={stylesLayout.formLabel}>카테고리</div>
+                <div
+                  className={`${stylesLayout.formContent} ${stylesForm.categorySelectionArea}`}
+                >
+                  {/* 대분류 */}
+                  <div className={stylesForm.categoryColumn}>
+                    <ul className={stylesForm.categoryList}>
+                      {largeCategories.length === 0 ? (
+                        <li
+                          className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                        >
+                          카테고리 불러오는 중...
+                        </li>
+                      ) : (
+                        largeCategories.map((cat) => (
+                          <li
+                            key={cat.id}
+                            className={`${stylesForm.categoryItem} ${
+                              selectedLarge === cat.id ? stylesForm.active : ""
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleLargeCategoryClick(cat.id)}
+                              aria-selected={selectedLarge === cat.id}
+                            >
+                              {cat.name}
+                            </button>
+                          </li>
+                        ))
+                      )}
+                    </ul>
                   </div>
 
                   {/* 중분류 */}
@@ -400,25 +427,6 @@ function AuctionRegister() {
                     선택됨: {categoryText}
                   </div>
                 )}
-              </li>
-
-              {/* 상품명 */}
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>상품명</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="경매 상품명을 입력해 주세요."
-                    maxLength={50}
-                    value={auctionTitle}
-                    onChange={(e) => setAuctionTitle(e.target.value)}
-                    required
-                  />
-                  <div className={stylesForm.charCounter}>
-                    {auctionTitle.length}/50
-                  </div>
-                </div>
               </li>
 
               {/* 시작가 */}

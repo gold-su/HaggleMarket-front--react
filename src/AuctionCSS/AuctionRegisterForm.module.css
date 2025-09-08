@@ -1,49 +1,45 @@
 /* src/AuctionCSS/AuctionRegisterForm.module.css */
-:root {
-  --accent-color: #3e7aef;
-  --border-color: #ddd;
-  --text-muted: #666;
-  --input-bg: #fff;
-  --input-border: #ccc;
-  --input-radius: 6px;
-  --shadow: rgba(62, 122, 239, 0.15);
-  --inline-gap: 12px;
-  --inline-gap-sm: 8px;
-}
 
-/* 공통 입력 */
+/* =========================
+   입력 필드 공통 스타일
+   ========================= */
 .formInput,
+.formSelect,
 .formTextarea {
   width: 100%;
   padding: 12px 14px;
   font-size: 16px;
-  border: 1px solid var(--input-border);
-  border-radius: var(--input-radius);
-  background: var(--input-bg);
+  border: 1px solid var(--input-border, #ccc);
+  /* 변수 없으면 기본값 사용 */
+  border-radius: var(--input-radius, 6px);
+  background-color: var(--input-bg, #fff);
   box-sizing: border-box;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .formInput:focus,
+.formSelect:focus,
 .formTextarea:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--shadow);
+  border-color: var(--accent-color, #3e7aef);
+  box-shadow: 0 0 0 3px rgba(62, 122, 239, 0.15);
 }
 
 .formTextarea {
-  resize: none;
+  resize: vertical;
   min-height: 120px;
 }
 
 .charCounter {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-muted, #666);
   text-align: right;
   margin-top: 6px;
 }
 
-/* 이미지 업로드 */
+/* =========================
+   이미지 업로드
+   ========================= */
 .imageUploadList {
   display: flex;
   flex-wrap: wrap;
@@ -88,11 +84,6 @@
   margin-bottom: 4px;
 }
 
-.addImage.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
 .imagePreviewItem img {
   width: 100%;
   height: 100%;
@@ -103,12 +94,12 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 20px;
-  height: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
   border: none;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
+  width: 20px;
+  height: 20px;
   font-size: 14px;
   cursor: pointer;
   display: flex;
@@ -116,25 +107,22 @@
   align-items: center;
 }
 
-.removeImageButton:hover {
-  background: rgba(0, 0, 0, 0.65);
-}
-
-/* 3단 카테고리/기간 등 */
+/* =========================
+   카테고리 선택
+   ========================= */
 .categorySelectionArea {
   display: flex;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color, #ddd);
   border-radius: 8px;
   overflow: hidden;
-  height: 240px;
-  background: #fff;
+  height: 320px;
 }
 
 .categoryColumn {
   flex: 1;
   overflow-y: auto;
-  background: #fff;
-  border-right: 1px solid var(--border-color);
+  background-color: #fff;
+  border-right: 1px solid var(--border-color, #ddd);
 }
 
 .categoryColumn:last-child {
@@ -149,184 +137,67 @@
 
 .categoryItem button {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 0.9rem;
+  padding: 12px 16px;
+  font-size: 0.95rem;
   text-align: left;
-  background: transparent;
+  background-color: transparent;
   border: none;
   cursor: pointer;
   transition: background 0.2s;
-  color: #111;
+  color: var(--text-color, #111);
 }
 
 .categoryItem button:hover {
-  background: #f4f6f8;
+  background-color: #eee;
 }
 
 .categoryItem.active button {
-  background: var(--accent-color);
+  background-color: var(--accent-color, #3e7aef);
   color: #fff;
   font-weight: 600;
 }
 
 .categoryItem.placeholder {
-  color: var(--text-muted);
+  color: var(--text-muted, #666);
   font-style: italic;
-  padding: 8px 12px;
-  pointer-events: none;
-  background: #fff;
+  padding: 12px 16px;
 }
 
-/* 라디오(세로) */
-.radioGroup {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--inline-gap);
-}
-
-.radioGroupVertical {
-  display: flex;
-  flex-direction: column;
-  gap: var(--inline-gap);
-}
-
-.radioLabel {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: #fff;
-  cursor: pointer;
-  user-select: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.radioLabel input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.radioLabel > span {
-  position: relative;
-  padding-left: 28px;
-  line-height: 1.2;
-}
-
-.radioLabel > span::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  border: 2px solid var(--border-color);
-  border-radius: 50%;
-  background: #fff;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.radioLabel > span::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  top: 50%;
-  transform: translateY(-50%) scale(0);
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent-color);
-  transition: transform 0.15s;
-}
-
-.radioLabel input[type="radio"]:checked + span::before {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px var(--shadow);
-}
-
-.radioLabel input[type="radio"]:checked + span::after {
-  transform: translateY(-50%) scale(1);
-}
-
-.radioLabel input[type="radio"]:checked + span {
-  color: var(--accent-color);
-  font-weight: 700;
-}
-
-/* 가격 한 줄 */
-.priceRow {
-  display: flex;
-  align-items: center;
-  gap: var(--inline-gap);
-  flex-wrap: nowrap;
-  min-width: 0;
-}
-
+/* =========================
+   가격 입력 필드 (시작가, 즉시 구매가)
+   ========================= */
 .priceInputWrapper {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  overflow: visible;
-  flex: 0 1 240px;
-  max-width: 260px;
-  min-width: 160px;
-  width: 100%;
+  display: flex;
+  border: 1px solid var(--input-border, #ccc);
+  border-radius: var(--input-radius, 6px);
+  overflow: hidden;
+  align-items: center;
 }
 
 .priceInput {
   border: none;
-  flex: 1 1 auto;
-  min-width: 0;
-  padding: 12px 8px 12px 14px;
+  flex: 1;
+  padding: 12px 14px;
   font-size: 1rem;
   outline: none;
 }
 
 .currency {
-  flex: 0 0 auto;
-  white-space: nowrap;
   padding: 12px 14px;
-  background: #f5f5f5;
+  background-color: #f5f5f5;
   color: #888;
   font-size: 1rem;
+  border-left: 1px solid var(--input-border, #ccc);
 }
 
-.checkboxRight {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
-
+/* =========================
+   반응형 미디어 쿼리 (폼 관련)
+   ========================= */
 @media (max-width: 768px) {
-  .imageUploadList {
-    gap: var(--inline-gap-sm);
-  }
-
-  .radioGroup {
-    gap: var(--inline-gap-sm);
-  }
-
-  .radioGroupVertical {
-    gap: var(--inline-gap-sm);
-  }
-
-  .priceRow {
-    gap: var(--inline-gap-sm);
-  }
-
-  .priceInputWrapper {
-    flex-basis: 200px;
-    max-width: 200px;
-  }
-
-  .categorySelectionArea {
-    height: auto;
-    max-height: 60vh;
+  .formInput,
+  .formTextarea,
+  .formSelect {
+    padding: 10px 12px;
+    font-size: 15px;
   }
 }
