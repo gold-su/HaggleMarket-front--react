@@ -10,47 +10,46 @@ import '../ShopCSS/MyShopContent.css';
 function MyShop() {
   const navigate = useNavigate();
 
-  // 파일 상단 어딘가에 추가
+  // 가격 정규화 유틸
   const normalizePrice = (v) => {
     if (v == null) return null;
-    if (typeof v === "number" && !Number.isNaN(v)) return v;
-    if (typeof v === "string") {
-      const cleaned = v.replace(/[^\d.-]/g, "");
+    if (typeof v === 'number' && !Number.isNaN(v)) return v;
+    if (typeof v === 'string') {
+      const cleaned = v.replace(/[^\d.-]/g, '');
       if (!cleaned) return null;
       const n = Number(cleaned);
       return Number.isNaN(n) ? null : n;
     }
-    if (typeof v === "object") {
-      return normalizePrice(v.amount ?? v.value ?? null);
+    if (typeof v === 'object') {
+      return normalizePrice(v?.amount ?? v?.value ?? null);
     }
     return null;
   };
 
-  const getPriceNumber = (p, mode = "used") => {
-    const auctionKeys = ["currentPrice", "price", "highestBid", "startPrice", "minPrice"];
-    const usedKeys = ["price", "sellingPrice", "amount", "priceWon"];
-    const keys = mode === "auction" ? auctionKeys : usedKeys;
+  const getPriceNumber = (p, mode = 'used') => {
+    const auctionKeys = ['currentPrice', 'price', 'highestBid', 'startPrice', 'minPrice', 'cost'];
+    const usedKeys = ['price', 'sellingPrice', 'amount', 'priceWon', 'cost']; // ✅ cost 추가됨
+    const keys = mode === 'auction' ? auctionKeys : usedKeys;
     for (const k of keys) {
       const n = normalizePrice(p?.[k]);
       if (n != null) return n;
     }
     return 0;
   };
-
-  // ✅ 이 페이지 전용 axios 인스턴스
+  // 이 페이지 전용 axios 인스턴스
   const api = axios.create({
     baseURL: 'http://localhost:8080',
     timeout: 15000,
   });
 
-  // ✅ 요청마다 토큰 자동 첨부
+  // 요청마다 토큰 자동 첨부
   api.interceptors.request.use((config) => {
     const token = localStorage.getItem('jwtToken');
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   });
 
-  // ✅ ProductCard와 동일한 이미지 URL 안전 처리
+  // ProductCard와 동일한 이미지 URL 안전 처리
   const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
   const getImageSrc = (obj) => {
     const url = obj?.thumbnailUrl ?? obj?.imageUrl;
@@ -58,8 +57,14 @@ function MyShop() {
     return url.startsWith('http') ? url : `${BASE}${url}`;
   };
 
-  // 상세 경로(요구한 라우트)
+  // 상세 경로
   const PRODUCT_DETAIL_PATH = (id) => `/products/detail/${id}`;
+
+  const fmtDate = (iso) => {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    return isNaN(d.getTime()) ? '-' : d.toISOString().slice(0, 10);
+  };
 
   const PLACEHOLDER =
     "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='100%25' height='100%25' fill='%23eee'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='14'%3EStore%3C/text%3E%3C/svg%3E";
@@ -69,7 +74,7 @@ function MyShop() {
     storeName: '상점',
     profileImage: PLACEHOLDER,
     isVerified: false,
-    storeOpenDate: '-',
+    storeOpenedAt: '-', // ✅ 이름 변경
     storeVisits: 0,
     salesCount: 0,
     description: '',
@@ -79,7 +84,7 @@ function MyShop() {
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState('상품');
 
-  // ▼ 탭 데이터 상태
+  // 탭 데이터 상태
   const [myProducts, setMyProducts] = useState({
     content: [],
     totalElements: 0,
@@ -90,7 +95,7 @@ function MyShop() {
   const [likedItems, setLikedItems] = useState({ content: [], total: 0 });
   const [loading, setLoading] = useState(false);
 
-  // ▼ 내 상품 로드
+  // 내 상품 로드
   const loadMyProducts = async (uNo = profile.userNo, page = 0, size = 12) => {
     if (!uNo) return;
     setLoading(true);
@@ -112,13 +117,13 @@ function MyShop() {
     }
   };
 
-  // ▼ 찜 로드
+  // 찜 로드
   const loadMyLikes = async () => {
     setLoading(true);
     try {
       const { data } = await api.get('/api/likes/sidebar', { params: { limit: 50 } });
       setLikedItems({ content: data ?? [], total: (data ?? []).length });
-      // 페이지네이션 API가 있다면 ↑ 대신:
+      // 페이지네이션 API가 있다면 위 한 줄 대신:
       // const { data } = await api.get('/api/likes/mine', { params: { page:0, size:12 }});
       // setLikedItems({ content: data?.content ?? [], total: data?.totalElements ?? 0 });
     } catch (err) {
@@ -131,16 +136,25 @@ function MyShop() {
   useEffect(() => {
     (async () => {
       try {
+        // 프로필/통계 동시 요청
         const me = await api.get('/api/shops/me');
         const s = await api.get(`/api/shops/${me.data.userNo}/stats`);
+        console.log("✅ /api/shops/me 응답:", me.data);
+
+        // ✅ storeOpenedAt(백엔드 키명) 사용
+        const opened =
+          me.data.storeOpenedAt ??
+          s.data.storeOpenedAt ??
+          profile.storeOpenedAt;
 
         setProfile((prev) => ({
           ...prev,
           userNo: me.data.userNo,
-          storeName: me.data.nickname || prev.storeName,
+          storeName: me.data.nickname ? `${me.data.nickname}의 상점` : prev.storeName,
           profileImage: me.data.profileUrl || prev.profileImage,
           isVerified: !!me.data.verified,
           description: me.data.intro || prev.description,
+          storeOpenedAt: opened, // ✅ 세팅
         }));
         setStats(s.data);
 
@@ -154,7 +168,7 @@ function MyShop() {
 
   const handleImgError = (e) => {
     e.currentTarget.onerror = null;
-    e.currentTarget.src = PLACEHOLDER; // 네가 쓰던 플레이스홀더 유지
+    e.currentTarget.src = PLACEHOLDER;
   };
 
   const handleProfileImageChangeClick = () => fileInputRef.current?.click();
@@ -180,7 +194,7 @@ function MyShop() {
     }
   };
 
-  // ▼ 리스트 렌더링
+  // 리스트 렌더링
   const renderProducts = () => {
     if (loading) return <p>로딩 중…</p>;
     if (!myProducts.content?.length) return <p>등록된 상품이 없습니다.</p>;
@@ -197,7 +211,7 @@ function MyShop() {
       >
         {myProducts.content.map((p) => {
           const id = p.postId ?? p.id;
-          const imageSrc = getImageSrc(p); // ✅ ProductCard 방식
+          const imageSrc = getImageSrc(p);
           return (
             <div
               key={id}
@@ -234,7 +248,7 @@ function MyShop() {
                   {p.title}
                 </div>
                 <div className="price" style={{ fontWeight: 600 }}>
-                  {getPriceNumber(p, "used").toLocaleString()}원
+                  {getPriceNumber(p, 'used').toLocaleString()}원
                 </div>
               </div>
             </div>
@@ -260,7 +274,7 @@ function MyShop() {
       >
         {likedItems.content.map((item) => {
           const id = item.postId ?? item.id;
-          const imageSrc = getImageSrc(item); // ✅ ProductCard 방식
+          const imageSrc = getImageSrc(item);
           return (
             <div
               key={id}
@@ -297,7 +311,7 @@ function MyShop() {
                   {item.title}
                 </div>
                 <div className="price" style={{ fontWeight: 600 }}>
-                  {getPriceNumber(item, "used").toLocaleString()}원
+                  {getPriceNumber(item, 'used').toLocaleString()}원
                 </div>
               </div>
             </div>
@@ -317,10 +331,7 @@ function MyShop() {
             className="myshop-profile-image"
             onError={handleImgError}
           />
-          <div
-            className="myshop-profile-image-overlay"
-            onClick={handleProfileImageChangeClick}
-          >
+          <div className="myshop-profile-image-overlay" onClick={handleProfileImageChangeClick}>
             <svg
               className="myshop-camera-icon"
               viewBox="0 0 24 24"
@@ -357,7 +368,8 @@ function MyShop() {
             {profile.isVerified && <span className="myshop-verified-badge">본인인증 완료</span>}
           </h1>
           <div className="myshop-store-stats">
-            <span>상점오픈일 {profile.storeOpenDate}</span>
+            {/* ✅ storeOpenedAt 사용 */}
+            <span>상점오픈일 {fmtDate(profile.storeOpenedAt)}</span>
             <span>상점방문수 {profile.storeVisits}명</span>
             <span>상품판매 {profile.salesCount}회</span>
           </div>
