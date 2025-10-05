@@ -169,18 +169,16 @@ function ProductDetail() {
 
           <ul className="details">
             <li>
-              <strong>상품상태:</strong>{" "}
-              {PRODUCT_STATUS_LABEL[product.productStatus] ||
-                product.productStatus}
+              상품상태: <b>{PRODUCT_STATUS_LABEL[product.productStatus] || product.productStatus}</b>
             </li>
             <li>
-              <strong>설명:</strong> {product.content}
+              설명: <b>{product.content}</b>
             </li>
             <li>
-              <strong>배송비:</strong> {product.deliveryFee ? "있음" : "없음"}
+              배송비: <b>{product.deliveryFee ? "있음" : "없음"}</b>
             </li>
             <li>
-              <strong>직거래지역:</strong> {product.seller?.address || "-"}
+              직거래지역: <b>{product.seller?.address || "-"}</b>
             </li>
           </ul>
 
@@ -207,88 +205,80 @@ function ProductDetail() {
           </div>
         </div>
       </div>
-            {/* 9월 26일 추가 부분 */}
+      {/* 10월 1일 추가 부분 */}
       {/* 하단 추가 정보 */}
+      {/* ───────────── 판매자 정보 스트립 (상품설명 아래) ───────────── */}
+      <div className="seller-info-strip" role="contentinfo" aria-label="판매자 정보">
+        {/* 아바타 + 판매자명 */}
+        <div className="seller-left">
+          <img
+            className="seller-avatar"
+            src={
+              product?.seller?.profileImageUrl
+              || product?.seller?.avatarUrl
+              || "/images/default-avatar.png"
+            }
+            alt="판매자 프로필"
+            onError={(e) => { e.currentTarget.src = "/images/default-avatar.png"; }}
+          />
+          <div className="seller-meta">
+            <div className="seller-name">
+              {product?.seller?.nickname
+                || product?.seller?.userName
+                || product?.seller?.name
+                || "판매자"}
+              {product?.seller?.verified ? <span className="seller-badge">본인인증</span> : null}
+            </div>
+            <div className="seller-stats">
+              <span>상품 {product?.seller?.productCount ?? 0}</span>
+              <span>평점 {product?.seller?.rating ?? "N/A"}</span>
+            </div>
+            <div className="seller-addr">
+              {product?.seller?.address || "-"}
+            </div>
+          </div>
+        </div>
+
+        {/* 판매자의 다른 상품(최대 3개 썸네일) */}
+        <div className="seller-middle">
+          {(product?.seller?.otherProducts ?? []).slice(0, 3).map((p, i) => (
+            <a
+              key={p.id ?? i}
+              className="seller-thumb"
+              href={`/products/detail/${p.id ?? ""}`}
+              onClick={(e) => {
+                if (!p.id) e.preventDefault();
+              }}
+              title={p.title ?? "상품"}
+            >
+              <img
+                src={p.thumbnailUrl || p.imageUrl || "/images/default.jpg"}
+                alt={p.title ?? "상품"}
+                onError={(e) => { e.currentTarget.src = "/images/default.jpg"; }}
+              />
+              <span className="seller-thumb-price">
+                {(Number(p.price ?? p.cost ?? 0)).toLocaleString()}원
+              </span>
+            </a>
+          ))}
+        </div>
+
+        {/* 액션 버튼 영역 */}
+        <div className="seller-right">
+          <button
+            type="button"
+            className="seller-btn store"
+            onClick={() => alert("상점 이동은 나중에 라우팅 연결하세요.")}
+          >
+            상점 보기
+          </button>
+        </div>
+      </div>
       <div className="product-extra-info">
         <h3>상품정보</h3>
         <div className="divider" />
         <div className="product-description">{product.content}</div>
-        {/* ───────────── 판매자 정보 스트립 (상품설명 아래) ───────────── */}
-        <div className="seller-info-strip" role="contentinfo" aria-label="판매자 정보">
-          {/* 아바타 + 판매자명 */}
-          <div className="seller-left">
-            <img
-              className="seller-avatar"
-              src={
-                product?.seller?.profileImageUrl
-                || product?.seller?.avatarUrl
-                || "/images/default-avatar.png"
-              }
-              alt="판매자 프로필"
-              onError={(e) => { e.currentTarget.src = "/images/default-avatar.png"; }}
-            />
-            <div className="seller-meta">
-              <div className="seller-name">
-                {product?.seller?.nickname
-                  || product?.seller?.userName
-                  || product?.seller?.name
-                  || "판매자"}
-                {product?.seller?.verified ? <span className="seller-badge">본인인증</span> : null}
-              </div>
-              <div className="seller-stats">
-                <span>상품 {product?.seller?.productCount ?? 0}</span>
-                <span>팔로워 {product?.seller?.followerCount ?? 0}</span>
-                <span>평점 {product?.seller?.rating ?? "N/A"}</span>
-              </div>
-              <div className="seller-addr">
-                {product?.seller?.address || "-"}
-              </div>
-            </div>
-          </div>
-
-          {/* 판매자의 다른 상품(최대 3개 썸네일) */}
-          <div className="seller-middle">
-            {(product?.seller?.otherProducts ?? []).slice(0, 3).map((p, i) => (
-              <a
-                key={p.id ?? i}
-                className="seller-thumb"
-                href={`/products/detail/${p.id ?? ""}`}
-                onClick={(e) => {
-                  if (!p.id) e.preventDefault();
-                }}
-                title={p.title ?? "상품"}
-              >
-                <img
-                  src={p.thumbnailUrl || p.imageUrl || "/images/default.jpg"}
-                  alt={p.title ?? "상품"}
-                  onError={(e) => { e.currentTarget.src = "/images/default.jpg"; }}
-                />
-                <span className="seller-thumb-price">
-                  {(Number(p.price ?? p.cost ?? 0)).toLocaleString()}원
-                </span>
-              </a>
-            ))}
-          </div>
-
-          {/* 액션 버튼 영역 */}
-          <div className="seller-right">
-            <button
-              type="button"
-              className="seller-btn follow"
-              onClick={() => alert("팔로우 기능은 향후 연결 예정입니다.")}
-            >
-              팔로우
-            </button>
-            <button
-              type="button"
-              className="seller-btn store"
-              onClick={() => alert("상점 이동은 나중에 라우팅 연결하세요.")}
-            >
-              상점 보기
-            </button>
-          </div>
-        </div>
-        {/* 9월 26일 추가 부분 여기까지 */}
+        {/* 10월 1일 추가 부분 여기까지 */}
         {/* ───────────── /판매자 정보 스트립 ───────────── */}
         <div className="divider" />
         <div className="product-extra-cards">

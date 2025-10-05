@@ -62,8 +62,19 @@
   margin: 0 0 20px 0;
 }
 
+/* 추가 수정한 곳 */
 .product-info ul.details li {
   margin-bottom: 8px;
+  color: #666; /* 라벨은 회색 */
+  font-weight: normal;
+  cursor: default; /* 클릭 가능한 것처럼 보이지 않도록 */
+}
+
+/* 추가 수정한 곳 */
+.product-info ul.details b {
+  color: #333; /* 값은 진한 회색 */
+  font-weight: 600;
+  cursor: default;
 }
 
 .product-info .buttons {
@@ -91,18 +102,22 @@
   /* 입체감 */
 }
 
-.product-info .buttons .wish {
-  background: #ccc;
-}
+/*.product-info .buttons .wish { wish코드 없음
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+}*/
 
 .product-info .buttons .chat {
-  background: #ffb100;
-  color: #fff;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
 }
 
 .product-info .buttons .buy {
-  background: #e60023;
-  color: #fff;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
 }
 
 /* 하단: 상품정보 카드 블록 */
@@ -320,10 +335,6 @@
   color: #fff;
 }
 
-.seller-btn.follow {}
-
-.seller-btn.store {}
-
 /* 반응형 */
 @media (max-width: 900px) {
   .seller-info-strip {
@@ -336,11 +347,7 @@
     flex-direction: row;
     justify-content: flex-end;
   }
-}
 
-
-/* 좁은 화면 대응 */
-@media (max-width: 768px) {
   .product-detail {
     flex-direction: column;
   }

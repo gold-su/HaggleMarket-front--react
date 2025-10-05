@@ -136,7 +136,7 @@
   border-radius: 30px;
   font-size: 1rem;
   outline: none;
-  background-color: #f8f8f8;
+  background-color: #fff; /* 배경 수정 */
   color: #3E7AEF;
 }
 
