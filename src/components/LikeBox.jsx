@@ -12,9 +12,25 @@ export default function LikeBox({
   const navigate = useNavigate();
 
   const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
-  const resolveImg = (url) =>
-    !url ? "/no-image.png" : url.startsWith("http") ? url : `${BASE}${url}`;
-  const goDetail = (id) => navigate(`/products/detail/${id}`);
+  const resolveImg = (url) => {
+    if (!url || url === "null") return "/no-image.png";
+
+    // 절대경로면 그대로 사용
+    if (url.startsWith("http")) return url;
+
+    // 숫자라면 => 경매 이미지 (imageId 기반)
+    if (!isNaN(url)) return `${BASE}/api/auction/images/${url}`;
+
+    // 일반 상품 이미지 (uploads 경로)
+    return `${BASE}${url}`;
+  };
+
+  // 수정: 상품/경매 구분해서 상세 페이지로 이동
+  const goDetail = (p) => {
+    if (!p || !p.id) return;
+    if (p.isAuction) navigate(`/auction/detail/${p.id}`); // ✅ isAuction → auction
+    else navigate(`/products/detail/${p.id}`);
+  };
 
   // 페이지 계산 (한 페이지 4개 = 2x2)
   const pageSize = 4;
@@ -50,12 +66,17 @@ export default function LikeBox({
               <button
                 key={p.id}
                 className="likebox-thumb-only"
-                onClick={() => goDetail(p.id)}
+                onClick={() => {
+                  console.log("전체 items:", items);
+                  console.log("Like item:", p);
+                  goDetail(p);
+                }
+                }
                 aria-label="상품 상세보기"
               >
                 <img
-                  src={resolveImg(p.img)}
-                  alt=""
+                  src={resolveImg(p.thumbnail)}
+                  alt={p.title}
                   onError={(e) => (e.currentTarget.src = "/no-image.png")}
                 />
               </button>

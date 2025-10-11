@@ -390,11 +390,8 @@ function MyShop() {
           <li className={activeTab === '찜' ? 'active' : ''} onClick={() => handleTabClick('찜')}>
             찜 {stats?.totalLikes ?? 0}
           </li>
-          <li className={activeTab === '팔로잉' ? 'active' : ''} onClick={() => handleTabClick('팔로잉')}>
-            팔로잉 {stats?.following ?? 0}
-          </li>
-          <li className={activeTab === '팔로워' ? 'active' : ''} onClick={() => handleTabClick('팔로워')}>
-            팔로워 {stats?.followers ?? 0}
+          <li className={activeTab === '내 상품' ? 'active' : ''} onClick={() => handleTabClick('내 상품')}>
+            내 상품 {stats?.totalProducts ?? 0}
           </li>
         </ul>
       </nav>
