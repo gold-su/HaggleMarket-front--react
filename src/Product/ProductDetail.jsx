@@ -19,36 +19,6 @@ function ProductDetail() {
 
   const fetchDetail = async () => {
     try {
-      // ================================
-      // ✅ 더미데이터 시작 (언제든 삭제 OK)
-      // 위치: ProductDetail.jsx -> fetchDetail() 내부 USE_MOCK 분기
-      // ================================
-      if (USE_MOCK) {
-        const mock = {
-          postId,
-          title: "더미 상품 제목",
-          cost: 19900,
-          content:
-            "여기는 더미 상세 설명입니다.\n이 블록만 지우면 실제 API만 사용합니다.",
-          likeCount: 12,
-          hit: 345,
-          createdAt: "2025-01-01T12:34:56",
-          productStatus: "USED_GOOD",
-          deliveryFee: true,
-          seller: { userNo: 1, address: "서울특별시 강남구" },
-          images: ["/images/default.jpg"],
-          thumbnail: "/images/default.jpg",
-          imageUrl: null,
-          tag: "예시, 더미",
-          categoryPath: "카테고리>하위",
-        };
-        setProduct(mock);
-        return;
-      }
-      // ================================
-      // ✅ 더미데이터 끝
-      // ================================
-
       const token = localStorage.getItem("jwtToken");
       const res = await axios.get(`/api/products/detail/${postId}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -62,7 +32,6 @@ function ProductDetail() {
 
   useEffect(() => {
     fetchDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
   if (error) return <div>{error}</div>;
@@ -70,25 +39,11 @@ function ProductDetail() {
 
   const imageList = (
     product.images?.length
-      ? product.images.map((p) =>
-          p?.startsWith("http") ? p : `http://localhost:8080${p}`
-        )
+      ? product.images.map((p) => `http://localhost:8080${p}`)
       : []
   ).concat(
-    product.thumbnail
-      ? [
-          product.thumbnail.startsWith("http")
-            ? product.thumbnail
-            : `http://localhost:8080${product.thumbnail}`,
-        ]
-      : [],
-    product.imageUrl
-      ? [
-          product.imageUrl.startsWith("http")
-            ? product.imageUrl
-            : `http://localhost:8080${product.imageUrl}`,
-        ]
-      : []
+    product.thumbnail ? [`http://localhost:8080${product.thumbnail}`] : [],
+    product.imageUrl ? [`http://localhost:8080${product.imageUrl}`] : []
   );
 
   const displayMain = mainImage || imageList[0] || "/images/default.jpg";
@@ -160,17 +115,15 @@ function ProductDetail() {
 
           <ul className="details">
             <li>
-              상품상태:{" "}
-              <b>
-                {PRODUCT_STATUS_LABEL[product.productStatus] ||
-                  product.productStatus}
-              </b>
+              <strong>상품상태:</strong>{" "}
+              {PRODUCT_STATUS_LABEL[product.productStatus] ||
+                product.productStatus}
             </li>
             <li>
               <strong>배송비:</strong> {product.deliveryFee ? "있음" : "없음"}
             </li>
             <li>
-              직거래지역: <b>{product.seller?.address || "-"}</b>
+              <strong>직거래지역:</strong> {product.seller?.address || "-"}
             </li>
           </ul>
 
@@ -314,7 +267,7 @@ function ProductDetail() {
         <div className="divider" />
         <div className="product-description">{product.content}</div>
         {/* 10월 1일 추가 부분 여기까지 */}
-        {/* ───────────── /판매자 정보 스트립 ───────────── */}
+        {/* 하단 추가 정보 */}
         <div className="divider" />
         <div className="product-extra-cards">
           <div className="card">
