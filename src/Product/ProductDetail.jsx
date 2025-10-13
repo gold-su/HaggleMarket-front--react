@@ -6,6 +6,7 @@ import { jwtDecode } from "jwt-decode";
 import LikeHeart from "../like/LikeHeart";
 import "../ProductCSS/ProductDetail.css";
 import { PRODUCT_STATUS_LABEL } from "../Product/productStatus.js";
+import { createChatRoom } from "../api/chat";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -119,9 +120,6 @@ function ProductDetail() {
                 product.productStatus}
             </li>
             <li>
-              <strong>설명:</strong> {product.content}
-            </li>
-            <li>
               <strong>배송비:</strong> {product.deliveryFee ? "있음" : "없음"}
             </li>
             <li>
@@ -138,7 +136,42 @@ function ProductDetail() {
               showCount={false}
               onChanged={() => fetchDetail()}
             />
-            <button className="chat">해글톡</button>
+            <button
+              className="chat"
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem("jwtToken");
+                  if (!token) {
+                    alert("로그인이 필요합니다.");
+                    navigate("/login");
+                    return;
+                  }
+
+                  const sellerUserNo = product?.seller?.userNo;
+                  if (!sellerUserNo) {
+                    alert("판매자 정보를 불러올 수 없습니다.");
+                    return;
+                  }
+
+                  console.log("🟢 product.id =", product.id);
+
+                  const data = await createChatRoom({
+                    roomKind: "POST", // ✅ 중고거래
+                    sellerUserNo, // ✅ 판매자 번호
+                    postId: product.id, // ✅ 상품 ID 추가
+                  });
+
+                  alert("채팅방이 생성되었습니다.");
+                  navigate(`/chat?roomId=${data.roomId}`);
+                } catch (err) {
+                  console.error(err);
+                  alert("채팅방 생성 중 오류가 발생했습니다.");
+                }
+              }}
+            >
+              해글톡
+            </button>
+
             <button className="buy">즉시구매</button>
 
             {canEdit && (

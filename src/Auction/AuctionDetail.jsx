@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { fetchAuctionDetail, placeBid, buyout, BASE } from "../api/auction";
 import styles from "../AuctionCSS/AuctionDetail.module.css";
 import BidHistoryModal from "../components/BidHistoryModal";
+import { createChatRoom } from "../api/chat";
 
 function AuctionDetail() {
   const { id } = useParams(); //URL에서 경매 ID 추출
@@ -446,6 +447,42 @@ function AuctionDetail() {
               title={!canBuyNow ? disabledReason : undefined}
             >
               즉시 구매
+            </button>
+            <button
+              className={styles.chatButton}
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem("jwtToken");
+                  if (!token) {
+                    alert("로그인이 필요합니다.");
+                    navigate("/login");
+                    return;
+                  }
+
+                  console.log("🟢 auction 객체:", auction);
+                  console.log("🟢 seller:", auction?.seller);
+
+                  const sellerUserNo = auction?.seller?.userNo;
+                  if (!sellerUserNo) {
+                    alert("판매자 정보를 찾을 수 없습니다.");
+                    return;
+                  }
+
+                  const data = await createChatRoom({
+                    roomKind: "AUCTION",
+                    sellerUserNo,
+                    auctionId: auction.id,
+                  });
+
+                  alert("채팅방이 생성되었습니다.");
+                  navigate(`/chat?roomId=${data.roomId}`);
+                } catch (err) {
+                  console.error(err);
+                  alert("채팅방 생성 중 오류가 발생했습니다.");
+                }
+              }}
+            >
+              💬 채팅하기
             </button>
           </div>
 
