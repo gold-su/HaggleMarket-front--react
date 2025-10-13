@@ -36,9 +36,9 @@ main {
   padding: 6px 12px;
   font-size: 0.95rem;
   border-radius: 6px;
-  border: 1.5px solid #3e7aef;
+  border: 1.5px solid #7d7d7d;
   background-color: #fff;
-  color: #3e7aef;
+  color: #000000;
   font-weight: 600;
   cursor: pointer;
 }
