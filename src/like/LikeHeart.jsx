@@ -38,19 +38,37 @@ function HeartIcon({ active, size = 28 }) {
   );
 }
 
-
 export default function LikeHeart({
+  // ✅ 호환성: 기존 postId 그대로 가능
   postId,
+  // ✅ 경매 전용 id도 지원
+  auctionId,
+  // ✅ 혹시 부모가 직접 id 넘기면 그걸 우선
+  id: explicitId,
+  // ✅ 명시적으로 경매 여부 강제하고 싶을 때
+  isAuction: isAuctionProp = false,
+
   initialLiked = false,
   initialCount = 0,
-  showCount = false,  // 카드에서는 기본 false
-  textMode = false,   // 상세에서 "찜하기/찜취소" 텍스트 버튼
+  showCount = false,   // 카드에서는 보통 false
+  textMode = false,    // 상세에서 텍스트 버튼
   onChanged,
 }) {
-  const { liked, count, toggle } = useLike(postId, initialLiked, initialCount, { onChanged });
+  // id/타입 자동 판별
+  const id = explicitId ?? postId ?? auctionId;
+  const isAuction = isAuctionProp || auctionId != null;
+
+  const { liked, count, toggle } = useLike(id, {
+    isAuction,
+    initialLiked,
+    initialCount,
+    onChanged,
+  });
 
   const onClick = (e) => { e.stopPropagation(); e.preventDefault(); toggle(); };
-  const onKeyDown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(e); } };
+  const onKeyDown = (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(e); }
+  };
 
   if (textMode) {
     return (
@@ -68,7 +86,6 @@ export default function LikeHeart({
     );
   }
 
-  // 카드용 아이콘 버튼
   return (
     <button
       type="button"
