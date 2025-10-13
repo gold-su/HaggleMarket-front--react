@@ -25,7 +25,7 @@ const normalizePrice = (v) => {
 const getPriceNumber = (product, mode = "used") => {
   // 백엔드 응답에 따라 존재할 수 있는 후보 키들
   const auctionKeys = ["currentPrice", "price", "highestBid", "startPrice", "minPrice"];
-  const usedKeys    = ["price", "sellingPrice", "amount", "priceWon"];
+  const usedKeys = ["price", "sellingPrice", "amount", "priceWon"];
   const keys = mode === "auction" ? auctionKeys : usedKeys;
 
   for (const k of keys) {
@@ -57,10 +57,10 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
   const targetLink = link
     ? link
     : product.detailUrl
-    ? product.detailUrl
-    : mode === "auction"
-    ? `/auction/detail/${product.id}`
-    : `/products/detail/${product.id}`;
+      ? product.detailUrl
+      : mode === "auction"
+        ? `/auction/detail/${product.id}`
+        : `/products/detail/${product.id}`;
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
@@ -125,10 +125,10 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
         <div className="product-price-row">
           <div className="product-price">{displayPrice}</div>
           <LikeHeart
-            postId={product?.id}
+            id={product?.id}                         // 공용 id
+            isAuction={mode === "auction"}           // 경매 카드일 때만 true
             initialLiked={product?.liked}
             initialCount={product?.likeCount}
-            onClick={handleFavoriteClick}
           />
         </div>
       </div>

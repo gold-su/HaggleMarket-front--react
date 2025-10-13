@@ -1,6 +1,5 @@
 // src/api/auth.jsx
 import axios from 'axios';
-
 export async function login(username, password) {
     try {
         const response = await axios.post('http://localhost:8080/api/users/login', {
@@ -17,3 +16,4 @@ export async function login(username, password) {
         throw new Error(error.response?.data?.message || '로그인 실패');
     }
 }
+

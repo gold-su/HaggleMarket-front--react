@@ -18,7 +18,7 @@ import EditProfile from "./editPage/EditProfile";
 import ProductDetail from "./Product/ProductDetail";
 import ProductForm from "./Product/ProductForm";
 import ChatPage from "./Chat/ChatPage";
-import LikeBox from "./components/LikeBox";
+import LikeSidebarContainer from "./components/LikeSidebarContainer.jsx";
 import {
   Routes,
   Route,
@@ -41,8 +41,6 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
-  const [likeItems, setLikeItems] = useState([]);
-  const [likeCount, setLikeCount] = useState(0);
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
   const BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8080"; //백엔드 URL
@@ -165,23 +163,6 @@ function App() {
     return () => document.removeEventListener("click", handleClickOutsideMenu);
   }, []);
 
-  useEffect(() => {
-    api
-      .get("/api/products/likes/sidebar", { params: { limit: 20 } })
-      .then((res) => {
-        const items = (res.data ?? []).map((d) => ({
-          id: d.postId,
-          title: d.title,
-          thumbnail: d.thumbnailUrl, // 백엔드 DTO 필드 그대로 매핑
-        }));
-        setLikeItems(items);
-        setLikeCount(items.length);
-      })
-      .catch(() => {
-        setLikeItems([]);
-        setLikeCount(0);
-      });
-  }, [location.pathname]); // 로그인/좋아요 변경 시 브로드캐스트로 다시 불러오면 더 좋음
 
   return (
     <Routes>
@@ -249,7 +230,7 @@ function App() {
                 onCategoryChange={setSelectedCategory} //변경 핸들러 전달
               />
             </main>
-            <LikeBox likeCount={likeCount} items={likeItems} initiallyOpen />
+            <LikeSidebarContainer/>
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}
