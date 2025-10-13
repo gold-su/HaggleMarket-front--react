@@ -172,7 +172,7 @@ function App() {
         const items = (res.data ?? []).map((d) => ({
           id: d.postId,
           title: d.title,
-          img: d.thumbnailUrl, // 백엔드 DTO 필드 그대로 매핑
+          thumbnail: d.thumbnailUrl, // 백엔드 DTO 필드 그대로 매핑
         }));
         setLikeItems(items);
         setLikeCount(items.length);
