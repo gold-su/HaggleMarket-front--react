@@ -31,20 +31,14 @@ export async function sendChatMessage(
 }
 
 /** 채팅방 생성 (상품/경매 공용) */
-export async function createChatRoom({
-  roomKind,
-  sellerUserNo,
-  auctionId,
-  productId,
-}) {
+export async function createChatRoom({ roomKind, auctionId, postId }) {
   const body = {
     roomKind, // "AUCTION" | "POST" | "ORDER"
-    sellerUserNo,
   };
 
   // roomKind에 맞춰 ID 필드만 선택적으로 포함
   if (roomKind === "AUCTION" && auctionId) body.auctionId = auctionId;
-  if (roomKind === "POST" && productId) body.productId = productId;
+  if (roomKind === "POST" && postId) body.postId = postId;
 
   console.log("[createChatRoom] 보내는 body =", body);
 

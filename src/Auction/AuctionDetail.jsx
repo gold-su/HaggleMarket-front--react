@@ -144,11 +144,19 @@ function AuctionDetail() {
           // 이미지: 숫자/문자 id 배열 혹은 url 배열 둘 다 허용
           // 서버 키 오타 대응(imagesUrls) + 절대 URL로 보정
           images,
-          seller: data.seller ?? { address: data.sellerAddress ?? "-" },
           categoryPath: data.categoryPath ?? data.category ?? "", // "대 > 중 > 소"
           categoryIds: data.categoryIds ?? data.categoryIdPath ?? null, // [largeId, middleId, smallId]가 내려오면 활용
           category: data.category ?? "",
           tag: data.tag ?? "",
+          seller: {
+            userNo: data.sellerUserId ?? data.seller?.userNo ?? null,
+            nickname: data.sellerNickname ?? data.seller?.nickname ?? "판매자",
+            address: data.sellerAddress ?? "-",
+            profileImageUrl:
+              data.sellerProfileImageUrl ??
+              data.seller?.profileImageUrl ??
+              "/images/default-avatar.jpg",
+          },
         };
         setAuction(normalized); //정규화된 데이터 저장하여 UI에서 바로 사용 가능하도록 함
       } catch (e) {

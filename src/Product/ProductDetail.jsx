@@ -147,18 +147,17 @@ function ProductDetail() {
                     return;
                   }
 
-                  const sellerUserNo = product?.seller?.userNo;
-                  if (!sellerUserNo) {
-                    alert("판매자 정보를 불러올 수 없습니다.");
-                    return;
-                  }
+                  // const sellerUserNo = product?.seller?.userNo;
+                  // if (!sellerUserNo) {
+                  //   alert("판매자 정보를 불러올 수 없습니다.");
+                  //   return;
+                  // }
 
-                  console.log("🟢 product.id =", product.id);
+                  console.log("🟢 product.id =", product.postId);
 
                   const data = await createChatRoom({
                     roomKind: "POST", // ✅ 중고거래
-                    sellerUserNo, // ✅ 판매자 번호
-                    postId: product.id, // ✅ 상품 ID 추가
+                    postId: product.postId, // ✅ 상품 ID 추가
                   });
 
                   alert("채팅방이 생성되었습니다.");
