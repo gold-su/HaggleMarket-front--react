@@ -20,12 +20,11 @@ body {
 }
 
 .chatPage {
-  height: 100vh;
+  height: 80vh;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  background-color: #f8f8f8;
   font-family: 'Noto Sans KR', sans-serif;
   color: var(--text-color);
   padding: 20px;

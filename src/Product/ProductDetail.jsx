@@ -160,7 +160,6 @@ function ProductDetail() {
                     postId: product.postId, // ✅ 상품 ID 추가
                   });
 
-                  alert("채팅방이 생성되었습니다.");
                   navigate(`/chat?roomId=${data.roomId}`);
                 } catch (err) {
                   console.error(err);

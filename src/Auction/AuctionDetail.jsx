@@ -482,7 +482,6 @@ function AuctionDetail() {
                     auctionId: auction.id,
                   });
 
-                  alert("채팅방이 생성되었습니다.");
                   navigate(`/chat?roomId=${data.roomId}`);
                 } catch (err) {
                   console.error(err);
