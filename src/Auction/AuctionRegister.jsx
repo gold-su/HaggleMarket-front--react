@@ -1,57 +1,36 @@
 // src/Auction/AuctionRegister.jsx
-import React, { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { whoAmI } from "../api/auction";
-import stylesLayout from "../AuctionCSS/AuctionRegisterLayout.module.css";
-import stylesForm from "../AuctionCSS/AuctionRegisterForm.module.css";
-import stylesButtons from "../AuctionCSS/AuctionRegisterButtons.module.css";
-import { createAuctionPost, uploadAuctionImages } from "../api/auction";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
+// ⬇️ 판매하기 페이지와 동일한 스타일 모듈을 재사용
+import stylesLayout from "../ProductCSS/ProductFormLayout.module.css";
+import stylesForm from "../ProductCSS/ProductFormInputs.module.css";
+import stylesButtons from "../ProductCSS/ProductFormButtons.module.css";
+
 function AuctionRegister() {
-  const navigate = useNavigate();
+  // ----- 기본 필드 (필요 시 기존 상태/핸들러로 교체) -----
+  const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [largeCategories, setLargeCategories] = useState([]);
+  const [middleCategories, setMiddleCategories] = useState([]);
+  const [smallCategories, setSmallCategories] = useState([]);
+  const [selectedLarge, setSelectedLarge] = useState(null);
+  const [selectedMiddle, setSelectedMiddle] = useState(null);
+  const [selectedSmall, setSelectedSmall] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    console.log("[auth] token present?", !!token);
-
-    whoAmI()
-      .then((me) => {
-        console.log("[auth] /api/auth/me =>", me);
-        if (!me?.authenticated) {
-          alert("로그인이 필요합니다.");
-        }
-      })
-      .catch((e) => {
-        console.log("[auth] me error", e?.response?.status, e?.response?.data);
-      });
-  }, []);
-
-  // 이미지: File과 미리보기 URL 둘 다 관리
-  const [imageFiles, setImageFiles] = useState([]); // File[]
-  const [imagePreviews, setImagePreviews] = useState([]); // string[]
-  const maxImages = 12;
-
-  // 기본 정보
-  const [auctionTitle, setAuctionTitle] = useState("");
-  const [auctionContent, setAuctionContent] = useState("");
-  // ✅ 백엔드 카테고리 (루트→중→소)
-  const [largeCategories, setLargeCategories] = useState([]); // [{id, name}]
-  const [middleCategories, setMiddleCategories] = useState([]); // [{id, name}]
-  const [smallCategories, setSmallCategories] = useState([]); // [{id, name}]
-  const [selectedLarge, setSelectedLarge] = useState(null); // id
-  const [selectedMiddle, setSelectedMiddle] = useState(null); // id
-  const [selectedSmall, setSelectedSmall] = useState(null); // id
-  // 경매 정보
+  const [title, setTitle] = useState("");
   const [startCost, setStartCost] = useState("");
   const [buyoutCost, setBuyoutCost] = useState("");
-  const [startTime, setStartTime] = useState(""); // yyyy-MM-ddTHH:mm
+  const [bidUnit, setBidUnit] = useState("");
+  const [deliveryFee, setDeliveryFee] = useState("별도");
+  const [desc, setDesc] = useState("");
+  const [tradeLocation, setTradeLocation] = useState("");
+  const [contact, setContact] = useState("");
+  const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-
-  // 상태
   const [submitting, setSubmitting] = useState(false);
 
-  // 대분류 로드
+  // ----- 카테고리 로딩 (판매하기 페이지와 동일 패턴) -----
   useEffect(() => {
     axios
       .get("/api/categories/roots")
@@ -59,218 +38,151 @@ function AuctionRegister() {
       .catch(() => setLargeCategories([]));
   }, []);
 
-  // 선택된 카테고리 경로 텍스트
-  const categoryText = useMemo(() => {
-    const largeName = largeCategories.find((c) => c.id === selectedLarge)?.name;
-    const middleName = middleCategories.find(
-      (c) => c.id === selectedMiddle
-    )?.name;
-    const smallName = smallCategories.find((c) => c.id === selectedSmall)?.name;
-    return [largeName, middleName, smallName].filter(Boolean).join(" > ");
-  }, [
-    largeCategories,
-    middleCategories,
-    smallCategories,
-    selectedLarge,
-    selectedMiddle,
-    selectedSmall,
-  ]);
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files ?? []);
-    if (!files.length) return;
-    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-    const allowed = files.filter(
-      (f) => /image\/(png|jpeg|jpg)/i.test(f.type) && f.size <= MAX_SIZE
-    );
-    if (allowed.length < files.length) {
-      alert("PNG/JPG만 가능하며, 파일당 5MB 이하만 업로드됩니다.");
-    }
-    const nextFiles = [...imageFiles, ...allowed].slice(0, maxImages);
-    const newPreviews = nextFiles.map((f) => URL.createObjectURL(f));
-
-    setImageFiles(nextFiles);
-    setImagePreviews(newPreviews);
-  };
-
-  const handleRemoveImage = (idx) => {
-    const nextFiles = imageFiles.filter((_, i) => i !== idx);
-    const nextPreviews = imagePreviews.filter((_, i) => i !== idx);
-    setImageFiles(nextFiles);
-    setImagePreviews(nextPreviews);
-  };
-
-  // 클릭 핸들러 (백엔드 연동)
-  const handleLargeCategoryClick = async (categoryId) => {
-    setSelectedLarge(categoryId);
+  const onLarge = (id) => {
+    setSelectedLarge(id);
     setSelectedMiddle(null);
     setSelectedSmall(null);
-    setSmallCategories([]); // 소분류 비우기
-
-    try {
-      // 중분류 로드
-      const res = await axios.get(`/api/categories/${categoryId}`);
-      setMiddleCategories(res.data || []);
-    } catch {
-      setMiddleCategories([]);
-    }
+    setSmallCategories([]);
+    axios
+      .get(`/api/categories/${id}`)
+      .then((res) => setMiddleCategories(res.data || []))
+      .catch(() => setMiddleCategories([]));
   };
-
-  const handleMiddleCategoryClick = async (categoryId) => {
-    setSelectedMiddle(categoryId);
+  const onMiddle = (id) => {
+    setSelectedMiddle(id);
     setSelectedSmall(null);
-
-    try {
-      // 소분류 로드
-      const res = await axios.get(`/api/categories/${categoryId}`);
-      setSmallCategories(res.data || []);
-    } catch {
-      setSmallCategories([]);
-    }
+    axios
+      .get(`/api/categories/${id}`)
+      .then((res) => setSmallCategories(res.data || []))
+      .catch(() => setSmallCategories([]));
   };
 
-  const handleSmallCategoryClick = (categoryId) => {
-    setSelectedSmall(categoryId);
+  // ----- 이미지 업로드(미리보기만) -----
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    const remain = Math.max(0, 12 - (images.length + imagePreviews.length));
+    const picked = files.slice(0, remain);
+    const urls = picked.map((f) => URL.createObjectURL(f));
+    setImages((p) => [...p, ...picked]);
+    setImagePreviews((p) => [...p, ...urls]);
+  };
+  const removePreview = (idx) => {
+    setImagePreviews((p) => p.filter((_, i) => i !== idx));
+    setImages((p) => p.filter((_, i) => i !== idx));
   };
 
-  // 프론트 유효성 검증
-  const validate = () => {
-    if (!auctionTitle.trim()) return "상품명을 입력해 주세요.";
-    if (!auctionContent.trim() || auctionContent.trim().length < 10)
-      return "상품 설명은 10자 이상 입력해 주세요.";
-    if (!selectedSmall) return "카테고리를 선택해 주세요.";
-    // if (!selectedLargeCategory) return '대분류를 선택해 주세요.'; 카테고리 임시로 빼둠
-    if (!startCost || Number(startCost) <= 0)
-      return "시작가를 올바르게 입력해 주세요.";
-    if (buyoutCost && Number(buyoutCost) <= Number(startCost))
-      return "즉시 구매가는 시작가보다 커야 합니다.";
-    if (!startTime || !endTime)
-      return "경매 시작/종료 시간을 모두 입력해 주세요.";
-    const st = new Date(startTime);
-    const et = new Date(endTime);
-    if (isNaN(st.getTime()) || isNaN(et.getTime()))
-      return "시간 형식을 확인해 주세요.";
-    if (st >= et) return "종료 시간은 시작 시간보다 늦어야 합니다.";
-    if (!imageFiles.length) return "이미지는 최소 1장 이상 등록해 주세요.";
-    if (imageFiles.length > maxImages)
-      return `이미지는 최대 ${maxImages}장까지 등록 가능합니다.`;
-    return null;
-  };
-
-  // TODO: 실제 로그인/세션에서 userNo 받아오기
-  const userNo = 1; // 데모: 고정.
-
-  const handleSubmitAuction = async (e) => {
+  // ----- 제출 (기존 API와 맞추어 사용하세요) -----
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const err = validate();
-    if (err) {
-      alert(err);
-      return;
-    }
+    if (submitting) return;
+
+    if (!title.trim()) return alert("경매 상품명을 입력해 주세요.");
+    if (!selectedSmall) return alert("카테고리를 선택해 주세요.");
+    if (!(Number(startCost) > 0)) return alert("시작가는 0보다 큰 숫자여야 합니다.");
+    if (!startTime || !endTime) return alert("경매 시작/종료 시간을 입력해 주세요.");
 
     try {
       setSubmitting(true);
 
-      // 1) 본문 생성
-      const { auctionId, message } = await createAuctionPost({
-        title: auctionTitle.trim(),
-        content: auctionContent.trim(), //카테고리 임시 빼둠
+      // 1) 이미지 업로드 (필요 시 실제 API로 교체)
+      let uploaded = [];
+      if (images.length > 0) {
+        const fd = new FormData();
+        images.forEach((f) => fd.append("images", f));
+        const res = await axios.post("/api/auction/images", fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        uploaded = res.data || [];
+      }
+
+      // 2) 본문 업로드 (필요 시 실제 API로 교체)
+      const dto = {
+        title: title.trim(),
         startCost: Number(startCost),
         buyoutCost: buyoutCost ? Number(buyoutCost) : null,
+        bidUnit: bidUnit ? Number(bidUnit) : null,
+        deliveryFee: deliveryFee === "포함",
+        content: desc.trim(),
+        categoryId: selectedSmall,
+        tradeLocation,
+        contact,
         startTime,
         endTime,
-        categoryId: Number(selectedSmall),
+        imageUrls: uploaded,
+      };
+
+      await axios.post("/api/auction", dto, {
+        headers: { "Content-Type": "application/json" },
       });
 
-      // 2) 이미지 업로드 (정렬 순서: 현재 배열 순서를 1부터 부여)
-      const sortOrder = imageFiles.map((_, i) => i + 1);
-      await uploadAuctionImages(auctionId, imageFiles, sortOrder);
-
-      alert(message ?? "경매 상품이 등록되었습니다.");
-      navigate(`/auction/detail/${auctionId}`);
-    } catch (e) {
-      console.error(e);
-      alert(
-        "일부 단계에서 오류가 발생했습니다. 이미지 재업로드를 시도해주세요."
-      );
+      alert("경매가 등록되었습니다.");
+      window.history.back();
+    } catch (err) {
+      console.error(err);
+      alert("등록에 실패했습니다.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleSaveDraft = () => {
-    // 간단 예시: localStorage 임시저장
-    const draft = {
-      auctionTitle,
-      auctionContent,
-      selectedLarge,
-      selectedMiddle,
-      selectedSmall,
-      startCost,
-      buyoutCost,
-      startTime,
-      endTime,
-      // 이미지 File은 직렬화 불가 → 필요하면 IndexedDB 사용
-    };
-    localStorage.setItem("auction_draft", JSON.stringify(draft));
-    alert("임시 저장되었습니다.");
-  };
-
-  // previews가 바뀔 때 이전 URL 해제
-  useEffect(() => {
-    return () => {
-      imagePreviews.forEach((u) => URL.revokeObjectURL(u));
-    };
-  }, [imagePreviews]);
-
   return (
-    <div className={stylesLayout.auctionRegisterPage}>
-      <main className={stylesLayout.mainContent} role="main">
-        <form
-          onSubmit={handleSubmitAuction}
-          id="auction-register-form"
-          noValidate
-        >
-          <section className={stylesLayout.section}>
-            <h1 className={stylesLayout.pageTitle}>경매 상품 등록</h1>
-            <h2 className={stylesLayout.sectionTitle}>경매 상품 정보 입력</h2>
+    <div className={stylesLayout.productRegisterPage}>
+      <main className={stylesLayout.registerMainContent} role="main">
+        <form onSubmit={handleSubmit} noValidate>
+          <section className={stylesLayout.registerSection}>
+            <h1 className={stylesLayout.registerTitle}>경매 상품 등록</h1>
 
             <ul className={stylesLayout.formGroups}>
               {/* 이미지 업로드 */}
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>
-                  상품 이미지{" "}
-                  <small>
-                    ({imageFiles.length}/{maxImages})
-                  </small>
-                </div>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>상품 이미지</div>
                 <div className={stylesLayout.formContent}>
                   <ul className={stylesForm.imageUploadList}>
                     <li
-                      className={`${stylesForm.imageUploadItem} ${stylesForm.addImage}`}
+                      className={`${stylesForm.imageUploadItem} ${stylesForm.addImage} ${
+                        imagePreviews.length >= 12 ? stylesForm.disabled : ""
+                      }`}
                     >
-                      <label htmlFor="image-upload-input">
+                      <label htmlFor="auction-image-input">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                          <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
                         <span>이미지 등록</span>
                       </label>
                       <input
-                        id="image-upload-input"
+                        id="auction-image-input"
                         type="file"
                         accept="image/jpg, image/jpeg, image/png"
                         multiple
                         onChange={handleImageChange}
+                        disabled={imagePreviews.length >= 12}
                         style={{ display: "none" }}
                       />
                     </li>
+
                     {imagePreviews.map((src, idx) => (
                       <li
                         key={idx}
                         className={`${stylesForm.imageUploadItem} ${stylesForm.imagePreviewItem}`}
                       >
-                        <img src={src} alt={`상품 이미지 ${idx + 1}`} />
+                        <img src={src} alt={`업로드 미리보기 ${idx + 1}`} />
                         <button
                           type="button"
                           className={stylesForm.removeImageButton}
-                          onClick={() => handleRemoveImage(idx)}
+                          onClick={() => removePreview(idx)}
                           aria-label="이미지 삭제"
                         >
                           ×
@@ -278,72 +190,78 @@ function AuctionRegister() {
                       </li>
                     ))}
                   </ul>
-                  {/* 안내 문구에서 '썸네일 클릭 → 1번 이동' 문구 제거 */}
-                  <div className={stylesForm.formHint}>
-                    최대 {maxImages}장, PNG/JPG만 가능.
-                  </div>
                 </div>
               </li>
 
               {/* 상품명 */}
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>상품명</div>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>상품 명</div>
                 <div className={stylesLayout.formContent}>
                   <input
                     type="text"
                     className={stylesForm.formInput}
                     placeholder="경매 상품명을 입력해 주세요."
                     maxLength={50}
-                    value={auctionTitle}
-                    onChange={(e) => setAuctionTitle(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     required
                   />
                   <div className={stylesForm.charCounter}>
-                    {auctionTitle.length}/50
+                    {title.length}/50
                   </div>
                 </div>
               </li>
 
               {/* 카테고리 */}
-              <li className={stylesLayout.formGroup}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>카테고리</div>
-                <div
-                  className={`${stylesLayout.formContent} ${stylesForm.categorySelectionArea}`}
-                >
-                  {/* 대분류 */}
-                  <div className={stylesForm.categoryColumn}>
-                    <ul className={stylesForm.categoryList}>
-                      {largeCategories.length === 0 ? (
-                        <li
+                <div className={stylesLayout.formContent}>
+                  <div className={stylesForm.categorySelectionArea}>
+                    {/* 대분류 */}
+                    <div className={stylesForm.categoryColumn}>
+                      <ul className={stylesForm.categoryList}>
+                        {largeCategories.length === 0 ? (
+                          <li
+                            className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                          >
+                            카테고리 불러오는 중...
+                          </li>
+                        ) : (
+                          largeCategories.map((cat) => (
+                            <li
+                              key={cat.id}
+                              className={`${stylesForm.categoryItem} ${
+                                selectedLarge === cat.id
+                                  ? stylesForm.active
+                                  : ""
+                              }`}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => onLarge(cat.id)}
+                                aria-selected={selectedLarge === cat.id}
+                              >
+                                {cat.name}
+                              </button>
+                            </li>
+                          ))
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* 중분류 */}
+                    <div className={stylesForm.categoryColumn}>
+                      {!selectedLarge ? (
+                        <div
                           className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
                         >
-                          카테고리 불러오는 중...
-                        </li>
-                      ) : (
-                        largeCategories.map((cat) => (
-                          <li
-                            key={cat.id}
-                            className={`${stylesForm.categoryItem} ${
-                              selectedLarge === cat.id ? stylesForm.active : ""
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleLargeCategoryClick(cat.id)}
-                              aria-selected={selectedLarge === cat.id}
-                            >
-                              {cat.name}
-                            </button>
-                          </li>
-                        ))
-                      )}
-                    </ul>
-                  </div>
-
-                  {/* 중분류 */}
-                  <div className={stylesForm.categoryColumn}>
-                    {selectedLarge ? (
-                      middleCategories.length === 0 ? (
+                          중분류 선택
+                        </div>
+                      ) : middleCategories.length === 0 ? (
                         <div
                           className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
                         >
@@ -362,9 +280,7 @@ function AuctionRegister() {
                             >
                               <button
                                 type="button"
-                                onClick={() =>
-                                  handleMiddleCategoryClick(cat.id)
-                                }
+                                onClick={() => onMiddle(cat.id)}
                                 aria-selected={selectedMiddle === cat.id}
                               >
                                 {cat.name}
@@ -372,20 +288,18 @@ function AuctionRegister() {
                             </li>
                           ))}
                         </ul>
-                      )
-                    ) : (
-                      <div
-                        className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
-                      >
-                        중분류 선택
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
 
-                  {/* 소분류 */}
-                  <div className={stylesForm.categoryColumn}>
-                    {selectedMiddle ? (
-                      smallCategories.length === 0 ? (
+                    {/* 소분류 */}
+                    <div className={stylesForm.categoryColumn}>
+                      {!selectedMiddle ? (
+                        <div
+                          className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                        >
+                          소분류 선택
+                        </div>
+                      ) : smallCategories.length === 0 ? (
                         <div
                           className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
                         >
@@ -404,7 +318,7 @@ function AuctionRegister() {
                             >
                               <button
                                 type="button"
-                                onClick={() => handleSmallCategoryClick(cat.id)}
+                                onClick={() => setSelectedSmall(cat.id)}
                                 aria-selected={selectedSmall === cat.id}
                               >
                                 {cat.name}
@@ -412,129 +326,198 @@ function AuctionRegister() {
                             </li>
                           ))}
                         </ul>
-                      )
-                    ) : (
-                      <div
-                        className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
-                      >
-                        소분류 선택
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-                {categoryText && (
-                  <div className={stylesForm.formHint}>
-                    선택됨: {categoryText}
-                  </div>
-                )}
               </li>
 
-              {/* 시작가 */}
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>시작가</div>
+              {/* 경매 정보 */}
+              <li className={stylesLayout.formGroupTitle}>
+                <h2 className={stylesLayout.registerTitle}>경매 정보</h2>
+              </li>
+
+              {/* 시작가 / 즉구가 / 최소입찰단위 */}
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>가격</div>
                 <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.priceInputWrapper}>
+                  <div className={stylesForm.priceRow} style={{ flexWrap: "wrap" }}>
+                    <div className={stylesForm.priceInputWrapper}>
+                      <input
+                        type="number"
+                        className={stylesForm.priceInput}
+                        placeholder="시작가"
+                        value={startCost}
+                        onChange={(e) => setStartCost(e.target.value)}
+                        min={1}
+                        step={1}
+                        inputMode="numeric"
+                        onWheel={(e) => e.currentTarget.blur()}
+                      />
+                      <span className={stylesForm.currency}>원</span>
+                    </div>
+
+                    <div className={stylesForm.priceInputWrapper}>
+                      <input
+                        type="number"
+                        className={stylesForm.priceInput}
+                        placeholder="즉시구매가 (선택)"
+                        value={buyoutCost}
+                        onChange={(e) => setBuyoutCost(e.target.value)}
+                        min={0}
+                        step={1}
+                        inputMode="numeric"
+                        onWheel={(e) => e.currentTarget.blur()}
+                      />
+                      <span className={stylesForm.currency}>원</span>
+                    </div>
+
+                    <div className={stylesForm.priceInputWrapper}>
+                      <input
+                        type="number"
+                        className={stylesForm.priceInput}
+                        placeholder="최소 입찰 단위 (선택)"
+                        value={bidUnit}
+                        onChange={(e) => setBidUnit(e.target.value)}
+                        min={0}
+                        step={1}
+                        inputMode="numeric"
+                        onWheel={(e) => e.currentTarget.blur()}
+                      />
+                      <span className={stylesForm.currency}>원</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+
+              {/* 경매 기간 */}
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>경매 기간</div>
+                <div className={stylesLayout.formContent}>
+                  <div className={stylesForm.priceRow}>
                     <input
-                      type="number"
-                      className={`${stylesForm.formInput} ${stylesForm.priceInput}`}
-                      placeholder="경매 시작가를 입력해 주세요."
-                      value={startCost}
-                      onChange={(e) => setStartCost(e.target.value)}
-                      min="1"
-                      required
+                      type="datetime-local"
+                      className={stylesForm.formInput}
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      aria-label="경매 시작 시간"
+                      style={{ maxWidth: 280 }}
                     />
-                    <span className={stylesForm.currency}>원</span>
-                  </div>
-                </div>
-              </li>
-
-              {/* 즉시 구매가 (선택) */}
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>즉시 구매가 (선택)</div>
-                <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.priceInputWrapper}>
                     <input
-                      type="number"
-                      className={`${stylesForm.formInput} ${stylesForm.priceInput}`}
-                      placeholder="즉시 구매가를 입력해 주세요."
-                      value={buyoutCost}
-                      onChange={(e) => setBuyoutCost(e.target.value)}
-                      min={startCost ? Number(startCost) + 1 : 1}
+                      type="datetime-local"
+                      className={stylesForm.formInput}
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      aria-label="경매 종료 시간"
+                      style={{ maxWidth: 280 }}
                     />
-                    <span className={stylesForm.currency}>원</span>
                   </div>
-                </div>
-              </li>
-
-              {/* 시간 */}
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>경매 시작 시간</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="datetime-local"
-                    className={stylesForm.formInput}
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    required
-                  />
-                </div>
-              </li>
-              <li className={stylesLayout.formGroup}>
-                <div className={stylesLayout.formLabel}>경매 종료 시간</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="datetime-local"
-                    className={stylesForm.formInput}
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    required
-                  />
                 </div>
               </li>
 
               {/* 설명 */}
-              <li className={stylesLayout.formGroup}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>상품 설명</div>
                 <div className={stylesLayout.formContent}>
                   <textarea
                     className={stylesForm.formTextarea}
-                    value={auctionContent}
-                    onChange={(e) => setAuctionContent(e.target.value)}
-                    placeholder="경매 상품 설명을 입력해주세요. (10자 이상)"
                     rows={8}
-                    required
+                    placeholder="경매 상품 설명을 입력해 주세요. (최소 10자)"
                     minLength={10}
+                    maxLength={2000}
+                    value={desc}
+                    onChange={(e) => setDesc(e.target.value)}
                   />
                   <div className={stylesForm.charCounter}>
-                    {auctionContent.length}/2000
+                    {desc.length}/2000
                   </div>
+                </div>
+              </li>
+
+              {/* 배송비 */}
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>배송비</div>
+                <div className={stylesLayout.formContent}>
+                  <div className={stylesForm.radioGroup}>
+                    {["포함", "별도"].map((fee) => (
+                      <label key={fee} className={stylesForm.radioLabel}>
+                        <input
+                          type="radio"
+                          name="auctionDeliveryFee"
+                          value={fee}
+                          checked={deliveryFee === fee}
+                          onChange={() => setDeliveryFee(fee)}
+                        />
+                        <span>{fee}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </li>
+
+              {/* 추가정보 */}
+              <li className={stylesLayout.formGroupTitle}>
+                <h2 className={stylesLayout.registerTitle}>추가정보</h2>
+              </li>
+
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>직거래 지역</div>
+                <div className={stylesLayout.formContent}>
+                  <input
+                    type="text"
+                    className={stylesForm.formInput}
+                    placeholder="예) 서울 강남구"
+                    value={tradeLocation}
+                    onChange={(e) => setTradeLocation(e.target.value)}
+                  />
+                </div>
+              </li>
+
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>연락</div>
+                <div className={stylesLayout.formContent}>
+                  <input
+                    type="text"
+                    className={stylesForm.formInput}
+                    placeholder="전화번호 또는 메신저 ID"
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                  />
                 </div>
               </li>
             </ul>
           </section>
+
+          <footer className={stylesLayout.registerFooter}>
+            <div className={stylesLayout.inner}>
+              <div className={stylesButtons.btnGroup}>
+                <button type="button" className={stylesButtons.btnDraft}>
+                  임시저장
+                </button>
+                <button
+                  type="submit"
+                  className={stylesButtons.btnSubmit}
+                  disabled={submitting}
+                >
+                  {submitting ? "등록 중…" : "등록하기"}
+                </button>
+              </div>
+            </div>
+          </footer>
         </form>
       </main>
-
-      <footer className={stylesLayout.registerFooter}>
-        <div className={stylesLayout.inner}>
-          <div className={stylesButtons.btnGroup}>
-            <button
-              type="button"
-              className={stylesButtons.btnDraft}
-              onClick={handleSaveDraft}
-            >
-              임시저장
-            </button>
-            <button
-              type="submit"
-              form="auction-register-form"
-              className={stylesButtons.btnSubmit}
-            >
-              등록하기
-            </button>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

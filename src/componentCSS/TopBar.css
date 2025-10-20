@@ -1,4 +1,5 @@
-/* src/componentsCSS/TopBar.css*/
+/* src/componentsCSS/TopBar.css */
+
 /* 전체 래퍼는 항상 100% 너비 */
 .top-bar-wrapper {
   width: 100%;
@@ -18,11 +19,17 @@
   flex-wrap: wrap;
 }
 
+/* 링크 그룹: 항목 간 간격 일정하게 유지 */
+.top-bar-links {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 10월 19일 간격 수정 */
+}
+
 /* 링크 스타일 */
 .top-bar-links a,
 .top-bar-links button,
 .top-bar-links span {
-  margin-left: 15px;
   text-decoration: none;
   color: #333;
   background: none;
@@ -37,12 +44,11 @@
   color: #3E7AEF;
 }
 
-/* 여기부터 10월 7일 수정*/
 /* ===== 알림 드롭다운 ===== */
 .alert-dropdown {
   position: relative;
-  display: inline-block;
-  margin-left: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .alert-button {
@@ -52,6 +58,9 @@
   color: #000;
   cursor: pointer;
   position: relative;
+  display: flex;
+  align-items: center;
+  /*gap: 6px; 10월 19일 삭제 */
 }
 
 .alert-badge {
@@ -60,12 +69,12 @@
   font-size: 10px;
   border-radius: 50%;
   padding: 2px 6px;
-  margin-left: 4px;
+  margin-left: 2px; /* ✅ 알림 숫자와 아이콘 간격 */
   vertical-align: middle;
 }
 
 .caret {
-  margin-left: 4px;
+  /*margin-left: 3px; 10월 19일 삭제*/
   font-size: 12px;
   transition: transform 0.2s ease;
 }
@@ -135,18 +144,21 @@
 .alert-clear-btn:hover {
   background: #eee;
 }
-/* 여기까지 10월 7일 수정*/
 
+/* 반응형 */
 @media (max-width: 600px) {
   .top-bar {
-    justify-content: center; /* 작아지면 가운데 정렬 */
+    justify-content: center;
     padding: 8px 10px;
+  }
+
+  .top-bar-links {
+    gap: 10px; /* ✅ 모바일에서는 간격 축소 */
   }
 
   .top-bar-links a,
   .top-bar-links button,
   .top-bar-links span {
-    margin-left: 10px;
     font-size: 0.8rem;
   }
 }

@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React, { useState } from 'react';
-import { Link,useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../componentCSS/Header.css'; // CSS 파일 경로 유지
 import { FaStore, FaComments, FaTags, FaGavel } from 'react-icons/fa'; // 경매 아이콘 추가
 
@@ -30,6 +30,10 @@ function Header({ onMenuToggle, onSearch, frequentKeywords }) {
     <header>
       <div className="header-inner-wrapper">
         <div className="logo-menu">
+          {/* 10월 19일 별모양 NEW 배지 생성 */}
+          <span className="new-burst" aria-hidden="true">
+            <span className="label">NEW</span>
+          </span>
           <Link to="/" className="logo">해글마켓</Link>
           <svg
             className="menu-icon"

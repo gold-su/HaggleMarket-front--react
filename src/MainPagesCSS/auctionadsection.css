@@ -177,28 +177,11 @@
   -webkit-box-orient: vertical;
 }
 
-.auction-item-description {
-  font-size: 0.9rem;
-  /* <-- 폰트 크기 증가 */
-  color: #666;
-  /* 회색 */
-  margin-bottom: 12px;
-  /* <-- 마진 조정 */
-  white-space: normal;
-  /* 줄 바꿈 허용 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  /* 두 줄로 제한 */
-  -webkit-box-orient: vertical;
-}
-
 .auction-item-price {
   font-weight: 900;
   font-size: 1.4rem;
   /* <-- 폰트 크기 증가 */
-  color: #00000;
+  color: #000000;
   text-align: left;
   /* 가격 오른쪽 정렬 */
 }

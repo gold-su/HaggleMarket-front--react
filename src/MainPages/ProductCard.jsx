@@ -116,7 +116,6 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
 
       <div className="product-info">
         <div className="product-title">{product?.title}</div>
-        <div className="product-description">{product?.content || ""}</div>
 
         {mode === "auction" && leftText && (
           <div className={`left-time ${isEnded ? "ended" : ""}`}>{leftText}</div>

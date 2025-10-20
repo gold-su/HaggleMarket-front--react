@@ -89,7 +89,7 @@
 .logo-menu {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 8px;
   flex-shrink: 1;
 }
 
@@ -325,4 +325,63 @@
 /* ✅ hover 시에도 글자색 유지 */
 .myshop-nav li:hover {
   color: #000 !important;
+}
+
+/* 10월 17일 추가 */
+/* ✅ 별모양 NEW 배지 (로고 옆) */
+.new-burst {
+  --size: 28px;                 /* 필요하면 32px, 36px로 키우세요 */
+  width: var(--size);
+  height: var(--size);
+  margin-left: 8px;
+  background: var(--santorini-blue); /* 사이트 톤과 통일 */
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  cursor: default;              /* 클릭처럼 보이지 않게 */
+  /* 스티커(별) 모양: 다각형 폭발 형태 */
+  clip-path: polygon(
+    50% 0%,
+    60% 8%,
+    74% 4%,
+    80% 18%,
+    96% 22%,
+    90% 36%,
+    100% 50%,
+    90% 64%,
+    96% 78%,
+    80% 82%,
+    74% 96%,
+    60% 92%,
+    50% 100%,
+    40% 92%,
+    26% 96%,
+    20% 82%,
+    4% 78%,
+    10% 64%,
+    0% 50%,
+    10% 36%,
+    4% 22%,
+    20% 18%,
+    26% 4%,
+    40% 8%
+  );
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+/* 안쪽 텍스트만 살짝 기울여 스티커 느낌 */
+.new-burst .label {
+  font-size: 9px;               /* --size에 맞춰 조정 */
+  font-weight: 900;
+  letter-spacing: .5px;
+  transform: rotate(-20deg);    /* 이미지처럼 대각선 느낌 */
+  line-height: 1;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .new-burst { --size: 24px; }
+  .new-burst .label { font-size: 8px; }
 }

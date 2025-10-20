@@ -1,11 +1,14 @@
 // src/components/TopBar.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../componentCSS/topBar.css'; // CSS 파일 경로 유지
+import '../componentCSS/topBar.css';
 import '../editPage/EditProfile';
 
 function TopBar() {
-  const isLoggedIn = !!localStorage.getItem('jwtToken');
+  // ⚠️ TEMP: 개발용 강제 로그인 스위치 (완료 후 false 또는 제거)
+  const DEV_FORCE_LOGIN = true;
+
+  const isLoggedIn = DEV_FORCE_LOGIN || !!localStorage.getItem('jwtToken');
 
   // ✅ 알림 상태 관리
   const [isOpen, setIsOpen] = useState(false);
@@ -30,12 +33,15 @@ function TopBar() {
   // ✅ 안 읽은 알림 수 계산
   const unreadCount = alerts.filter(a => !a.read).length;
 
+  // 표시용 닉네임 (토큰 없을 때도 보이도록 기본값)
+  const nick = localStorage.getItem("nickName") || "게스트";
+
   return (
     <div className="top-bar-wrapper">
       <div className="top-bar">
         {isLoggedIn ? (
           <div className="top-bar-links">
-            <span>{localStorage.getItem("nickName")}님 환영합니다.</span>
+            <span>{nick}님 환영합니다.</span>
             <Link to="/editprofile">내 정보 수정</Link>
 
             {/* ✅ 알림 드롭다운 */}

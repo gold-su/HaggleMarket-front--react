@@ -11,3 +11,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/*10월 16일*/
+/* ===== Global Typography + Colors (통일) ===== */
+:root{
+  --color-text-strong:#0f172a; /* 거의 검정 */
+  --color-text:#334155;        /* 본문 */
+  --color-muted:#64748b;       /* 보조 */
+  --color-border:#e5e7eb;
+  --color-primary:#2980f5;     /* 포인트 */
+  --color-primary-hover:#1f6ee0;
+}
+
+html { font-size: 16px; }
+body {
+  color: var(--color-text);
+  line-height: 1.55;
+}
+
+/* 공통 섹션 제목 */
+.section-title, .product-list-title, .mypage-title, .pageTitle, .myshop-store-name {
+  font-weight: 800;
+  color: var(--color-text-strong);
+  letter-spacing: -0.2px;
+}
+
+/* 자주 쓰는 캡션/보조 텍스트 */
+.text-muted{ color:var(--color-muted); }
+
+/* 링크 기본 톤 */
+a { color: var(--color-text-strong); text-decoration: none; }
+a:hover { color: var(--color-primary); }
+
+/* 공통 버튼 톤(필요 컴포넌트에서 상속) */
+button {
+  font-weight: 700;
+  border-radius: 8px;
+}
