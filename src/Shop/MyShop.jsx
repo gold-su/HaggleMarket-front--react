@@ -9,7 +9,7 @@ import "../ShopCSS/MyShopContent.css";
 /* ====== 설정(엔드포인트 경로는 프로젝트에 맞게 필요시 바꿔주세요) ====== */
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 const USED_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=used`;   // 내 중고
-const AUCTION_LIST_URL = (userNo) => `/api/shops/${userNo}/auctions`;          // 내 경매(프로젝트에 없는 경우 맞는 URL로 교체)
+const AUCTION_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=auction`; // 내 경매(프로젝트에 없는 경우 맞는 URL로 교체)
 const LIKES_URL = `/api/products/likes/sidebar`;                               // 찜(중고+경매 통합)
 const DELETE_USED_URL = (id) => `/api/products/${id}`;
 const DELETE_AUCTION_URL = (id) => `/api/auction/${id}`;
@@ -23,11 +23,11 @@ const looksNumeric = (v) => /^\d+$/.test(String(v ?? ""));
 const isAuctionItem = (obj) =>
   Boolean(
     obj?.isAuction ||
-      obj?.auction === true ||
-      obj?.type === "AUCTION" ||
-      obj?.kind === "AUCTION" ||
-      obj?.category === "AUCTION" ||
-      obj?.auctionId != null
+    obj?.auction === true ||
+    obj?.type === "AUCTION" ||
+    obj?.kind === "AUCTION" ||
+    obj?.category === "AUCTION" ||
+    obj?.auctionId != null
   );
 
 const normalizePrice = (v) => {
@@ -55,7 +55,6 @@ const getPriceNumber = (p, auction = false) => {
 };
 
 const resolveThumb = (obj) => {
-  // 썸네일 후보
   const raw =
     obj?.thumbnailUrl ??
     obj?.imageUrl ??
@@ -63,11 +62,24 @@ const resolveThumb = (obj) => {
     (obj?.firstImageId != null ? String(obj.firstImageId) : null);
 
   if (!raw) return "/no-image.png";
-  if (typeof raw === "number" || looksNumeric(raw)) {
-    // 경매 이미지 id만 내려오는 케이스
+
+  // ✅ 숫자면 -> 경매 이미지 API 호출
+  if (/^\d+$/.test(String(raw))) {
     return `${API_BASE}/api/auction/images/${raw}`;
   }
-  return String(raw).startsWith("http") ? raw : `${API_BASE}${raw}`;
+
+  // ✅ 절대경로면 그대로
+  if (raw.startsWith("http")) return raw;
+
+  // ✅ 업로드된 중고상품 이미지
+  if (raw.startsWith("/uploads/")) return `${API_BASE}${raw}`;
+
+  // ✅ 일반 파일명(jpg, png 등)
+  if (/\.(jpg|jpeg|png|gif)$/i.test(raw)) {
+    return `${API_BASE}/upload/profile/${raw}`;
+  }
+
+  return `${API_BASE}${raw}`;
 };
 
 const fmtDate = (iso) => {
@@ -128,7 +140,7 @@ export default function MyShop() {
   });
   const [stats, setStats] = useState(null);
 
-  const [activeTab, setActiveTab] = useState("상품"); // 상품 / 찜 / 내 상품
+  const [activeTab, setActiveTab] = useState("내 상품"); // 상품 / 찜 / 내 상품
   const [filter, setFilter] = useState("ALL"); // ALL / USED / AUCTION
 
   // 데이터
@@ -179,64 +191,25 @@ export default function MyShop() {
     }
   };
 
-// 내 경매 목록 로딩 (여러 후보 엔드포인트 순차 시도)
-const loadAuction = async (userNo) => {
-  if (!userNo) return;
-  setLoading(true);
-
-  // 응답 -> 표준화
-  const normalize = (data) => {
-    const list = Array.isArray(data?.content) ? data.content : (Array.isArray(data) ? data : []);
-    return list.map(a => ({
-      ...a,
-      id: a.auctionId ?? a.id,
-      auctionId: a.auctionId ?? a.id,
-      title: a.title ?? "",
-      // 썸네일: 숫자 id만 오면 이미지 API로 바꿔줌
-      thumbnailUrl: (() => {
-        const raw = a.thumbnailUrl ?? a.imageUrl ?? a.thumbnail ?? a.firstImageId;
-        if (raw == null) return null;
-        if (typeof raw === "number" || /^\d+$/.test(String(raw))) {
-          return `${API_BASE}/api/auction/images/${raw}`;
-        }
-        return String(raw).startsWith("http") ? raw : `${API_BASE}${raw}`;
-      })(),
-      currentPrice: a.currentCost ?? a.currentPrice ?? a.startCost ?? a.startPrice ?? 0,
-      startCost: a.startCost ?? a.startPrice ?? 0,
-      isAuction: true,
-    }));
+  const loadAuction = async (userNo) => {
+    if (!userNo) return;
+    setLoading(true);
+    try {
+      const { data } = await api.get(`/api/shops/${userNo}/products?type=auction`);
+      const list = Array.isArray(data?.content)
+        ? data.content
+        : Array.isArray(data)
+          ? data
+          : [];
+      setAuctionList(list);
+    } catch (e) {
+      console.error("❌ 경매 목록 로드 실패", e);
+      setAuctionList([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 후보 엔드포인트들 (순서대로 시도)
-  const candidates = [
-    `/api/shops/${userNo}/auctions`,     // 우리가 먼저 가정했던 경로 (지금은 404)
-    `/api/auction/my`,                   // 인증 사용자 본인 경매
-    `/api/auctions?owner=${userNo}`,     // 쿼리파라미터 방식
-    `/api/auction/list?owner=${userNo}`, // 다른 팀에서 쓰는 네이밍일 수 있음
-    `/api/auctions`,                     // 전체에서 프론트 필터링(최후의 보루)
-  ];
-
-  let ok = false;
-  for (const url of candidates) {
-    try {
-      const { data } = await api.get(url);
-      setAuctionList(normalize(data));
-      ok = true;
-      break;
-    } catch (e) {
-      // 404면 다음 후보로 넘어감
-      if (e?.response?.status !== 404) {
-        console.warn("auctions load fail:", url, e?.response?.status);
-      }
-    }
-  }
-
-  if (!ok) {
-    console.error("No auction endpoint matched. Please set the correct URL.");
-    setAuctionList([]);
-  }
-  setLoading(false);
-};
   const loadLikes = async () => {
     setLoading(true);
     try {
@@ -276,11 +249,9 @@ const loadAuction = async (userNo) => {
   };
   const goMyPage = () => navigate("/mypage");
 
-  /* ====== 탭 전환 ====== */
   const handleTabClick = async (tab) => {
     setActiveTab(tab);
-    if (tab === "상품" || tab === "내 상품") {
-      // 둘 다 내 상품(중고/경매) 리스트 필요
+    if (tab === "내 상품") {
       await Promise.all([loadUsed(profile.userNo), loadAuction(profile.userNo)]);
     } else if (tab === "찜") {
       await loadLikes();
@@ -326,7 +297,6 @@ const loadAuction = async (userNo) => {
     return rows;
   }, [likesList, filter]);
 
-  /* ====== 카드 공통 컴포넌트 ====== */
   function Card({ item, withActions = false }) {
     const auc = isAuctionItem(item) || item._isAuction;
     const id = item.auctionId ?? item.id ?? item.postId;
@@ -334,23 +304,31 @@ const loadAuction = async (userNo) => {
     const price = getPriceNumber(item, auc);
     const goDetail = () => navigate(auc ? DETAIL_AUCTION_PATH(id) : DETAIL_USED_PATH(id));
 
+    const [menuOpen, setMenuOpen] = useState(false);
+
     return (
       <div
         className="myshop-card"
-        onClick={goDetail}
         style={{
+          position: "relative",
           border: "1px solid #eee",
           borderRadius: 12,
           overflow: "hidden",
           background: "#fff",
           cursor: "pointer",
         }}
+        onClick={goDetail}
       >
         <img
           src={imageSrc}
           alt={item.title}
           onError={onImgError}
-          style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block" }}
+          style={{
+            width: "100%",
+            aspectRatio: "1/1",
+            objectFit: "cover",
+            display: "block",
+          }}
           loading="lazy"
         />
         <div style={{ padding: 10 }}>
@@ -367,45 +345,95 @@ const loadAuction = async (userNo) => {
           >
             {item.title}
           </div>
-          <div style={{ fontWeight: 600 }}>
-            {price.toLocaleString()}원 {auc && <span style={{ marginLeft: 6, fontSize: 12, color: "#888" }}>경매</span>}
-          </div>
 
-          {withActions && (
-            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(item);
-                }}
-                style={{
-                  flex: 1,
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  border: "1px solid #ddd",
-                  background: "#fff",
-                }}
-              >
-                수정
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(item);
-                }}
-                style={{
-                  flex: 1,
-                  padding: "8px 10px",
-                  borderRadius: 8,
-                  border: "1px solid #ff5a5a",
-                  color: "#fff",
-                  background: "#ff5a5a",
-                }}
-              >
-                삭제
-              </button>
+          {/* 가격 + 점 메뉴 영역 */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ fontWeight: 600 }}>
+              {price.toLocaleString()}원{" "}
+              {auc && (
+                <span style={{ marginLeft: 6, fontSize: 12, color: "#888" }}>경매</span>
+              )}
             </div>
-          )}
+
+            {withActions && (
+              <div style={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+                <button
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    fontSize: 20,
+                    cursor: "pointer",
+                    color: "#888",
+                    lineHeight: 1,
+                  }}
+                >
+                  ⋯
+                </button>
+
+                {menuOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: "24px",
+                      right: 0,
+                      background: "#fff",
+                      border: "1px solid #ddd",
+                      borderRadius: 8,
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                      zIndex: 100,
+                      display: "flex",
+                      flexDirection: "column",
+                      minWidth: 90,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen(false);
+                        onEdit(item);
+                      }}
+                      style={{
+                        padding: "8px 10px",
+                        border: "none",
+                        background: "#fff",
+                        textAlign: "left",
+                        fontSize: 14,
+                        cursor: "pointer",
+                      }}
+                    >
+                      ✏ 수정
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMenuOpen(false);
+                        onDelete(item);
+                      }}
+                      style={{
+                        padding: "8px 10px",
+                        border: "none",
+                        background: "#fff",
+                        textAlign: "left",
+                        fontSize: 14,
+                        color: "#ff5a5a",
+                        cursor: "pointer",
+                      }}
+                    >
+                      🗑 삭제
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -483,26 +511,21 @@ const loadAuction = async (userNo) => {
         </div>
       </div>
 
-      {/* 탭 + 우측 필터 드롭다운 */}
       <nav className="myshop-nav" style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <ul style={{ display: "flex", gap: 16 }}>
-          <li className={activeTab === "상품" ? "active" : ""} onClick={() => handleTabClick("상품")}>
-            상품 {stats?.totalProducts ?? 0}
+          <li className={activeTab === "내 상품" ? "active" : ""} onClick={() => handleTabClick("내 상품")}>
+            내 상품 {stats?.totalProducts ?? 0}
           </li>
           <li className={activeTab === "찜" ? "active" : ""} onClick={() => handleTabClick("찜")}>
             찜
-          </li>
-          <li className={activeTab === "내 상품" ? "active" : ""} onClick={() => handleTabClick("내 상품")}>
-            내 상품 {stats?.totalProducts ?? 0}
           </li>
         </ul>
         <FilterDropdown value={filter} onChange={setFilter} />
       </nav>
 
+
       <div className="myshop-content">
-        {activeTab === "상품" && <Grid items={combinedMine} />}
         {activeTab === "찜" && <Grid items={filteredLikes} />}
-        {/* ✅ 내 상품 탭에서만 수정/삭제 버튼 노출 */}
         {activeTab === "내 상품" && <Grid items={combinedMine} withActions />}
       </div>
     </section>
