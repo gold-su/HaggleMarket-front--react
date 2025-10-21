@@ -89,7 +89,7 @@
 .logo-menu {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 8px;
   flex-shrink: 1;
 }
 
@@ -136,8 +136,8 @@
   border-radius: 30px;
   font-size: 1rem;
   outline: none;
-  background-color: #f8f8f8;
-  color: #3E7AEF;
+  background-color: #fff; /* 배경 수정 */
+  color: #000000;
 }
 
 .search-box::placeholder {
@@ -266,4 +266,122 @@
   border-bottom: 1px solid var(--header-border);
   box-shadow: var(--shadow);
   box-sizing: border-box;
+}
+
+/* 여기부터 10월 7일 추가*/
+/* ✅ 헤더에서 '판매하기' 와 '경매 등록' 아이콘만 검은색으로 */
+.auth-buttons a[href="/product"] svg,
+.auth-buttons a[href="/register-auction"] svg {
+  color: #000 !important;   /* react-icons는 보통 currentColor 사용 */
+  fill: #000 !important;
+  stroke: #000 !important;
+}
+
+/* hover 시에도 아이콘은 계속 검은색 유지 */
+.auth-buttons a[href="/product"]:hover svg,
+.auth-buttons a[href="/register-auction"]:hover svg {
+  color: #000 !important;
+  fill: #000 !important;
+  stroke: #000 !important;
+}
+
+/* ✅ '내상점'과 '해글톡' 아이콘 색상을 검정색으로 변경 */
+.auth-buttons a[href="/myshop"] svg,
+.auth-buttons a[href="/chat"] svg {
+  color: #000 !important;
+  fill: #000 !important;
+  stroke: #000 !important;
+}
+
+/* hover 시에도 검은색 유지 */
+.auth-buttons a[href="/myshop"]:hover svg,
+.auth-buttons a[href="/chat"]:hover svg {
+  color: #000 !important;
+  fill: #000 !important;
+  stroke: #000 !important;
+}
+
+/* ✅ 구분선(divider)을 검정색으로 변경 */
+.auth-buttons .divider {
+  color: #000 !important;
+}
+
+/* ✅ 상점 이름을 검은색으로 변경 */
+.myshop-store-name {
+  color: #2c2c2c !important;
+}
+
+/* ✅ 기본 탭 텍스트를 검은색으로 변경 */
+.myshop-nav li {
+  color: #747474 !important;
+}
+
+/* ✅ 활성 탭(파란 밑줄)은 유지하지만 글자는 검정색으로 */
+.myshop-nav li.active {
+  color: #000 !important;
+  border-bottom-color: #3E7AEF !important; /* 밑줄 파란색 유지 */
+}
+
+/* ✅ hover 시에도 글자색 유지 */
+.myshop-nav li:hover {
+  color: #000 !important;
+}
+
+/* 10월 17일 추가 */
+/* ✅ 별모양 NEW 배지 (로고 옆) */
+.new-burst {
+  --size: 28px;                 /* 필요하면 32px, 36px로 키우세요 */
+  width: var(--size);
+  height: var(--size);
+  margin-left: 8px;
+  background: var(--santorini-blue); /* 사이트 톤과 통일 */
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  user-select: none;
+  cursor: default;              /* 클릭처럼 보이지 않게 */
+  /* 스티커(별) 모양: 다각형 폭발 형태 */
+  clip-path: polygon(
+    50% 0%,
+    60% 8%,
+    74% 4%,
+    80% 18%,
+    96% 22%,
+    90% 36%,
+    100% 50%,
+    90% 64%,
+    96% 78%,
+    80% 82%,
+    74% 96%,
+    60% 92%,
+    50% 100%,
+    40% 92%,
+    26% 96%,
+    20% 82%,
+    4% 78%,
+    10% 64%,
+    0% 50%,
+    10% 36%,
+    4% 22%,
+    20% 18%,
+    26% 4%,
+    40% 8%
+  );
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+/* 안쪽 텍스트만 살짝 기울여 스티커 느낌 */
+.new-burst .label {
+  font-size: 9px;               /* --size에 맞춰 조정 */
+  font-weight: 900;
+  letter-spacing: .5px;
+  transform: rotate(-20deg);    /* 이미지처럼 대각선 느낌 */
+  line-height: 1;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .new-burst { --size: 24px; }
+  .new-burst .label { font-size: 8px; }
 }

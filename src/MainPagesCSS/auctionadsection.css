@@ -72,8 +72,20 @@
   width: 100%;
 
   /* 양 옆 페이드 마스크 유지 */
-  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
 
   /* 스크롤바 숨김 */
   scrollbar-width: none;
@@ -84,7 +96,6 @@
   display: none;
   /* Chrome, Safari, Opera */
 }
-
 
 .auction-item {
   flex-shrink: 0;
@@ -136,7 +147,6 @@
   scroll-padding-right: calc(var(--cardW) + var(--gap));
 }
 
-
 .auction-item-details {
   background-color: var(--santorini-white);
   /* 흰색 배경 위에 표시 */
@@ -147,7 +157,6 @@
   justify-content: space-between;
   flex-grow: 1;
   /* 남은 공간 채우기 */
-
 }
 
 .auction-item-title {
@@ -168,28 +177,11 @@
   -webkit-box-orient: vertical;
 }
 
-.auction-item-description {
-  font-size: 0.9rem;
-  /* <-- 폰트 크기 증가 */
-  color: #666;
-  /* 회색 */
-  margin-bottom: 12px;
-  /* <-- 마진 조정 */
-  white-space: normal;
-  /* 줄 바꿈 허용 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  /* 두 줄로 제한 */
-  -webkit-box-orient: vertical;
-}
-
 .auction-item-price {
   font-weight: 900;
   font-size: 1.4rem;
   /* <-- 폰트 크기 증가 */
-  color: var(--santorini-blue);
+  color: #000000;
   text-align: left;
   /* 가격 오른쪽 정렬 */
 }
@@ -252,7 +244,6 @@
   stroke: var(--star-yellow);
 }
 
-
 /* 스크롤 버튼 스타일 */
 .scroll-button {
   position: absolute;
@@ -290,7 +281,7 @@
   width: 32px;
   /* <-- SVG 아이콘 크기 증가 */
   height: 32px;
-  color: #3E7AEF;
+  color: #3e7aef;
 }
 
 .scroll-button-left {
@@ -302,14 +293,17 @@
   /* <-- 래퍼 밖으로 더 빼기 */
 }
 
-
 /* 반응형(원하면 조정) — 2장 보이기일 때도 '첫 칸 비우기' 유지 */
 @media (max-width: 1024px) {
   .auction-items-preview {
     --cols: 2;
-    grid-auto-columns: calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols));
+    grid-auto-columns: calc(
+      (100% - var(--gap) * (var(--cols) - 1)) / var(--cols)
+    );
     padding-left: calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols));
-    scroll-padding-left: calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols));
+    scroll-padding-left: calc(
+      (100% - var(--gap) * (var(--cols) - 1)) / var(--cols)
+    );
   }
 }
 
@@ -317,7 +311,9 @@
 @media (max-width: 640px) {
   .auction-items-preview {
     --cols: 1.1;
-    grid-auto-columns: calc((100% - var(--gap) * (ceil(var(--cols)) - 1)) / var(--cols));
+    grid-auto-columns: calc(
+      (100% - var(--gap) * (ceil(var(--cols)) - 1)) / var(--cols)
+    );
     /* 간단히 90%로 해도 OK */
     padding-left: 5%;
     scroll-padding-left: 5%;

@@ -1,4 +1,5 @@
-/* src/componentsCSS/TopBar.css*/
+/* src/componentsCSS/TopBar.css */
+
 /* 전체 래퍼는 항상 100% 너비 */
 .top-bar-wrapper {
   width: 100%;
@@ -18,11 +19,17 @@
   flex-wrap: wrap;
 }
 
+/* 링크 그룹: 항목 간 간격 일정하게 유지 */
+.top-bar-links {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 10월 19일 간격 수정 */
+}
+
 /* 링크 스타일 */
 .top-bar-links a,
 .top-bar-links button,
 .top-bar-links span {
-  margin-left: 15px;
   text-decoration: none;
   color: #333;
   background: none;
@@ -37,17 +44,121 @@
   color: #3E7AEF;
 }
 
+/* ===== 알림 드롭다운 ===== */
+.alert-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
 
+.alert-button {
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  /*gap: 6px; 10월 19일 삭제 */
+}
+
+.alert-badge {
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  border-radius: 50%;
+  padding: 2px 6px;
+  margin-left: 2px; /* ✅ 알림 숫자와 아이콘 간격 */
+  vertical-align: middle;
+}
+
+.caret {
+  /*margin-left: 3px; 10월 19일 삭제*/
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+.caret.open {
+  transform: rotate(180deg);
+}
+
+.alert-panel {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  width: 260px;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.alert-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.alert-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+}
+.alert-item.unread {
+  background-color: #f8fbff;
+  font-weight: 600;
+}
+.alert-item:last-child {
+  border-bottom: none;
+}
+
+.alert-text {
+  color: #111;
+}
+
+.alert-time {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.alert-footer {
+  text-align: center;
+  padding: 8px;
+  border-top: 1px solid #eee;
+}
+
+.alert-clear-btn {
+  border: none;
+  background: #f8f8f8;
+  color: #555;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.alert-clear-btn:hover {
+  background: #eee;
+}
+
+/* 반응형 */
 @media (max-width: 600px) {
   .top-bar {
-    justify-content: center; /* 작아지면 가운데 정렬 */
+    justify-content: center;
     padding: 8px 10px;
+  }
+
+  .top-bar-links {
+    gap: 10px; /* ✅ 모바일에서는 간격 축소 */
   }
 
   .top-bar-links a,
   .top-bar-links button,
   .top-bar-links span {
-    margin-left: 10px;
     font-size: 0.8rem;
   }
 }

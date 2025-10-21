@@ -14,15 +14,12 @@ const readToken = () => localStorage.getItem("jwtToken");
  */
 export default function useLike(
   id,
-  {
-    isAuction = false,
-    initialLiked = false,
-    initialCount = 0,
-    onChanged,
-  } = {}
+  { isAuction = false, initialLiked = false, initialCount = 0, onChanged } = {}
 ) {
   const [liked, setLiked] = useState(!!initialLiked);
-  const [count, setCount] = useState(Number.isFinite(initialCount) ? initialCount : 0);
+  const [count, setCount] = useState(
+    Number.isFinite(initialCount) ? initialCount : 0
+  );
   const [token, setToken] = useState(readToken());
   const busyRef = useRef(false);
 
@@ -42,29 +39,39 @@ export default function useLike(
   }, []);
 
   // 초기값 변동 시 동기화
-  useEffect(() => { setLiked(!!initialLiked); }, [initialLiked]);
-  useEffect(() => { setCount(Number.isFinite(initialCount) ? initialCount : 0); }, [initialCount]);
+  useEffect(() => {
+    setLiked(!!initialLiked);
+  }, [initialLiked]);
+  useEffect(() => {
+    setCount(Number.isFinite(initialCount) ? initialCount : 0);
+  }, [initialCount]);
 
   // 내 좋아요 여부 조회
   useEffect(() => {
     if (!id) return;
-    if (!token) { setLiked(false); setCount(Number.isFinite(initialCount) ? initialCount : 0); return; }
-    axios.get(`${baseUrl}/${id}/like/me`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(res => {
+    if (!token) {
+      setLiked(false);
+      setCount(Number.isFinite(initialCount) ? initialCount : 0);
+      return;
+    }
+    axios
+      .get(`${baseUrl}/${id}/like/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
         if (typeof res.data?.liked !== "undefined") setLiked(!!res.data.liked);
       })
-      .catch(err => {
+      .catch((err) => {
         const s = err?.response?.status;
-        if (s === 401 || s === 403) {
-          localStorage.removeItem("jwtToken");
-          window.dispatchEvent(new Event("auth:changed"));
-        }
       });
   }, [id, token, baseUrl, initialCount]);
 
   // 토글
   const toggle = useCallback(async () => {
-    if (!token) { alert("로그인이 필요합니다."); return; }
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
     if (busyRef.current || !id) return;
     busyRef.current = true;
 
@@ -86,7 +93,11 @@ export default function useLike(
       onChanged?.({ id, isAuction, liked: nextLiked, count: nextCount });
       // 사이드바 갱신 신호
       window.dispatchEvent(new Event("likes:changed"));
-      window.dispatchEvent(new CustomEvent("like:updated", { detail: { id, isAuction, liked: nextLiked, count: nextCount } }));
+      window.dispatchEvent(
+        new CustomEvent("like:updated", {
+          detail: { id, isAuction, liked: nextLiked, count: nextCount },
+        })
+      );
     } catch (err) {
       // 롤백
       setLiked(prevLiked);

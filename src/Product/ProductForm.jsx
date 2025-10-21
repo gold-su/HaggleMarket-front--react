@@ -12,8 +12,8 @@ function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('jwtToken');
-
-  useEffect(() => {
+ /* 10월 19일 강제 로그인 설정 */
+  /*useEffect(() => {
     if (!token) {
       alert('로그인이 필요합니다.');
       navigate('/login');
@@ -23,7 +23,24 @@ function ProductForm({ mode = 'create' }) {
       alert('로그인이 필요합니다.');
       navigate('/login');
     });
-  }, [token, navigate]);
+  }, [token, navigate]);*/
+
+  // 🔁 로그인 강제 리다이렉트 제거: 새 등록(create)은 비로그인 접근 허용
+  useEffect(() => {
+    // 수정 모드일 때만 로그인/인증 체크
+    if (mode === 'edit') {
+      if (!token) {
+        alert('로그인이 필요합니다. (수정은 로그인 후 가능)');
+        navigate('/login');
+        return;
+      }
+      whoAmI().catch(() => {
+        alert('로그인이 필요합니다. (수정은 로그인 후 가능)');
+        navigate('/login');
+      });
+    }
+  }, [mode, token, navigate]);
+
 
   // 카테고리
   const [largeCategories, setLargeCategories] = useState([]);
