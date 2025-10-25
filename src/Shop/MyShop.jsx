@@ -279,6 +279,14 @@ export default function MyShop() {
     }
   };
 
+  const daysSince = (dateStr) => {
+    if (!dateStr || dateStr === "-") return "-";
+    const start = new Date(dateStr);
+    const today = new Date();
+    const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+    return `${diff}일째`;
+  };
+
   /* ====== 뷰 데이터(필터 반영) ====== */
   const combinedMine = useMemo(() => {
     // 상품/내 상품 탭에서 공통으로 사용
@@ -465,34 +473,15 @@ export default function MyShop() {
       <div className="myshop-store-header">
         <div className="myshop-profile-image-wrapper">
           <img
-            src={profile.profileImage}
+            src={
+              profile.profileImage?.startsWith("/uploads/")
+                ? `${API_BASE}${profile.profileImage}`
+                : profile.profileImage
+            }
             alt="상점 프로필"
             className="myshop-profile-image"
             onError={onImgError}
           />
-
-          {/* ✅ 프로필 사진 아래 항상 보이도록 유지 */}
-          <div className="myshop-buttons">
-            <button className="myshop-mypage-btn" onClick={goMyPage}>
-              마이페이지
-            </button>
-          </div>
-
-          <div className="myshop-profile-image-overlay" onClick={onChangeProfileImageClick}>
-            <svg
-              className="myshop-camera-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-              <circle cx="12" cy="13" r="4"></circle>
-            </svg>
-          </div>
-          <input type="file" accept="image/*" ref={fileInputRef} onChange={onFileChange} style={{ display: "none" }} />
         </div>
 
         <div className="myshop-store-details">
@@ -501,7 +490,7 @@ export default function MyShop() {
             {profile.isVerified && <span className="myshop-verified-badge">본인인증 완료</span>}
           </h1>
           <div className="myshop-store-stats">
-            <span>상점오픈일 {fmtDate(profile.storeOpenedAt)}</span>
+            <span>오픈한지 {daysSince(profile.storeOpenedAt)}</span>
             <span>상점방문수 {profile.storeVisits}명</span>
             <span>상품판매 {profile.salesCount}회</span>
           </div>
@@ -522,8 +511,6 @@ export default function MyShop() {
         </ul>
         <FilterDropdown value={filter} onChange={setFilter} />
       </nav>
-
-
       <div className="myshop-content">
         {activeTab === "찜" && <Grid items={filteredLikes} />}
         {activeTab === "내 상품" && <Grid items={combinedMine} withActions />}

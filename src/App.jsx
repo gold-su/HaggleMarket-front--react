@@ -11,8 +11,6 @@ import AuctionRegister from "./Auction/AuctionRegister";
 import AuctionEdit from "./Auction/AuctionEdit";
 import AuctionDetail from "./Auction/AuctionDetail";
 import MyShop from "./Shop/MyShop";
-import ProductManagementPage from "./Shop/ProductManagementPage";
-import MyPage from "./Shop/MyPage";
 import EditProfile from "./editPage/EditProfile";
 // import ProductRegister from './Product/ProductRegister';
 import ProductDetail from "./Product/ProductDetail";
@@ -170,6 +168,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/editprofile" element={<EditProfile />} />
+      <Route path="/myshop/:sellerNo" element={<MyShop />} />
 
       {/* ✅ 비밀번호 찾기 / 재설정 */}
       <Route
@@ -281,27 +280,6 @@ function App() {
         }
       />
 
-      {/* 마이페이지 */}
-      <Route
-        path="/mypage"
-        element={
-          <>
-            <TopBar />
-            <Header
-              onMenuToggle={handleMenuToggle}
-              onSearch={handleSearch}
-              frequentKeywords={frequentKeywords}
-            />
-            <MyPage />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
-          </>
-        }
-      />
-
       {/* 상품 상세 */}
       <Route
         path="/products/detail/:id"
@@ -314,27 +292,6 @@ function App() {
               frequentKeywords={frequentKeywords}
             />
             <ProductDetail />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
-          </>
-        }
-      />
-
-      {/* 상품 관리 */}
-      <Route
-        path="/myshop/products"
-        element={
-          <>
-            <TopBar />
-            <Header
-              onMenuToggle={handleMenuToggle}
-              onSearch={handleSearch}
-              frequentKeywords={frequentKeywords}
-            />
-            <ProductManagementPage />
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}
