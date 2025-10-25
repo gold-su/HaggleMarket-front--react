@@ -1,3 +1,4 @@
+// src/Shop/MyShop.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -6,11 +7,11 @@ import "../ShopCSS/MyShopHeader.css";
 import "../ShopCSS/MyShopNavigation.css";
 import "../ShopCSS/MyShopContent.css";
 
-/* ====== 설정(엔드포인트 경로는 프로젝트에 맞게 필요시 바꿔주세요) ====== */
+/* ====== 설정 ====== */
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
-const USED_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=used`;   // 내 중고
-const AUCTION_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=auction`; // 내 경매(프로젝트에 없는 경우 맞는 URL로 교체)
-const LIKES_URL = `/api/products/likes/sidebar`;                               // 찜(중고+경매 통합)
+const USED_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=used`;
+const AUCTION_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=auction`;
+const LIKES_URL = `/api/products/likes/sidebar`;
 const DELETE_USED_URL = (id) => `/api/products/${id}`;
 const DELETE_AUCTION_URL = (id) => `/api/auction/${id}`;
 const EDIT_USED_PATH = (id) => `/products/edit/${id}`;
@@ -18,17 +19,19 @@ const EDIT_AUCTION_PATH = (id) => `/auction/edit/${id}`;
 const DETAIL_USED_PATH = (id) => `/products/detail/${id}`;
 const DETAIL_AUCTION_PATH = (id) => `/auction/detail/${id}`;
 
+/* ====== 기본 아바타 ====== */
+const DEFAULT_AVATAR = "/images/default-avatar.svg";
+
 /* ====== 유틸 ====== */
-const looksNumeric = (v) => /^\d+$/.test(String(v ?? ""));
 const isAuctionItem = (obj) =>
   Boolean(
     obj?.isAuction ||
     obj?.auction === true ||
     obj?.type === "AUCTION" ||
     obj?.kind === "AUCTION" ||
-    obj?.category === "AUCTION" ||
     obj?.auctionId != null
   );
+
 
 const normalizePrice = (v) => {
   if (v == null) return null;
@@ -44,8 +47,16 @@ const normalizePrice = (v) => {
 };
 
 const getPriceNumber = (p, auction = false) => {
-  const auctionKeys = ["currentPrice", "currentCost", "highestBid", "price", "startPrice", "startCost", "minPrice", "cost"];
-  const usedKeys = ["price", "sellingPrice", "amount", "priceWon", "cost"];
+  const auctionKeys = [
+    "currentPrice",
+    "currentCost",
+    "highestBid",
+    "price",
+    "startPrice",
+    "minPrice",
+    "cost",
+  ];
+  const usedKeys = ["price", "sellingPrice", "amount", "cost"];
   const keys = auction ? auctionKeys : usedKeys;
   for (const k of keys) {
     const n = normalizePrice(p?.[k]);
@@ -62,34 +73,19 @@ const resolveThumb = (obj) => {
     (obj?.firstImageId != null ? String(obj.firstImageId) : null);
 
   if (!raw) return "/no-image.png";
-
-  // ✅ 숫자면 -> 경매 이미지 API 호출
-  if (/^\d+$/.test(String(raw))) {
-    return `${API_BASE}/api/auction/images/${raw}`;
-  }
-
-  // ✅ 절대경로면 그대로
+  if (/^\d+$/.test(String(raw))) return `${API_BASE}/api/auction/images/${raw}`;
   if (raw.startsWith("http")) return raw;
-
-  // ✅ 업로드된 중고상품 이미지
   if (raw.startsWith("/uploads/")) return `${API_BASE}${raw}`;
-
-  // ✅ 일반 파일명(jpg, png 등)
-  if (/\.(jpg|jpeg|png|gif)$/i.test(raw)) {
-    return `${API_BASE}/upload/profile/${raw}`;
-  }
-
   return `${API_BASE}${raw}`;
 };
 
-const fmtDate = (iso) => {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? "-" : d.toISOString().slice(0, 10);
+const daysSince = (dateStr) => {
+  if (!dateStr || dateStr === "-") return "-";
+  const start = new Date(dateStr);
+  const today = new Date();
+  const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  return `${diff}일째`;
 };
-
-const PLACEHOLDER =
-  "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='100%25' height='100%25' fill='%23eee'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='Arial' font-size='14'%3EStore%3C/text%3E%3C/svg%3E";
 
 /* ====== 드롭다운 ====== */
 function FilterDropdown({ value, onChange }) {
@@ -113,10 +109,10 @@ function FilterDropdown({ value, onChange }) {
   );
 }
 
+/* ====== 메인 ====== */
 export default function MyShop() {
   const navigate = useNavigate();
 
-  // axios
   const api = useMemo(() => {
     const _api = axios.create({ baseURL: API_BASE, timeout: 15000 });
     _api.interceptors.request.use((config) => {
@@ -127,56 +123,92 @@ export default function MyShop() {
     return _api;
   }, []);
 
-  /* ====== 상태 ====== */
+  const [editIntro, setEditIntro] = useState(false);
+  const [introText, setIntroText] = useState("");
+
   const [profile, setProfile] = useState({
     userNo: null,
     storeName: "상점",
-    profileImage: PLACEHOLDER,
+    profileUrl: DEFAULT_AVATAR,
     isVerified: false,
     storeOpenedAt: "-",
     storeVisits: 0,
     salesCount: 0,
     description: "",
   });
+
   const [stats, setStats] = useState(null);
-
-  const [activeTab, setActiveTab] = useState("내 상품"); // 상품 / 찜 / 내 상품
-  const [filter, setFilter] = useState("ALL"); // ALL / USED / AUCTION
-
-  // 데이터
-  const [usedList, setUsedList] = useState([]);       // 내 중고
-  const [auctionList, setAuctionList] = useState([]); // 내 경매
-  const [likesList, setLikesList] = useState([]);     // 찜(혼합)
-
+  const [activeTab, setActiveTab] = useState("내 상품");
+  const [filter, setFilter] = useState("ALL");
+  const [usedList, setUsedList] = useState([]);
+  const [auctionList, setAuctionList] = useState([]);
+  const [likesList, setLikesList] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const fileInputRef = useRef(null);
+  const saveIntro = async () => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      await api.put(`/api/shops/${profile.userNo}/intro`,
+        { intro: introText },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setProfile((prev) => ({ ...prev, description: introText }));
+      setEditIntro(false);
+      alert("소개글이 저장되었습니다!");
+    } catch (e) {
+      console.error(e);
+      alert("소개글 저장 실패");
+    }
+  };
 
-  /* ====== 로드 ====== */
+  /* ====== 초기 로드 ====== */
   useEffect(() => {
     (async () => {
       try {
+        // ✅ 내 상점 기본 정보 (userNo 얻기용)
         const me = await api.get("/api/shops/me");
+
+        // ✅ 상세 프로필 (소개글 intro 포함)
+        const detail = await api.get(`/api/shops/${me.data.userNo}/detail`);
+
+        // ✅ 상점 통계
         const s = await api.get(`/api/shops/${me.data.userNo}/stats`);
+
+        // ✅ 상태에 반영
         setProfile((prev) => ({
           ...prev,
           userNo: me.data.userNo,
-          storeName: me.data.nickname ? `${me.data.nickname}의 상점` : prev.storeName,
-          profileImage: me.data.profileUrl || prev.profileImage,
-          isVerified: !!me.data.verified,
-          description: me.data.intro || prev.description,
-          storeOpenedAt: me.data.storeOpenedAt ?? s.data.storeOpenedAt ?? "-",
+          storeName: detail.data.nickname
+            ? `${detail.data.nickname}의 상점`
+            : prev.storeName,
+          profileUrl:
+            !detail.data.profileUrl ||
+              detail.data.profileUrl === "null" ||
+              detail.data.profileUrl === "undefined"
+              ? DEFAULT_AVATAR
+              : detail.data.profileUrl.startsWith("/uploads/")
+                ? `${API_BASE}${detail.data.profileUrl}`
+                : detail.data.profileUrl,
+          isVerified: !!detail.data.verified,
+          description: detail.data.intro || prev.description, // ✅ intro 반영
+          storeOpenedAt: detail.data.storeOpenedAt ?? s.data.storeOpenedAt ?? "-",
         }));
+
         setStats(s.data);
 
-        // 기본 탭: 상품 → 중고+경매 둘 다 로드
-        await Promise.all([loadUsed(me.data.userNo), loadAuction(me.data.userNo)]);
+        // ✅ 상품 목록 불러오기
+        await Promise.all([
+          loadUsed(me.data.userNo),
+          loadAuction(me.data.userNo),
+        ]);
       } catch (e) {
-        console.error(e);
+        console.error("❌ 상점 정보 불러오기 실패", e);
       }
     })();
   }, [api]);
 
+
+  /* ====== 로드 함수 ====== */
   const loadUsed = async (userNo) => {
     if (!userNo) return;
     setLoading(true);
@@ -195,7 +227,7 @@ export default function MyShop() {
     if (!userNo) return;
     setLoading(true);
     try {
-      const { data } = await api.get(`/api/shops/${userNo}/products?type=auction`);
+      const { data } = await api.get(AUCTION_LIST_URL(userNo));
       const list = Array.isArray(data?.content)
         ? data.content
         : Array.isArray(data)
@@ -218,11 +250,6 @@ export default function MyShop() {
         ...d,
         id: d.postId ?? d.auctionId ?? d.id,
         isAuction: !!d.isAuction || d.auctionId != null || isAuctionItem(d),
-        thumbnailUrl:
-          d.thumbnailUrl ??
-          d.imageUrl ??
-          d.thumbnail ??
-          (d.firstImageId != null ? String(d.firstImageId) : null),
       }));
       setLikesList(items);
     } catch (e) {
@@ -233,22 +260,13 @@ export default function MyShop() {
     }
   };
 
-  /* ====== 프로필/버튼 ====== */
+  /* ====== 이미지 에러 핸들러 ====== */
   const onImgError = (e) => {
     e.currentTarget.onerror = null;
-    e.currentTarget.src = PLACEHOLDER;
+    e.currentTarget.src = DEFAULT_AVATAR;
   };
-  const onChangeProfileImageClick = () => fileInputRef.current?.click();
-  const onFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () =>
-      setProfile((prev) => ({ ...prev, profileImage: reader.result }));
-    reader.readAsDataURL(file);
-  };
-  const goMyPage = () => navigate("/mypage");
 
+  /* ====== 탭 전환 ====== */
   const handleTabClick = async (tab) => {
     setActiveTab(tab);
     if (tab === "내 상품") {
@@ -258,10 +276,14 @@ export default function MyShop() {
     }
   };
 
-  /* ====== CRUD (내 상품 탭) ====== */
+  /* ====== 삭제/수정 ====== */
   const onEdit = (item) => {
     const auc = isAuctionItem(item);
-    navigate(auc ? EDIT_AUCTION_PATH(item.auctionId ?? item.id) : EDIT_USED_PATH(item.postId ?? item.id));
+    navigate(
+      auc
+        ? EDIT_AUCTION_PATH(item.auctionId ?? item.id)
+        : EDIT_USED_PATH(item.postId ?? item.id)
+    );
   };
 
   const onDelete = async (item) => {
@@ -270,7 +292,6 @@ export default function MyShop() {
     const id = item.auctionId ?? item.id ?? item.postId;
     try {
       await api.delete(auc ? DELETE_AUCTION_URL(id) : DELETE_USED_URL(id));
-      // 목록 갱신
       await Promise.all([loadUsed(profile.userNo), loadAuction(profile.userNo)]);
       alert("삭제되었습니다.");
     } catch (e) {
@@ -279,38 +300,14 @@ export default function MyShop() {
     }
   };
 
-  const daysSince = (dateStr) => {
-    if (!dateStr || dateStr === "-") return "-";
-    const start = new Date(dateStr);
-    const today = new Date();
-    const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-    return `${diff}일째`;
-  };
-
-  /* ====== 뷰 데이터(필터 반영) ====== */
-  const combinedMine = useMemo(() => {
-    // 상품/내 상품 탭에서 공통으로 사용
-    const u = (usedList ?? []).map((p) => ({ ...p, _isAuction: false, id: p.postId ?? p.id }));
-    const a = (auctionList ?? []).map((p) => ({ ...p, _isAuction: true, id: p.auctionId ?? p.id }));
-    let rows = [...u, ...a];
-    if (filter === "USED") rows = rows.filter((x) => !x._isAuction);
-    if (filter === "AUCTION") rows = rows.filter((x) => x._isAuction);
-    return rows;
-  }, [usedList, auctionList, filter]);
-
-  const filteredLikes = useMemo(() => {
-    let rows = likesList ?? [];
-    if (filter === "USED") rows = rows.filter((x) => !isAuctionItem(x));
-    if (filter === "AUCTION") rows = rows.filter((x) => isAuctionItem(x));
-    return rows;
-  }, [likesList, filter]);
-
+  /* ====== 카드/그리드 ====== */
   function Card({ item, withActions = false }) {
     const auc = isAuctionItem(item) || item._isAuction;
     const id = item.auctionId ?? item.id ?? item.postId;
     const imageSrc = resolveThumb(item);
     const price = getPriceNumber(item, auc);
-    const goDetail = () => navigate(auc ? DETAIL_AUCTION_PATH(id) : DETAIL_USED_PATH(id));
+    const goDetail = () =>
+      navigate(auc ? DETAIL_AUCTION_PATH(id) : DETAIL_USED_PATH(id));
 
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -353,8 +350,6 @@ export default function MyShop() {
           >
             {item.title}
           </div>
-
-          {/* 가격 + 점 메뉴 영역 */}
           <div
             style={{
               display: "flex",
@@ -365,12 +360,16 @@ export default function MyShop() {
             <div style={{ fontWeight: 600 }}>
               {price.toLocaleString()}원{" "}
               {auc && (
-                <span style={{ marginLeft: 6, fontSize: 12, color: "#888" }}>경매</span>
+                <span style={{ marginLeft: 6, fontSize: 12, color: "#888" }}>
+                  경매
+                </span>
               )}
             </div>
-
             {withActions && (
-              <div style={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+              <div
+                style={{ position: "relative" }}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   onClick={() => setMenuOpen((prev) => !prev)}
                   style={{
@@ -384,7 +383,6 @@ export default function MyShop() {
                 >
                   ⋯
                 </button>
-
                 {menuOpen && (
                   <div
                     style={{
@@ -399,7 +397,6 @@ export default function MyShop() {
                       display: "flex",
                       flexDirection: "column",
                       minWidth: 90,
-                      overflow: "hidden",
                     }}
                   >
                     <button
@@ -461,7 +458,12 @@ export default function MyShop() {
         }}
       >
         {items.map((it) => (
-          <Card key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${it.auctionId ?? it.id ?? it.postId}`} item={it} withActions={withActions} />
+          <Card
+            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${it.auctionId ?? it.id ?? it.postId
+              }`}
+            item={it}
+            withActions={withActions}
+          />
         ))}
       </div>
     );
@@ -471,49 +473,127 @@ export default function MyShop() {
   return (
     <section className="myshop-container">
       <div className="myshop-store-header">
-        <div className="myshop-profile-image-wrapper">
-          <img
-            src={
-              profile.profileImage?.startsWith("/uploads/")
-                ? `${API_BASE}${profile.profileImage}`
-                : profile.profileImage
-            }
-            alt="상점 프로필"
-            className="myshop-profile-image"
-            onError={onImgError}
-          />
-        </div>
+        <img
+          src={
+            profile.profileUrl
+              ? profile.profileUrl.startsWith("http")
+                ? profile.profileUrl
+                : `${API_BASE}${profile.profileUrl}`
+              : "/images/default-avatar.svg"
+          }
+          alt="상점 프로필"
+          className="myshop-profile-image"
+          onError={onImgError}
+        />
 
         <div className="myshop-store-details">
           <h1 className="myshop-store-name">
             {profile.storeName}
-            {profile.isVerified && <span className="myshop-verified-badge">본인인증 완료</span>}
+            {profile.isVerified && (
+              <span className="myshop-verified-badge">본인인증 완료</span>
+            )}
           </h1>
           <div className="myshop-store-stats">
             <span>오픈한지 {daysSince(profile.storeOpenedAt)}</span>
             <span>상점방문수 {profile.storeVisits}명</span>
             <span>상품판매 {profile.salesCount}회</span>
           </div>
-          <p className="myshop-store-description">
-            {profile.description || "앱에서 가게 소개 작성하고 신뢰도를 높여 보세요."}
-          </p>
+          <div className="myshop-store-description">
+            {editIntro ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <textarea
+                  value={introText}
+                  onChange={(e) => setIntroText(e.target.value)}
+                  placeholder="소개글을 입력하세요"
+                  style={{
+                    width: "100%",
+                    minHeight: 80,
+                    resize: "none",
+                    padding: 8,
+                    borderRadius: 8,
+                    border: "1px solid #ddd",
+                  }}
+                />
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={saveIntro}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      background: "#007bff",
+                      color: "#fff",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    저장
+                  </button>
+                  <button
+                    onClick={() => setEditIntro(false)}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: 8,
+                      background: "#eee",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <p style={{ margin: 0 }}>
+                  {profile.description ||
+                    "앱에서 가게 소개 작성하고 신뢰도를 높여 보세요."}
+                </p>
+                <button
+                  onClick={() => {
+                    setIntroText(profile.description || "");
+                    setEditIntro(true);
+                  }}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    color: "#007bff",
+                    cursor: "pointer",
+                    fontSize: 14,
+                  }}
+                >
+                  ✏ 수정
+                </button>
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
 
-      <nav className="myshop-nav" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <nav
+        className="myshop-nav"
+        style={{ display: "flex", alignItems: "center", gap: 16 }}
+      >
         <ul style={{ display: "flex", gap: 16 }}>
-          <li className={activeTab === "내 상품" ? "active" : ""} onClick={() => handleTabClick("내 상품")}>
+          <li
+            className={activeTab === "내 상품" ? "active" : ""}
+            onClick={() => handleTabClick("내 상품")}
+          >
             내 상품 {stats?.totalProducts ?? 0}
           </li>
-          <li className={activeTab === "찜" ? "active" : ""} onClick={() => handleTabClick("찜")}>
+          <li
+            className={activeTab === "찜" ? "active" : ""}
+            onClick={() => handleTabClick("찜")}
+          >
             찜
           </li>
         </ul>
         <FilterDropdown value={filter} onChange={setFilter} />
       </nav>
+
       <div className="myshop-content">
-        {activeTab === "찜" && <Grid items={filteredLikes} />}
-        {activeTab === "내 상품" && <Grid items={combinedMine} withActions />}
+        {activeTab === "찜" && <Grid items={likesList} />}
+        {activeTab === "내 상품" && <Grid items={[...usedList, ...auctionList]} withActions />}
       </div>
     </section>
   );

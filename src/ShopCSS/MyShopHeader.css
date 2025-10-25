@@ -10,22 +10,21 @@
 
 .myshop-profile-image-wrapper {
   position: relative;
-  width: 150px; /* 너무 넓어서 중앙 배치가 깨질 수 있음 */
-  height: 150px;
+  width: 120px;      /* 🔹 기존 150 → 120으로 축소 */
+  height: 120px;     /* 🔹 비율 유지 */
   border-radius: 50%;
-  overflow: hidden; /* ✅ 필수: 이미지가 원형 안에 보이도록 */
+  overflow: hidden;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5; /* ✅ 이미지 없을 때 배경 */
+  background-color: #f5f5f5;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
 
-
 .myshop-profile-image {
-  width: 100%;
-  height: 100%;
+  width: 120px;      /* 🔹 명시적으로 동일 크기 지정 */
+  height: 120px;
   object-fit: cover;
   border-radius: 50%;
   display: block;

@@ -17,6 +17,7 @@ function ProductDetail() {
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(null);
 
+  // ✅ 상품 상세 불러오기
   const fetchDetail = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -34,9 +35,32 @@ function ProductDetail() {
     fetchDetail();
   }, [postId]);
 
+  // ✅ 판매자 상점 정보 불러오기
+  useEffect(() => {
+    if (!product) return;
+    const sellerNo = product?.seller?.userNo;
+    if (!sellerNo) return;
+    if (product?.seller?.profileUrl || product?.seller?.shopLoaded) return;
+
+    axios
+      .get(`/api/shops/${sellerNo}`)
+      .then((res) => {
+        setProduct((prev) => ({
+          ...prev,
+          seller: {
+            ...prev.seller,
+            ...res.data,
+            shopLoaded: true,
+          },
+        }));
+      })
+      .catch((err) => console.error("❌ 상점정보 불러오기 실패:", err));
+  }, [product]);
+
   if (error) return <div>{error}</div>;
   if (!product) return <div>로딩 중...</div>;
 
+  // ✅ 이미지 처리
   const imageList = (
     product.images?.length
       ? product.images.map((p) => `http://localhost:8080${p}`)
@@ -50,6 +74,7 @@ function ProductDetail() {
   const createdAtText =
     typeof product.createdAt === "string" ? product.createdAt.slice(0, 10) : "";
 
+  // ✅ 로그인 사용자 번호 확인
   const token = localStorage.getItem("jwtToken");
   let myNo = null;
   try {
@@ -62,17 +87,31 @@ function ProductDetail() {
   const canEdit =
     (product?.mine ?? product?.isMine ?? false) || isMineFromToken;
 
+  // ✅ 프로필 URL 처리
+  const resolveProfileUrl = (url) => {
+    if (!url || url === "null" || url === "undefined") {
+      return "/images/default-avatar.svg";
+    }
+    if (typeof url === "string" && url.startsWith("/uploads/")) {
+      return `http://localhost:8080${url}`;
+    }
+    return url;
+  };
+
+  // ✅ 렌더링
   return (
     <div className="product-page">
       <div className="product-detail">
-        {/* 좌측 이미지 영역 */}
+        {/* 좌측 이미지 */}
         <div className="product-media">
           <div className="product-detail-image">
             <img
               src={displayMain}
               alt={product.title}
               onError={(e) => {
-                e.currentTarget.src = "/images/default.jpg";
+                if (!e.currentTarget.src.includes("default.jpg")) {
+                  e.currentTarget.src = "/images/default.jpg";
+                }
               }}
             />
           </div>
@@ -92,7 +131,9 @@ function ProductDetail() {
                     src={img}
                     alt={`썸네일 ${idx + 1}`}
                     onError={(e) => {
-                      e.currentTarget.src = "/images/default.jpg";
+                      if (!e.currentTarget.src.includes("default.jpg")) {
+                        e.currentTarget.src = "/images/default.jpg";
+                      }
                     }}
                   />
                 </button>
@@ -101,7 +142,7 @@ function ProductDetail() {
           )}
         </div>
 
-        {/* 우측 정보 영역 */}
+        {/* 우측 상품 정보 */}
         <div className="product-info">
           <h2>{product.title}</h2>
           <div className="price">
@@ -147,17 +188,9 @@ function ProductDetail() {
                     return;
                   }
 
-                  // const sellerUserNo = product?.seller?.userNo;
-                  // if (!sellerUserNo) {
-                  //   alert("판매자 정보를 불러올 수 없습니다.");
-                  //   return;
-                  // }
-
-                  console.log("🟢 product.id =", product.postId);
-
                   const data = await createChatRoom({
-                    roomKind: "POST", // ✅ 중고거래
-                    postId: product.postId, // ✅ 상품 ID 추가
+                    roomKind: "POST",
+                    postId: product.postId,
                   });
 
                   navigate(`/chat?roomId=${data.roomId}`);
@@ -183,34 +216,23 @@ function ProductDetail() {
           </div>
         </div>
       </div>
-      {/* 10월 1일 추가 부분 */}
-      {/* 하단 추가 정보 */}
-      {/* ───────────── 판매자 정보 스트립 (상품설명 아래) ───────────── */}
-      <div
-        className="seller-info-strip"
-        role="contentinfo"
-        aria-label="판매자 정보"
-      >
-        {/* 아바타 + 판매자명 */}
+
+      {/* ───────────── 판매자 정보 영역 ───────────── */}
+      <div className="seller-info-strip" role="contentinfo" aria-label="판매자 정보">
         <div className="seller-left">
           <img
             className="seller-avatar"
-            src={
-              product?.seller?.profileImageUrl ||
-              product?.seller?.avatarUrl ||
-              "/images/default-avatar.png"
-            }
+            src={resolveProfileUrl(product?.seller?.profileUrl)}
             alt="판매자 프로필"
             onError={(e) => {
-              e.currentTarget.src = "/images/default-avatar.png";
+              if (!e.currentTarget.src.includes("default-avatar.svg")) {
+                e.currentTarget.src = "/images/default-avatar.svg";
+              }
             }}
           />
           <div className="seller-meta">
             <div className="seller-name">
-              {product?.seller?.nickname ||
-                product?.seller?.userName ||
-                product?.seller?.name ||
-                "판매자"}
+              {product?.seller?.nickname || "판매자"}
               {product?.seller?.verified ? (
                 <span className="seller-badge">본인인증</span>
               ) : null}
@@ -223,49 +245,31 @@ function ProductDetail() {
           </div>
         </div>
 
-        {/* 판매자의 다른 상품(최대 3개 썸네일) */}
-        <div className="seller-middle">
-          {(product?.seller?.otherProducts ?? []).slice(0, 3).map((p, i) => (
-            <a
-              key={p.id ?? i}
-              className="seller-thumb"
-              href={`/products/detail/${p.id ?? ""}`}
-              onClick={(e) => {
-                if (!p.id) e.preventDefault();
-              }}
-              title={p.title ?? "상품"}
-            >
-              <img
-                src={p.thumbnailUrl || p.imageUrl || "/images/default.jpg"}
-                alt={p.title ?? "상품"}
-                onError={(e) => {
-                  e.currentTarget.src = "/images/default.jpg";
-                }}
-              />
-              <span className="seller-thumb-price">
-                {Number(p.price ?? p.cost ?? 0).toLocaleString()}원
-              </span>
-            </a>
-          ))}
-        </div>
-
-        {/* 액션 버튼 영역 */}
         <div className="seller-right">
+          {/* ✅ 자기 게시물 → 내상점 / 타인 → 상점보기 */}
           <button
             type="button"
             className="seller-btn store"
-            onClick={() => alert("상점 이동은 나중에 라우팅 연결하세요.")}
+            onClick={() => {
+              if (Number(product.seller.userNo) === Number(myNo)) {
+                navigate("/myshop");
+              } else {
+                navigate(`/shop/${product.seller.userNo}`);
+              }
+            }}
           >
-            상점 보기
+            {Number(product.seller.userNo) === Number(myNo)
+              ? "내 상점"
+              : "상점 보기"}
           </button>
         </div>
       </div>
+
+      {/* ───────────── 상품 추가 정보 ───────────── */}
       <div className="product-extra-info">
         <h3>상품정보</h3>
         <div className="divider" />
         <div className="product-description">{product.content}</div>
-        {/* 10월 1일 추가 부분 여기까지 */}
-        {/* 하단 추가 정보 */}
         <div className="divider" />
         <div className="product-extra-cards">
           <div className="card">

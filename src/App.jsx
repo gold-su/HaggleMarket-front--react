@@ -11,6 +11,7 @@ import AuctionRegister from "./Auction/AuctionRegister";
 import AuctionEdit from "./Auction/AuctionEdit";
 import AuctionDetail from "./Auction/AuctionDetail";
 import MyShop from "./Shop/MyShop";
+import ShopDetail from "./Shop/ShopDetail.jsx";
 import EditProfile from "./editPage/EditProfile";
 // import ProductRegister from './Product/ProductRegister';
 import ProductDetail from "./Product/ProductDetail";
@@ -35,6 +36,22 @@ import SearchPage from "./search/SearchPage.jsx";
 import ForgotPassword from "./auth/ForgotPassword";
 import ResetPassword from "./auth/ResetPassword";
 
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("jwtToken");
+
+  if (!token) {
+    // 메시지를 1회만 보여주기 위해 setTimeout으로 비동기 처리
+    setTimeout(() => {
+      alert("로그인이 필요한 서비스입니다. 로그인 페이지로 이동합니다.");
+    }, 0);
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [frequentKeywords, setFrequentKeywords] = useState([]);
@@ -53,24 +70,6 @@ function App() {
     navigate(`/search?${params.toString()}`);
   };
 
-  useEffect(() => {
-    setFrequentKeywords([
-      "재테크",
-      "맛집",
-      "카페",
-      "소프트웨어 개발",
-      "프로그래밍",
-      "데이터 관리",
-      "IT 기술",
-      "여행",
-      "건강",
-      "영화",
-      "음악",
-      "독서",
-      "운동",
-      "요리",
-    ]);
-  }, []);
   useEffect(() => {
     if (location.pathname !== "/") return;
     const loadProducts = async () => {
@@ -168,7 +167,6 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/editprofile" element={<EditProfile />} />
-      <Route path="/myshop/:sellerNo" element={<MyShop />} />
 
       {/* ✅ 비밀번호 찾기 / 재설정 */}
       <Route
@@ -190,6 +188,7 @@ function App() {
           </>
         }
       />
+
       <Route
         path="/reset"
         element={
@@ -229,7 +228,7 @@ function App() {
                 onCategoryChange={setSelectedCategory} //변경 핸들러 전달
               />
             </main>
-            <LikeSidebarContainer/>
+            <LikeSidebarContainer />
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}
@@ -239,9 +238,31 @@ function App() {
         }
       />
 
-      {/* 내 상점 */}
       <Route
         path="/myshop"
+        element={
+          <ProtectedRoute>
+            <>
+              <TopBar />
+              <Header
+                onMenuToggle={handleMenuToggle}
+                onSearch={handleSearch}
+                frequentKeywords={frequentKeywords}
+              />
+              <MyShop />
+              <MenuBox
+                isOpen={isMenuOpen}
+                onClose={() => setIsMenuOpen(false)}
+                frequentKeywords={frequentKeywords}
+              />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/shop/:userNo"
         element={
           <>
             <TopBar />
@@ -250,7 +271,7 @@ function App() {
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
-            <MyShop />
+            <ShopDetail />
             <MenuBox
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}
