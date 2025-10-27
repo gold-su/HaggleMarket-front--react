@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styles from "../ChatCSS/ChatPage.module.css";
 import {
   fetchChatRooms,
   fetchChatMessages,
   sendChatMessage,
 } from "../api/chat";
-import { useLocation } from "react-router-dom";
+
+// ✅ 백엔드 API 서버 주소
+const BASE_URL = "http://localhost:8080"; // 🔹 배포 시 실제 주소로 변경
+const DEFAULT_AVATAR = "/images/default-avatar.jpg";
 
 const normalizeMessage = (raw) => {
   if (!raw) return "";
@@ -25,10 +28,7 @@ function StarRating({ rating = 0, count = 0 }) {
   const half = rating - full >= 0.5;
   const empty = 5 - full - (half ? 1 : 0);
   return (
-    <div
-      className={styles.starWrap}
-      aria-label={`평점 ${rating}점, 리뷰 ${count}개`}
-    >
+    <div className={styles.starWrap}>
       {Array.from({ length: full }).map((_, i) => (
         <span key={`f${i}`} className={styles.star}>
           ★
@@ -49,134 +49,94 @@ function StarRating({ rating = 0, count = 0 }) {
 
 function ChatPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const preselectRoomId = query.get("roomId");
+  const { search } = useLocation();
+  const preselectRoomId = new URLSearchParams(search).get("roomId");
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
-  const fileInputRef = useRef(null);
 
-  // ✅ 서버에서 불러올 채팅방 목록
   const [chatRooms, setChatRooms] = useState([]);
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [selectedChatRoomId, setSelectedChatRoomId] = useState(null);
-
-  const [moreOpenHeader, setMoreOpenHeader] = useState(false);
-  const [listMoreOpen, setListMoreOpen] = useState(false);
-  const [blockedRooms, setBlockedRooms] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("blockedRooms") || "[]");
-    } catch {
-      return [];
-    }
-  });
-
-  const [blockedModalOpen, setBlockedModalOpen] = useState(false);
-  const [selectedUnblockIds, setSelectedUnblockIds] = useState([]);
 
   const selectedRoom = useMemo(
     () => chatRooms.find((r) => r.roomId === selectedChatRoomId) || null,
     [chatRooms, selectedChatRoomId]
   );
 
-  // ✅ [1] 채팅방 목록 불러오기
   useEffect(() => {
-    const loadRooms = async () => {
+    (async () => {
       try {
         const data = await fetchChatRooms();
         setChatRooms(data);
-      } catch (err) {
-        console.error("채팅방 불러오기 실패", err);
+      } catch (e) {
+        console.error("채팅방 불러오기 실패", e);
       }
-    };
-    loadRooms();
+    })();
   }, []);
 
   useEffect(() => {
-    if (preselectRoomId) {
-      setSelectedChatRoomId(Number(preselectRoomId));
-    }
+    if (preselectRoomId) setSelectedChatRoomId(Number(preselectRoomId));
   }, [preselectRoomId]);
 
-  // ✅ [2] 채팅방 선택 시 메시지 불러오기
   useEffect(() => {
     if (!selectedChatRoomId) {
       setMessages([]);
       return;
     }
-
-    const loadMessages = async () => {
+    (async () => {
       try {
         const data = await fetchChatMessages(selectedChatRoomId);
-        setMessages(data.reverse()); // 최신순 정렬 시 reverse
-      } catch (err) {
-        console.error("메시지 불러오기 실패", err);
+        setMessages(data.reverse());
+      } catch (e) {
+        console.error("메시지 불러오기 실패", e);
       }
-    };
-    loadMessages();
+    })();
   }, [selectedChatRoomId]);
 
-  // 자동 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const autoResize = () => {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-  };
-  const handleChange = (e) => {
-    setCurrentMessage(e.target.value);
-    autoResize();
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  // ✅ [3] 메시지 전송 (백엔드 연동)
   const handleSendMessage = async () => {
     if (!currentMessage.trim() || !selectedChatRoomId) return;
-    const text = normalizeMessage(currentMessage);
     try {
-      const sent = await sendChatMessage(selectedChatRoomId, text);
+      const sent = await sendChatMessage(
+        selectedChatRoomId,
+        normalizeMessage(currentMessage)
+      );
       setMessages((prev) => [...prev, sent]);
       setCurrentMessage("");
-      if (textareaRef.current) textareaRef.current.style.height = "auto";
-    } catch (err) {
-      console.error("메시지 전송 실패", err);
+      textareaRef.current && (textareaRef.current.style.height = "auto");
+    } catch (e) {
+      console.error("메시지 전송 실패", e);
       alert("메시지 전송 실패");
     }
   };
 
-  // ⛔️ 아래 UI 관련 로직(차단, 모달, 스타일)은 그대로 유지
-  // ------------------------------------------------------------
+  const resolveImageUrl = (url) => {
+    if (!url) return DEFAULT_AVATAR;
 
-  const handleBack = () => navigate(-1);
-  const handleBlockRoom = () => {
-    /* 그대로 */
-  };
-  const handleLeaveRoom = () => {
-    /* 그대로 */
-  };
-  const onBuyNow = () => {
-    /* 그대로 */
-  };
+    try {
+      // 이미 절대경로면 그대로 반환
+      if (/^https?:\/\//i.test(url)) return url;
 
-  const renderMessage = (msg) => (
-    <div className={styles.messageBubble}>{msg.content || msg.text}</div>
-  );
+      // BASE_URL이 붙지 않은 상대경로면 서버 주소 붙이기
+      if (url.startsWith("/")) return `${BASE_URL}${url}`;
+
+      // 혹시 앞에 슬래시 빠진 경우도 대비
+      return `${BASE_URL}/${url}`;
+    } catch (e) {
+      console.error("resolveImageUrl 실패:", url, e);
+      return DEFAULT_AVATAR;
+    }
+  };
 
   return (
     <div className={styles.chatPage}>
       <div className={styles.chatContainer}>
-        {/* 좌측 채팅방 목록 */}
+        {/* 좌측 채팅 목록 */}
         <div className={styles.chatRoomList}>
           <div className={styles.listHeaderRow}>
             <h2>채팅 목록</h2>
@@ -185,69 +145,159 @@ function ChatPage() {
           {chatRooms.length === 0 ? (
             <p className={styles.emptyMessage}>채팅 목록이 없습니다.</p>
           ) : (
-            chatRooms
-              .filter((r) => !blockedRooms.includes(r.roomId))
-              .map((room) => (
-                <div
-                  key={room.roomId}
-                  className={`${styles.chatRoomItem} ${
-                    selectedChatRoomId === room.roomId ? styles.active : ""
-                  }`}
-                  onClick={() => setSelectedChatRoomId(room.roomId)}
-                >
-                  <div className={styles.chatRoomDetails}>
-                    <div className={styles.chatRoomUser}>
-                      {room.otherUserName}
-                    </div>
-                    <div className={styles.chatRoomLastMessage}>
-                      {room.lastMessage}
-                    </div>
+            chatRooms.map((room) => (
+              <div
+                key={room.roomId}
+                className={`${styles.chatRoomItem} ${
+                  selectedChatRoomId === room.roomId ? styles.active : ""
+                }`}
+                onClick={() => setSelectedChatRoomId(room.roomId)}
+              >
+                <img
+                  className={styles.chatRoomProfile}
+                  src={resolveImageUrl(room.otherUserProfileImageUrl)}
+                  alt="프로필"
+                  onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+                />
+
+                <div className={styles.chatRoomDetails}>
+                  <div className={styles.chatRoomUser}>
+                    {room.otherUserName}
                   </div>
-                  <div className={styles.chatRoomMeta}>
-                    <span className={styles.chatRoomTime}>
-                      {room.lastMessageTime?.slice(11, 16)}
-                    </span>
+                  <div className={styles.chatRoomLastMessage}>
+                    {room.lastMessage}
                   </div>
                 </div>
-              ))
+                <div className={styles.chatRoomMeta}>
+                  <span className={styles.chatRoomTime}>
+                    {room.lastMessageTime
+                      ? new Date(room.lastMessageTime).toLocaleTimeString(
+                          "ko-KR",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )
+                      : ""}
+                  </span>
+                </div>
+              </div>
+            ))
           )}
         </div>
 
         {/* 우측 메시지 영역 */}
         <div className={styles.chatMessageArea}>
+          {/* 헤더 */}
+          <div className={styles.chatHeader}>
+            {selectedRoom ? (
+              <>
+                <button
+                  onClick={() => navigate(-1)}
+                  className={styles.backButton}
+                  aria-label="뒤로가기"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    width="24"
+                    height="24"
+                  >
+                    <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                  </svg>
+                </button>
+                <img
+                  className={styles.headerAvatar}
+                  src={resolveImageUrl(selectedRoom.otherUserProfileImageUrl)}
+                  alt="프로필"
+                  onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+                />
+
+                <div className={styles.headerTitleArea}>
+                  <div className={styles.storeName}>
+                    {selectedRoom.otherUserName}
+                  </div>
+                  <StarRating rating={4.8} count={132} />
+                </div>
+                <div className={styles.headerActionsRight}>
+                  <button type="button" className={styles.buyButton}>
+                    구매하기
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className={styles.headerTitleArea}>
+                <div className={styles.storeName}>해글톡 💬</div>
+              </div>
+            )}
+          </div>
+
           {!selectedChatRoomId ? (
             <p className={styles.selectChatPrompt}>채팅을 선택해주세요.</p>
           ) : (
             <>
               <div className={styles.chatMessages}>
-                {messages.map((msg) => {
+                {messages.map((msg, idx) => {
                   const isMe = msg.senderNo === msg.currentUserNo;
+                  const msgDate = new Date(msg.createdAt).toLocaleDateString(
+                    "ko-KR",
+                    {
+                      month: "2-digit",
+                      day: "2-digit",
+                    }
+                  );
+                  const prevDate =
+                    idx > 0
+                      ? new Date(
+                          messages[idx - 1].createdAt
+                        ).toLocaleDateString("ko-KR", {
+                          month: "2-digit",
+                          day: "2-digit",
+                        })
+                      : null;
+                  const showDivider = msgDate !== prevDate;
+
                   return (
-                    <div
-                      key={msg.id}
-                      className={`${styles.messageItem} ${
-                        isMe ? styles.myMessage : styles.otherMessage
-                      }`}
-                    >
-                      {renderMessage(msg)}
-                      <span className={styles.timeBelow}>
-                        {msg.createdAt?.slice(11, 16)}
-                      </span>
-                    </div>
+                    <React.Fragment key={msg.id}>
+                      {showDivider && (
+                        <div className={styles.dateDivider}>
+                          ―― {msgDate} ――
+                        </div>
+                      )}
+                      <div
+                        className={`${styles.messageItem} ${
+                          isMe ? styles.myMessage : styles.otherMessage
+                        }`}
+                      >
+                        <div className={styles.messageBubble}>
+                          {msg.content}
+                        </div>
+                        <span className={styles.timeBelow}>
+                          {new Date(msg.createdAt).toLocaleTimeString("ko-KR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </React.Fragment>
                   );
                 })}
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* 입력 영역 */}
               <div className={styles.chatInputArea}>
                 <textarea
                   ref={textareaRef}
                   rows={1}
                   placeholder="메시지를 입력하세요…"
                   value={currentMessage}
-                  onChange={handleChange}
-                  onKeyDown={handleKeyDown}
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
                   className={`${styles.messageInput} ${styles.messageTextarea}`}
                 />
                 <button

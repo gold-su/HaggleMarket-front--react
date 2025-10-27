@@ -1,13 +1,13 @@
 /* src/ChatCSS/ChatPage.module.css */
 :root {
-  --primary-color: #3E7AEF;
+  --primary-color: #3e7aef;
   --primary-dark: #2f65c0;
   --secondary-color: #f7f7f7;
   --text-color: #333;
   --text-light: #666;
   --text-lighter: #aaa;
   --border-color: #eee;
-  --my-message-bg: #E1FFC7;
+  --my-message-bg: #e1ffc7;
   --other-message-bg: #ffffff;
   --unread-badge-bg: #ff5a5f;
   --shadow-soft: rgba(0, 0, 0, 0.08);
@@ -25,7 +25,7 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  font-family: 'Noto Sans KR', sans-serif;
+  font-family: "Noto Sans KR", sans-serif;
   color: var(--text-color);
   padding: 20px;
 }
@@ -99,7 +99,7 @@ body {
   background: #fff;
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   min-width: 160px;
   padding: 6px;
   z-index: 20;
@@ -305,7 +305,7 @@ body {
 }
 
 .buyButton {
-  background: #3E7AEF;
+  background: #3e7aef;
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -409,7 +409,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   padding: 10px;
 }
 
@@ -485,7 +485,7 @@ body {
   background: #fff;
 }
 
-.chatInputArea>* {
+.chatInputArea > * {
   min-width: 0;
 }
 
@@ -496,7 +496,7 @@ body {
   border-radius: 999px;
   padding: 8px 10px;
   cursor: pointer;
-  transition: background .15s ease;
+  transition: background 0.15s ease;
 }
 
 .iconButton:hover {
@@ -546,7 +546,7 @@ body {
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .4);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -557,7 +557,7 @@ body {
   width: min(520px, 92vw);
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   padding: 16px;
 }
 
@@ -730,4 +730,58 @@ body {
     width: 100%;
     border-radius: 8px;
   }
+}
+.dateDivider {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.8rem;
+  margin: 12px 0;
+  position: relative;
+}
+.dateDivider::before,
+.dateDivider::after {
+  content: "";
+  display: inline-block;
+  width: 40px;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0 8px;
+  vertical-align: middle;
+}
+/* 목록/헤더 프로필 이미지 */
+.chatRoomProfile {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.headerAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  margin-right: 8px;
+}
+
+/* 날짜 구분선(보강) */
+.dateDivider {
+  text-align: center;
+  color: var(--text-light);
+  font-size: 0.8rem;
+  margin: 12px 0;
+  position: relative;
+}
+.dateDivider::before,
+.dateDivider::after {
+  content: "";
+  display: inline-block;
+  width: 40px;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0 8px;
+  vertical-align: middle;
 }
