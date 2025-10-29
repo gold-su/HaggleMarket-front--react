@@ -375,18 +375,22 @@ body {
   background: var(--other-message-bg);
   color: var(--text-color);
   border: 1px solid var(--border-color);
-  border-bottom-left-radius: 4px;
   white-space: pre-wrap;
   word-break: keep-all;
   overflow-wrap: break-word;
-  line-break: normal;
 }
 
+/* 🔹 왼쪽(상대방) 말풍선 — 왼쪽 아래만 뾰족 */
+.otherMessage .messageBubble {
+  border-radius: 20px 20px 20px 4px;
+  background: var(--other-message-bg);
+}
+
+/* 🔹 오른쪽(내 메시지) 말풍선 — 오른쪽 아래만 뾰족 */
 .myMessage .messageBubble {
+  border-radius: 20px 20px 4px 20px;
   background: var(--my-message-bg);
-  color: var(--text-color);
   border: none;
-  border-bottom-right-radius: 4px;
 }
 
 .timeBelow {
