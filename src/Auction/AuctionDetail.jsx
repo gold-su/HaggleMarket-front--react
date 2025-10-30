@@ -5,11 +5,19 @@ import { fetchAuctionDetail, placeBid, buyout, BASE } from "../api/auction";
 import styles from "../AuctionCSS/AuctionDetail.module.css";
 import BidHistoryModal from "../components/BidHistoryModal";
 import { createChatRoom } from "../api/chat";
+import { jwtDecode } from "jwt-decode";
 
 function AuctionDetail() {
   const { id } = useParams(); //URL에서 경매 ID 추출
   const navigate = useNavigate(); //페이지 이동 훅
 
+  const token = localStorage.getItem("jwtToken");
+  let myNo = null;
+  try {
+    myNo = token ? jwtDecode(token)?.userNo : null;
+  } catch {
+    myNo = null;
+  }
   const [activeIdx, setActiveIdx] = useState(0);
   const [auction, setAuction] = useState(null); //경매 데이텨 객체
   const [errMsg, setErrorMsg] = useState(""); //에러 메시지
@@ -94,6 +102,14 @@ function AuctionDetail() {
   }, [imageSrcList]);
   //남은 시간 표시용, 남은 시간을 초 단위로 갱신, 종료 시간이 지나면 "경매 종료" 표시
   const [leftText, setLeftText] = useState(""); //남은 시간 표시용 텍스트
+
+  useEffect(() => {
+    if (auction?.seller) {
+      console.log("🧩 판매자 데이터:", auction.seller);
+    }
+  }, [auction]);
+
+
   useEffect(() => {
     if (!auction?.endTime) return setLeftText("");
     const tick = () => {
@@ -189,10 +205,10 @@ function AuctionDetail() {
         setAuction((prev) =>
           prev
             ? {
-                ...prev,
-                currentPrice: res.currentHighestBid ?? bidAmount,
-                bidCount: (prev.bidCount ?? 0) + 1,
-              }
+              ...prev,
+              currentPrice: res.currentHighestBid ?? bidAmount,
+              bidCount: (prev.bidCount ?? 0) + 1,
+            }
             : prev
         );
         setMyBid("");
@@ -229,10 +245,10 @@ function AuctionDetail() {
   const disabledReason = !hasBuyout
     ? "즉시구매가 미설정"
     : isEnded
-    ? "경매가 종료되어 즉시구매 불가"
-    : buyoutCost < currentPrice
-    ? "즉시구매가가 현재가보다 낮아 불가"
-    : undefined;
+      ? "경매가 종료되어 즉시구매 불가"
+      : buyoutCost < currentPrice
+        ? "즉시구매가가 현재가보다 낮아 불가"
+        : undefined;
 
   function handleBuyoutClick() {
     if (!canBuyNow) return; // 방어코드
@@ -285,73 +301,121 @@ function AuctionDetail() {
   return (
     <div className={styles.auctionPage}>
       <div className={styles.auctionDetail}>
-        <div className={styles.auctionImage}>
-          <div
-            className={styles.mainWrapper}
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
-            <img
-              src={mainImage}
-              alt={`${auction.title} - ${activeIdx + 1}/${total}`}
-              onError={(e) => {
-                e.currentTarget.src = "/images/default.jpg";
-              }}
-              className={styles.mainImg}
-              loading="eager"
-            />
-            {total > 1 && (
-              <>
-                <button
-                  type="button"
-                  className={`${styles.navBtn} ${styles.left}`}
-                  onClick={goPrev}
-                  aria-label="이전 이미지"
-                >
-                  ‹
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.navBtn} ${styles.right}`}
-                  onClick={goNext}
-                  aria-label="다음 이미지"
-                >
-                  ›
-                </button>
-                <div className={styles.counter}>
-                  {activeIdx + 1} / {total}
-                </div>
-              </>
+        {/* ───────────── 왼쪽: 이미지 + 판매자 카드 ───────────── */}
+        <div className={styles.auctionLeftWrap}>
+          {/* 이미지 */}
+          <div className={styles.auctionImage}>
+            <div
+              className={styles.mainWrapper}
+              onTouchStart={onTouchStart}
+              onTouchEnd={onTouchEnd}
+            >
+              <img
+                src={mainImage}
+                alt={`${auction.title} - ${activeIdx + 1}/${total}`}
+                onError={(e) => {
+                  e.currentTarget.src = "/images/default.jpg";
+                }}
+                className={styles.mainImg}
+                loading="eager"
+              />
+              {total > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className={`${styles.navBtn} ${styles.left}`}
+                    onClick={goPrev}
+                    aria-label="이전 이미지"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.navBtn} ${styles.right}`}
+                    onClick={goNext}
+                    aria-label="다음 이미지"
+                  >
+                    ›
+                  </button>
+                  <div className={styles.counter}>
+                    {activeIdx + 1} / {total}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {imageSrcList.length > 1 && (
+              <div className={styles.thumbRow}>
+                {imageSrcList.map((src, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`${styles.thumbBtn} ${idx === activeIdx ? styles.active : ""}`}
+                    onClick={() => setActiveIdx(idx)}
+                    aria-label={`${idx + 1}번 이미지 보기`}
+                    title={`${idx + 1}번 이미지`}
+                  >
+                    <img
+                      src={src}
+                      alt={`thumbnail-${idx + 1}`}
+                      className={styles.thumb}
+                      onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
-          {imageSrcList.length > 1 && (
-            <div className={styles.thumbRow}>
-              {imageSrcList.map((src, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`${styles.thumbBtn} ${
-                    idx === activeIdx ? styles.active : ""
-                  }`}
-                  onClick={() => setActiveIdx(idx)}
-                  aria-label={`${idx + 1}번 이미지 보기`}
-                  title={`${idx + 1}번 이미지`}
-                >
-                  <img
-                    src={src}
-                    alt={`thumbnail-${idx + 1}`}
-                    className={styles.thumb}
-                    onError={(e) => {
-                      e.currentTarget.style.visibility = "hidden";
-                    }}
-                    loading="lazy"
-                  />
-                </button>
-              ))}
+          <div className={styles.sellerInfoStrip}>
+            <div className={styles.sellerLeft}>
+              <img
+                className={styles.sellerAvatar}
+                src={
+                  auction?.seller?.profileImageUrl
+                    ? auction.seller.profileImageUrl.startsWith("http")
+                      ? auction.seller.profileImageUrl
+                      : `${BASE}${auction.seller.profileImageUrl}`
+                    : "/images/default-avatar.svg"
+                }
+                alt="판매자 프로필"
+                onError={(e) => (e.currentTarget.src = "/images/default-avatar.svg")}
+              />
+              <div className={styles.sellerMeta}>
+                <div className={styles.sellerName}>
+                  {auction?.seller?.nickname || "판매자"}
+                </div>
+                <div className={styles.sellerStats}>
+                  상품 {auction?.seller?.productCount ?? 0} · 평점{" "}
+                  {auction?.seller?.rating ?? "N/A"}
+                </div>
+                <div className={styles.sellerAddr}>
+                  {auction?.seller?.address || "-"}
+                </div>
+              </div>
             </div>
-          )}
+
+            <div className={styles.sellerRight}>
+              <button
+                type="button"
+                className={styles.sellerBtn}
+                onClick={() => {
+                  if (Number(auction.seller.userNo) === Number(myNo)) {
+                    navigate("/myshop");
+                  } else {
+                    navigate(`/shop/${auction.seller.userNo}`);
+                  }
+                }}
+              >
+                {Number(auction.seller.userNo) === Number(myNo)
+                  ? "내 상점"
+                  : "상점 보기"}
+              </button>
+            </div>
+          </div>
         </div>
+
 
         <div className={styles.auctionInfo}>
           <h2 className={styles.auctionTitle}>{auction.title}</h2>

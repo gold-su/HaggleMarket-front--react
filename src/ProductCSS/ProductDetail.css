@@ -1,4 +1,7 @@
-/* src/ProductCSS/ProductDetail.css */
+/* =============================
+   ProductDetail 전체 스타일
+============================= */
+
 /* 전체 페이지 컨테이너 */
 .product-page {
   max-width: 1200px;
@@ -6,6 +9,9 @@
   padding: 40px 20px;
 }
 
+/* -----------------------------
+   상단 : 이미지 + 정보
+----------------------------- */
 .product-detail {
   display: flex;
   align-items: stretch;
@@ -20,9 +26,7 @@
 
 .product-detail-image {
   width: 375px;
-  /* 원하는 가로폭 고정 */
   height: 375px;
-  /* 세로도 고정! */
   overflow: hidden;
   border-radius: 12px;
   background: #f0f0f0;
@@ -32,7 +36,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* 박스를 꽉 채우게 */
   display: block;
 }
 
@@ -41,10 +44,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /* 버튼 하단 맞춤 */
 }
 
-/* 기존 정보 영역 스타일 그대로 */
+/* -----------------------------
+   상품 정보 텍스트
+----------------------------- */
 .product-info .price {
   font-size: 28px;
   font-weight: bold;
@@ -62,26 +66,23 @@
   margin: 0 0 20px 0;
 }
 
-/* 추가 수정한 곳 */
 .product-info ul.details li {
   margin-bottom: 8px;
-  color: #666; /* 라벨은 회색 */
-  font-weight: normal;
-  cursor: default; /* 클릭 가능한 것처럼 보이지 않도록 */
+  color: #666;
 }
 
-/* 추가 수정한 곳 */
 .product-info ul.details b {
-  color: #333; /* 값은 진한 회색 */
+  color: #333;
   font-weight: 600;
-  cursor: default;
 }
 
+/* -----------------------------
+   버튼 영역
+----------------------------- */
 .product-info .buttons {
   display: flex;
   gap: 10px;
   margin-top: auto;
-  /* 맨 아래로 */
 }
 
 .product-info .buttons button {
@@ -92,83 +93,23 @@
   font-size: 16px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* 부드러운 효과 */
 }
 
 .product-info .buttons button:hover {
   transform: scale(1.05);
-  /* 살짝 커지기 */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  /* 입체감 */
 }
 
-/*.product-info .buttons .wish { wish코드 없음
-  background: #e0f2fe;
-  color: #0369a1;
-  font-weight: 600;
-}*/
-
-.product-info .buttons .chat {
-  background: #e0f2fe;
-  color: #0369a1;
-  font-weight: 600;
-}
-
+.product-info .buttons .chat,
 .product-info .buttons .buy {
   background: #e0f2fe;
   color: #0369a1;
   font-weight: 600;
 }
 
-/* 하단: 상품정보 카드 블록 */
-.product-extra-info {
-  border-top: 1px solid #ddd;
-  padding-top: 20px;
-}
-
-.product-description {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #333;
-  margin-bottom: 30px;
-  /* 카드 영역과 간격 */
-  white-space: pre-line;
-  /* 개행 유지하려면 */
-}
-
-.product-extra-info h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.product-extra-info .divider {
-  border-top: 1px solid #ddd;
-  margin: 10px 0 20px;
-}
-
-.product-extra-cards {
-  display: flex;
-  gap: 20px;
-}
-
-.product-extra-cards .card {
-  flex: 1;
-  padding: 20px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.product-extra-cards .card-title {
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #555;
-}
-
-.product-extra-cards .card-content {
-  color: #333;
-}
-
+/* -----------------------------
+   썸네일
+----------------------------- */
 .product-thumbs {
   display: flex;
   gap: 10px;
@@ -176,7 +117,6 @@
   margin-top: auto;
 }
 
-/* 썸네일 버튼 */
 .product-thumb {
   width: 70px;
   height: 70px;
@@ -195,7 +135,6 @@
   display: block;
 }
 
-/* 선택/호버 표시 */
 .product-thumb.active {
   outline: 2px solid #ff4d4f;
   border-color: transparent;
@@ -205,40 +144,67 @@
   outline: 2px solid #999;
 }
 
-/* ───────────────── 판매자 정보 스트립 (상품설명 아래) ───────────────── */
-.seller-info-strip {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr auto;
-  /* 좌/중/우 */
-  align-items: center;
-  gap: 16px;
-  padding: 14px 16px;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  background: #fff;
-  margin: 12px 0 18px;
-  /* 설명 아래 간격 */
+/* -----------------------------
+   하단 : 카드 3개 (지역/카테고리/판매자)
+----------------------------- */
+.product-extra-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  margin-bottom: 10px; /* 👈 기존보다 아래 간격 줄임 */
 }
 
-/* 왼쪽: 프로필+텍스트 */
+.product-extra-cards .card {
+  flex: 1;
+  min-width: 280px;
+  padding: 16px; /* 👈 내부 여백도 살짝 줄임 (20 → 16) */
+  border: 1px solid #eee;
+  border-radius: 8px;
+  text-align: center;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+.product-extra-cards .card-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.product-extra-cards .card-content {
+  color: #333;
+}
+
+/* -----------------------------
+   판매자 정보 카드 (3번째) - 버튼 오른쪽 밀착
+----------------------------- */
+.product-extra-cards .card:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 왼쪽 기준으로 배치 */
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+/* 판매자 정보 */
 .seller-left {
   display: flex;
   align-items: center;
   gap: 14px;
-  min-width: 0;
+  width: 100%;
+  justify-content: space-between; /* ✅ 버튼을 오른편 중앙에 배치 */
 }
 
 .seller-avatar {
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  object-fit: cover;
   border: 1px solid #ddd;
-  flex-shrink: 0;
+  object-fit: cover;
 }
 
+/* 왼쪽 프로필과 정보 묶음 */
 .seller-meta {
-  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -247,18 +213,6 @@
 .seller-name {
   font-weight: 800;
   color: #111;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.seller-badge {
-  display: inline-block;
-  font-size: 12px;
-  color: #fff;
-  background: #4caf50;
-  border-radius: 10px;
-  padding: 2px 8px;
 }
 
 .seller-stats {
@@ -273,62 +227,16 @@
   color: #888;
 }
 
-/* 가운데: 다른 상품 썸네일 3개 */
-.seller-middle {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-start;
-  align-items: center;
-  overflow: hidden;
-}
-
-.seller-thumb {
-  display: inline-flex;
-  width: 90px;
-  height: 90px;
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #eee;
-  text-decoration: none;
-}
-
-.seller-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.seller-thumb-price {
-  position: absolute;
-  left: 4px;
-  bottom: 4px;
-  background: rgba(17, 17, 17, 0.85);
-  color: #fff;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-
-/* 오른쪽: 버튼 */
-.seller-right {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
+/* 버튼 */
 .seller-btn {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 20px;
   font-weight: 700;
-  cursor: pointer;
   border: 1.5px solid #3e7aef;
   background: #fff;
   color: #3e7aef;
-  transition: background-color 0.2s ease, color 0.2s ease,
-    border-color 0.2s ease;
-  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .seller-btn:hover {
@@ -336,19 +244,34 @@
   color: #fff;
 }
 
-/* 반응형 */
+/* -----------------------------
+   상품 정보 영역 (가로 한 줄 전체)
+----------------------------- */
+.product-extra-info {
+  flex-basis: 100%;
+  width: 100%;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  margin-top: 30px;
+}
+
+.product-extra-info h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.product-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 30px;
+  white-space: pre-line;
+}
+
+/* -----------------------------
+   반응형
+----------------------------- */
 @media (max-width: 900px) {
-  .seller-info-strip {
-    grid-template-columns: 1fr;
-    /* 세로 스택 */
-    align-items: stretch;
-  }
-
-  .seller-right {
-    flex-direction: row;
-    justify-content: flex-end;
-  }
-
   .product-detail {
     flex-direction: column;
   }
@@ -364,5 +287,13 @@
 
   .product-detail-image img {
     height: auto;
+  }
+
+  .product-extra-cards {
+    flex-direction: column;
+  }
+
+  .product-extra-cards .card {
+    width: 100%;
   }
 }
