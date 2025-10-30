@@ -101,7 +101,7 @@ main {
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  line-clamp: 2;  
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -114,7 +114,7 @@ main {
   line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  line-clamp: 2;  
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -126,7 +126,9 @@ main {
   font-weight: 600;
   color: #ef4444;
 }
-.left-time.ended { color: #c03; }
+.left-time.ended {
+  color: #c03;
+}
 
 /* 가격 + 하트 */
 .product-price-row {
@@ -142,7 +144,9 @@ main {
   color: #0f172a;
 }
 
-.product-price-row .heart-btn { margin-left: 8px; }
+.product-price-row .heart-btn {
+  margin-left: 8px;
+}
 
 /* 배지/디데이 */
 .product-badge {
@@ -169,7 +173,9 @@ main {
   font-weight: 700;
   opacity: 0.9;
 }
-.product-dday.ended { background: #c0392b; }
+.product-dday.ended {
+  background: #c0392b;
+}
 
 /* 찜 아이콘 (컴포넌트가 해당 클래스 사용 시) */
 .favorite-icon {
@@ -181,8 +187,13 @@ main {
   stroke: #9ca3af;
   transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease;
 }
-.favorite-icon:hover { transform: scale(1.08); }
-.favorite-icon.active { fill: #ef4444; stroke: #ef4444; }
+.favorite-icon:hover {
+  transform: scale(1.08);
+}
+.favorite-icon.active {
+  fill: #ef4444;
+  stroke: #ef4444;
+}
 
 /* 빈 상태 */
 .product-list-empty {

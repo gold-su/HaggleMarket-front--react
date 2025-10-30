@@ -24,7 +24,13 @@ const normalizePrice = (v) => {
 
 const getPriceNumber = (product, mode = "used") => {
   // 백엔드 응답에 따라 존재할 수 있는 후보 키들
-  const auctionKeys = ["currentPrice", "price", "highestBid", "startPrice", "minPrice"];
+  const auctionKeys = [
+    "currentPrice",
+    "price",
+    "highestBid",
+    "startPrice",
+    "minPrice",
+  ];
   const usedKeys = ["price", "sellingPrice", "amount", "priceWon"];
   const keys = mode === "auction" ? auctionKeys : usedKeys;
 
@@ -50,17 +56,23 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
   }, [product, BASE]);
 
   // 2) 가격 표기 (문자열/객체 모두 호환)
-  const priceNumber = useMemo(() => getPriceNumber(product, mode), [product, mode]);
-  const displayPrice = useMemo(() => priceNumber.toLocaleString() + "원", [priceNumber]);
+  const priceNumber = useMemo(
+    () => getPriceNumber(product, mode),
+    [product, mode]
+  );
+  const displayPrice = useMemo(
+    () => priceNumber.toLocaleString() + "원",
+    [priceNumber]
+  );
 
   // 3) 이동 경로 분기 (link prop이 있으면 우선)
   const targetLink = link
     ? link
     : product.detailUrl
-      ? product.detailUrl
-      : mode === "auction"
-        ? `/auction/detail/${product.id}`
-        : `/products/detail/${product.id}`;
+    ? product.detailUrl
+    : mode === "auction"
+    ? `/auction/detail/${product.id}`
+    : `/products/detail/${product.id}`;
 
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
@@ -90,7 +102,9 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
         const pad = (num) => String(num).padStart(2, "0");
-        setLeftText(`남은 시간: ${pad(hours)}시간 ${pad(minutes)}분 ${pad(seconds)}초`);
+        setLeftText(
+          `남은 시간: ${pad(hours)}시간 ${pad(minutes)}분 ${pad(seconds)}초`
+        );
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -116,16 +130,19 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
 
       <div className="product-info">
         <div className="product-title">{product?.title}</div>
+        <div className="product-description">{product?.content || ""}</div>
 
         {mode === "auction" && leftText && (
-          <div className={`left-time ${isEnded ? "ended" : ""}`}>{leftText}</div>
+          <div className={`left-time ${isEnded ? "ended" : ""}`}>
+            {leftText}
+          </div>
         )}
 
         <div className="product-price-row">
           <div className="product-price">{displayPrice}</div>
           <LikeHeart
-            id={product?.id}                         // 공용 id
-            isAuction={mode === "auction"}           // 경매 카드일 때만 true
+            id={product?.id} // 공용 id
+            isAuction={mode === "auction"} // 경매 카드일 때만 true
             initialLiked={product?.liked}
             initialCount={product?.likeCount}
           />

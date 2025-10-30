@@ -50,8 +50,8 @@ export default function LikeHeart({
 
   initialLiked = false,
   initialCount = 0,
-  showCount = false,   // 카드에서는 보통 false
-  textMode = false,    // 상세에서 텍스트 버튼
+  showCount = false, // 카드에서는 보통 false
+  textMode = false, // 상세에서 텍스트 버튼
   onChanged,
 }) {
   // id/타입 자동 판별
@@ -65,9 +65,16 @@ export default function LikeHeart({
     onChanged,
   });
 
-  const onClick = (e) => { e.stopPropagation(); e.preventDefault(); toggle(); };
+  const onClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggle();
+  };
   const onKeyDown = (e) => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(e); }
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick(e);
+    }
   };
 
   if (textMode) {
@@ -81,7 +88,8 @@ export default function LikeHeart({
         aria-label={liked ? "찜취소" : "찜하기"}
         title={liked ? "찜취소" : "찜하기"}
       >
-        {liked ? "찜취소" : "찜하기"}{showCount ? ` (${count})` : ""}
+        {liked ? "찜취소" : "찜하기"}
+        {showCount ? ` (${count})` : ""}
       </button>
     );
   }

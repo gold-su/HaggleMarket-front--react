@@ -10,7 +10,8 @@ import "../ShopCSS/MyShopContent.css";
 /* ====== 설정 ====== */
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 const USED_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=used`;
-const AUCTION_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=auction`;
+const AUCTION_LIST_URL = (userNo) =>
+  `/api/shops/${userNo}/products?type=auction`;
 const LIKES_URL = `/api/products/likes/sidebar`;
 const DELETE_USED_URL = (id) => `/api/products/${id}`;
 const DELETE_AUCTION_URL = (id) => `/api/auction/${id}`;
@@ -26,12 +27,11 @@ const DEFAULT_AVATAR = "/images/default-avatar.svg";
 const isAuctionItem = (obj) =>
   Boolean(
     obj?.isAuction ||
-    obj?.auction === true ||
-    obj?.type === "AUCTION" ||
-    obj?.kind === "AUCTION" ||
-    obj?.auctionId != null
+      obj?.auction === true ||
+      obj?.type === "AUCTION" ||
+      obj?.kind === "AUCTION" ||
+      obj?.auctionId != null
   );
-
 
 const normalizePrice = (v) => {
   if (v == null) return null;
@@ -42,7 +42,8 @@ const normalizePrice = (v) => {
     const n = Number(cleaned);
     return Number.isNaN(n) ? null : n;
   }
-  if (typeof v === "object") return normalizePrice(v?.amount ?? v?.value ?? null);
+  if (typeof v === "object")
+    return normalizePrice(v?.amount ?? v?.value ?? null);
   return null;
 };
 
@@ -151,7 +152,7 @@ export default function MyShop() {
     if (filter === "AUCTION") return auctionList;
     return allItems;
   }, [filter, usedList, auctionList]);
-  
+
   const filteredLikesList = useMemo(() => {
     const auctionItems = likesList.filter((i) => i.isAuction);
     const usedItems = likesList.filter((i) => !i.isAuction);
@@ -164,7 +165,8 @@ export default function MyShop() {
   const saveIntro = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      await api.put(`/api/shops/${profile.userNo}/intro`,
+      await api.put(
+        `/api/shops/${profile.userNo}/intro`,
         { intro: introText },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -199,15 +201,16 @@ export default function MyShop() {
             : prev.storeName,
           profileUrl:
             !detail.data.profileUrl ||
-              detail.data.profileUrl === "null" ||
-              detail.data.profileUrl === "undefined"
+            detail.data.profileUrl === "null" ||
+            detail.data.profileUrl === "undefined"
               ? DEFAULT_AVATAR
               : detail.data.profileUrl.startsWith("/uploads/")
-                ? `${API_BASE}${detail.data.profileUrl}`
-                : detail.data.profileUrl,
+              ? `${API_BASE}${detail.data.profileUrl}`
+              : detail.data.profileUrl,
           isVerified: !!detail.data.verified,
           description: detail.data.intro || prev.description, // ✅ intro 반영
-          storeOpenedAt: detail.data.storeOpenedAt ?? s.data.storeOpenedAt ?? "-",
+          storeOpenedAt:
+            detail.data.storeOpenedAt ?? s.data.storeOpenedAt ?? "-",
         }));
 
         setStats(s.data);
@@ -222,7 +225,6 @@ export default function MyShop() {
       }
     })();
   }, [api]);
-
 
   /* ====== 로드 함수 ====== */
   const loadUsed = async (userNo) => {
@@ -247,8 +249,8 @@ export default function MyShop() {
       const list = Array.isArray(data?.content)
         ? data.content
         : Array.isArray(data)
-          ? data
-          : [];
+        ? data
+        : [];
       setAuctionList(list);
     } catch (e) {
       console.error("❌ 경매 목록 로드 실패", e);
@@ -286,7 +288,10 @@ export default function MyShop() {
   const handleTabClick = async (tab) => {
     setActiveTab(tab);
     if (tab === "내 상품") {
-      await Promise.all([loadUsed(profile.userNo), loadAuction(profile.userNo)]);
+      await Promise.all([
+        loadUsed(profile.userNo),
+        loadAuction(profile.userNo),
+      ]);
     } else if (tab === "찜") {
       await loadLikes();
     }
@@ -308,7 +313,10 @@ export default function MyShop() {
     const id = item.auctionId ?? item.id ?? item.postId;
     try {
       await api.delete(auc ? DELETE_AUCTION_URL(id) : DELETE_USED_URL(id));
-      await Promise.all([loadUsed(profile.userNo), loadAuction(profile.userNo)]);
+      await Promise.all([
+        loadUsed(profile.userNo),
+        loadAuction(profile.userNo),
+      ]);
       alert("삭제되었습니다.");
     } catch (e) {
       console.error(e);
@@ -475,8 +483,9 @@ export default function MyShop() {
       >
         {items.map((it) => (
           <Card
-            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${it.auctionId ?? it.id ?? it.postId
-              }`}
+            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${
+              it.auctionId ?? it.id ?? it.postId
+            }`}
             item={it}
             withActions={withActions}
           />
@@ -582,7 +591,6 @@ export default function MyShop() {
               </div>
             )}
           </div>
-
         </div>
       </div>
 
