@@ -1,14 +1,16 @@
+// src/pages/ChatPage.jsx
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "../ChatCSS/ChatPage.module.css";
 import { fetchChatRooms, fetchChatMessages } from "../api/chat";
 import { Client } from "@stomp/stompjs";
-import SockJS from "sockjs-client";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_HTTP_URL = "http://localhost:8080";
+const BASE_WS_URL = "ws://localhost:8080/ws";
 const DEFAULT_AVATAR = "/images/default-avatar.jpg";
 const BOT_ROOM_NAME = "해글봇 💬";
 
+// ✅ 메시지 정리 함수
 const normalizeMessage = (raw) => {
   if (!raw) return "";
   let s = String(raw).replace(/\r\n/g, "\n");
@@ -21,6 +23,7 @@ const normalizeMessage = (raw) => {
   return s;
 };
 
+// ⭐ 별점 UI
 function StarRating({ rating = 0, count = 0 }) {
   const full = Math.floor(rating);
   const half = rating - full >= 0.5;
@@ -59,18 +62,20 @@ function ChatPage() {
   const subRef = useRef(null);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const seenSetRef = useRef(new Set());
 
   const selectedRoom = useMemo(
     () => chatRooms.find((r) => r.roomId === selectedChatRoomId) || null,
     [chatRooms, selectedChatRoomId]
   );
 
-  // 1) 방 목록 불러오기 + 챗봇 고정 + 최초 자동 선택
+  /** 1️⃣ 방 목록 로드 + 해글봇 항상 맨 위 고정 */
   useEffect(() => {
     (async () => {
       try {
         const data = await fetchChatRooms();
         const botRoom = data.find((r) => r.otherUserName === BOT_ROOM_NAME);
+
         let sorted = data;
         if (botRoom) {
           sorted = [
@@ -78,6 +83,7 @@ function ChatPage() {
             ...data.filter((r) => r.roomId !== botRoom.roomId),
           ];
         }
+
         setChatRooms(sorted);
 
         if (preselectRoomId) {
@@ -86,148 +92,142 @@ function ChatPage() {
           setSelectedChatRoomId(botRoom.roomId);
         }
       } catch (e) {
-        console.error("채팅방 불러오기 실패", e);
+        console.error("채팅방 불러오기 실패:", e);
       }
     })();
   }, [preselectRoomId]);
 
-  // 2) 선택된 방의 기존 메시지 로딩
+  /** 2️⃣ 선택된 방 메시지 로딩 */
   useEffect(() => {
     if (!selectedChatRoomId) {
       setMessages([]);
+      seenSetRef.current.clear();
       return;
     }
+
     (async () => {
       try {
         const data = await fetchChatMessages(selectedChatRoomId);
-        setMessages(data.reverse());
+        const reversed = data.reverse();
+
+        const nextSeen = new Set(seenSetRef.current);
+        for (const m of reversed) {
+          const key = m.id ?? `${m.clientMsgId || "x"}:${m.senderNo || "x"}`;
+          nextSeen.add(key);
+        }
+
+        seenSetRef.current = nextSeen;
+        setMessages(reversed);
       } catch (e) {
-        console.error("메시지 불러오기 실패", e);
+        console.error("메시지 불러오기 실패:", e);
       }
     })();
   }, [selectedChatRoomId]);
 
-  // 3) STOMP 연결 (앱 생명주기 1회) + 방 바뀔 때마다 구독 재설정
+  /** 3️⃣ STOMP 연결 (앱 생명주기 1회) */
   useEffect(() => {
-    // 토큰 가져오기 (accessToken 우선, 없으면 token)
+    if (stompRef.current && stompRef.current.connected) {
+      console.log("[WS] 이미 연결됨");
+      return;
+    }
+
     const token =
-      localStorage.getItem("jwtToken") || // ✅ 네 로그인 코드가 저장하는 키
+      localStorage.getItem("jwtToken") ||
       localStorage.getItem("accessToken") ||
       localStorage.getItem("token") ||
       "";
 
-    console.log("[WS] token(len):", token ? token.length : 0);
-    // token 앞 10글자 정도만 찍어서 유무 확인
-    console.log("[WS] token head:", token ? token.slice(0, 10) : "(none)");
-
     if (!token) {
-      console.warn(
-        "[WS] 로컬스토리지에 토큰이 없습니다. CONNECT 헤더가 비어 전송됩니다."
-      );
+      console.warn("[WS] ❌ JWT 토큰 없음, 연결 불가");
+      return;
     }
 
-    const sock = new SockJS(`${BASE_URL}/ws`);
-    const client = new Client({
-      webSocketFactory: () => sock,
-      reconnectDelay: 3000,
-      debug: (str) => console.log("[STOMP]", str),
-      connectHeaders: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-      onConnect: () => {
-        console.log("[STOMP] 연결 성공");
-        // 선택된 방이 이미 있다면 구독
-        if (selectedChatRoomId) {
-          if (subRef.current) {
-            subRef.current.unsubscribe();
-            subRef.current = null;
-          }
-          subRef.current = client.subscribe(
-            `/topic/chat.room.${selectedChatRoomId}`,
-            (frame) => {
-              try {
-                const msg = JSON.parse(frame.body);
-                setMessages((prev) => [...prev, msg]);
-              } catch (err) {
-                console.error("실시간 메시지 파싱 실패:", err, frame.body);
-              }
-            }
-          );
-        }
-      },
-      onStompError: (frame) => {
-        console.error(
-          "[STOMP ERROR] cmd:",
-          frame.command,
-          "headers:",
-          frame.headers,
-          "body:",
-          frame.body
-        );
-      },
-    });
-
-    client.onStompError = (frame) => {
-      console.error(
-        "[STOMP] Broker error:",
-        frame.headers["message"],
-        frame.body
+    const wsFactory = () =>
+      new WebSocket(
+        `${BASE_WS_URL}?Authorization=${encodeURIComponent(`Bearer ${token}`)}`
       );
-    };
-    client.onWebSocketClose = (evt) => {
-      console.warn("[STOMP] WebSocket closed", evt);
-    };
+
+    const client = new Client({
+      webSocketFactory: wsFactory,
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      debug: (msg) => console.log("[STOMP]", msg),
+      reconnectDelay: 0,
+      onConnect: () => console.log("✅ STOMP 연결 성공"),
+      onStompError: (f) => console.error("❌ STOMP 에러:", f.body),
+      onWebSocketError: (e) => console.error("❌ WS 에러:", e),
+      onWebSocketClose: (e) => console.warn("⚠️ WS 종료:", e),
+    });
 
     client.activate();
     stompRef.current = client;
 
     return () => {
-      try {
-        if (subRef.current) {
-          subRef.current.unsubscribe();
-          subRef.current = null;
-        }
-      } finally {
-        client.deactivate();
-        stompRef.current = null;
-      }
+      if (subRef.current) subRef.current.unsubscribe();
+      client.deactivate();
+      stompRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 최초 1회만
+  }, []);
 
-  // 4) 선택된 방 변경 시 구독만 재설정
+  /** 4️⃣ 방 변경 시 구독 갱신 (중복 방지) */
   useEffect(() => {
     const client = stompRef.current;
-    if (!client || !client.connected) return;
+    if (!client || !client.connected || !selectedChatRoomId) return;
 
     if (subRef.current) {
       subRef.current.unsubscribe();
       subRef.current = null;
     }
-    if (selectedChatRoomId) {
-      subRef.current = client.subscribe(
-        `/topic/chat.room.${selectedChatRoomId}`,
-        (frame) => {
-          try {
-            const msg = JSON.parse(frame.body);
-            setMessages((prev) => [...prev, msg]);
-          } catch (err) {
-            console.error("실시간 메시지 파싱 실패:", err, frame.body);
-          }
-        }
-      );
-    }
+
+    const topic = `/topic/chat.room.${selectedChatRoomId}`;
+    console.log("[STOMP] 구독:", topic);
+
+    subRef.current = client.subscribe(topic, (frame) => {
+      try {
+        const msg = JSON.parse(frame.body);
+        const key =
+          msg.id ?? `${msg.clientMsgId || "x"}:${msg.senderNo || "x"}`;
+        if (seenSetRef.current.has(key)) return;
+        seenSetRef.current.add(key);
+
+        setMessages((prev) => [...prev, msg]);
+
+        // ✅ 채팅 목록에서 해당 방을 상단으로 이동 (단, 해글봇은 항상 맨 위)
+        setChatRooms((prev) => {
+          const current = prev.find((r) => r.roomId === msg.roomId);
+          if (!current) return prev;
+          const others = prev.filter((r) => r.roomId !== msg.roomId);
+          const botRoom = prev.find((r) => r.otherUserName === BOT_ROOM_NAME);
+          const reordered = botRoom
+            ? [
+                botRoom,
+                current,
+                ...others.filter((r) => r.roomId !== botRoom.roomId),
+              ]
+            : [current, ...others];
+          return reordered;
+        });
+      } catch (err) {
+        console.error("실시간 메시지 파싱 실패:", err);
+      }
+    });
+
+    return () => {
+      if (subRef.current) {
+        console.log("[STOMP] 구독 해제:", topic);
+        subRef.current.unsubscribe();
+        subRef.current = null;
+      }
+    };
   }, [selectedChatRoomId]);
 
-  // 5) 자동 스크롤
+  /** 5️⃣ 자동 스크롤 */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 6) 전송
+  /** 6️⃣ 메시지 전송 */
   const handleSendMessage = () => {
     if (!currentMessage.trim() || !selectedChatRoomId) return;
-
     const body = {
       content: normalizeMessage(currentMessage),
       clientMsgId: Date.now(),
@@ -239,23 +239,36 @@ function ChatPage() {
         destination: `/app/chat.send.${selectedChatRoomId}`,
         body: JSON.stringify(body),
       });
+
+      // ✅ 최근 대화방 상단 이동 (단, 해글봇은 맨 위 고정)
+      setChatRooms((prev) => {
+        const current = prev.find((r) => r.roomId === selectedChatRoomId);
+        if (!current) return prev;
+        const others = prev.filter((r) => r.roomId !== selectedChatRoomId);
+        const botRoom = prev.find((r) => r.otherUserName === BOT_ROOM_NAME);
+        const reordered = botRoom
+          ? [
+              botRoom,
+              current,
+              ...others.filter((r) => r.roomId !== botRoom.roomId),
+            ]
+          : [current, ...others];
+        return reordered;
+      });
+
       setCurrentMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     } else {
-      alert("서버 연결이 끊어졌습니다. 잠시 뒤 다시 시도해주세요.");
+      alert("⚠️ 서버 연결이 끊어졌습니다. 다시 시도해주세요.");
     }
   };
 
+  /** 이미지 경로 처리 */
   const resolveImageUrl = (url) => {
     if (!url) return DEFAULT_AVATAR;
-    try {
-      if (/^https?:\/\//i.test(url)) return url;
-      if (url.startsWith("/")) return `${BASE_URL}${url}`;
-      return `${BASE_URL}/${url}`;
-    } catch (e) {
-      console.error("resolveImageUrl 실패:", url, e);
-      return DEFAULT_AVATAR;
-    }
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.startsWith("/")) return `${BASE_HTTP_URL}${url}`;
+    return `${BASE_HTTP_URL}/${url}`;
   };
 
   return (
@@ -266,7 +279,6 @@ function ChatPage() {
           <div className={styles.listHeaderRow}>
             <h2>채팅 목록</h2>
           </div>
-
           {chatRooms.length === 0 ? (
             <p className={styles.emptyMessage}>채팅 목록이 없습니다.</p>
           ) : (
@@ -297,10 +309,7 @@ function ChatPage() {
                     {room.lastMessageTime
                       ? new Date(room.lastMessageTime).toLocaleTimeString(
                           "ko-KR",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
+                          { hour: "2-digit", minute: "2-digit" }
                         )
                       : ""}
                   </span>
@@ -318,7 +327,6 @@ function ChatPage() {
                 <button
                   onClick={() => navigate(-1)}
                   className={styles.backButton}
-                  aria-label="뒤로가기"
                 >
                   ←
                 </button>
@@ -351,10 +359,7 @@ function ChatPage() {
                   const isMe = msg.senderNo === msg.currentUserNo;
                   const msgDate = new Date(msg.createdAt).toLocaleDateString(
                     "ko-KR",
-                    {
-                      month: "2-digit",
-                      day: "2-digit",
-                    }
+                    { month: "2-digit", day: "2-digit" }
                   );
                   const prevDate =
                     idx > 0
@@ -368,7 +373,11 @@ function ChatPage() {
                   const showDivider = msgDate !== prevDate;
 
                   return (
-                    <React.Fragment key={msg.id}>
+                    <React.Fragment
+                      key={
+                        msg.id ?? `${msg.clientMsgId}:${msg.senderNo}:${idx}`
+                      }
+                    >
                       {showDivider && (
                         <div className={styles.dateDivider}>
                           ―― {msgDate} ――
