@@ -54,14 +54,28 @@
   scroll-padding-right: calc(var(--cardW) + var(--gap));
 
   /* 좌우 페이드 마스크 */
-  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
 
   /* 스크롤바 숨김 */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.auction-items-preview::-webkit-scrollbar { display: none; }
+.auction-items-preview::-webkit-scrollbar {
+  display: none;
+}
 
 /* 좌우 스페이서(첫/끝 카드 여백) */
 .auction-items-preview::before,
@@ -114,7 +128,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 1;
-  line-clamp: 2;  
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -165,7 +179,9 @@
   color: #666;
   z-index: 5;
 }
-.auction-item-days-ago { white-space: nowrap; }
+.auction-item-days-ago {
+  white-space: nowrap;
+}
 
 .auction-favorite-icon {
   width: 22px;
@@ -205,23 +221,33 @@
   height: 32px;
   color: #3e7aef;
 }
-.scroll-button-left { left: -40px; }
-.scroll-button-right { right: -40px; }
+.scroll-button-left {
+  left: -40px;
+}
+.scroll-button-right {
+  right: -40px;
+}
 
 /* 반응형 */
 @media (max-width: 1024px) {
   .auction-items-preview {
     --cols: 2;
-    grid-auto-columns: calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols));
+    grid-auto-columns: calc(
+      (100% - var(--gap) * (var(--cols) - 1)) / var(--cols)
+    );
     padding-left: calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols));
-    scroll-padding-left: calc((100% - var(--gap) * (var(--cols) - 1)) / var(--cols));
+    scroll-padding-left: calc(
+      (100% - var(--gap) * (var(--cols) - 1)) / var(--cols)
+    );
   }
 }
 
 @media (max-width: 640px) {
   .auction-items-preview {
     --cols: 1.1;
-    grid-auto-columns: calc((100% - var(--gap) * (ceil(var(--cols)) - 1)) / var(--cols));
+    grid-auto-columns: calc(
+      (100% - var(--gap) * (ceil(var(--cols)) - 1)) / var(--cols)
+    );
     padding-left: 5%;
     scroll-padding-left: 5%;
   }
