@@ -145,6 +145,22 @@ export default function MyShop() {
   const [likesList, setLikesList] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const allItems = [...usedList, ...auctionList];
+  const filteredItems = useMemo(() => {
+    if (filter === "USED") return usedList;
+    if (filter === "AUCTION") return auctionList;
+    return allItems;
+  }, [filter, usedList, auctionList]);
+  
+  const filteredLikesList = useMemo(() => {
+    const auctionItems = likesList.filter((i) => i.isAuction);
+    const usedItems = likesList.filter((i) => !i.isAuction);
+
+    if (filter === "USED") return usedItems;
+    if (filter === "AUCTION") return auctionItems;
+    return likesList;
+  }, [filter, likesList]);
+
   const saveIntro = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
@@ -592,8 +608,8 @@ export default function MyShop() {
       </nav>
 
       <div className="myshop-content">
-        {activeTab === "찜" && <Grid items={likesList} />}
-        {activeTab === "내 상품" && <Grid items={[...usedList, ...auctionList]} withActions />}
+        {activeTab === "찜" && <Grid items={filteredLikesList} />}
+        {activeTab === "내 상품" && <Grid items={filteredItems} withActions />}
       </div>
     </section>
   );

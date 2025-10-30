@@ -20,27 +20,60 @@ export default function LikeBox({
   const resolveUrl = (v) => {
     if (!v || v === "null") return "/no-image.png";
     if (typeof v !== "string") v = String(v);
-    if (/^https?:\/\//i.test(v)) return v; // 절대경로
-    return `${BASE}${v.startsWith("/") ? "" : "/"}${v}`; // 상대경로
+    if (/^https?:\/\//i.test(v)) return v;
+    return `${BASE}${v.startsWith("/") ? "" : "/"}${v}`;
   };
 
-  const getId = (p) => p?.id ?? p?.postId ?? p?.auctionId ?? null;
+  // ✅ ID 추출 로직 — auction/post 구분 관계없이 대응
+  const getId = (p) => {
+    if (!p) return null;
+    return (
+      p.postId ??
+      p.id ??
+      p.auctionId ??
+      p.productId ??
+      p.raw?.postId ??
+      p.raw?.id ??
+      p.raw?.auctionId ??
+      p.raw?.productId ??
+      null
+    );
+  };
+
+  // ✅ 이동 처리 — auction 필드도 인식
   const goDetail = (p) => {
     const id = getId(p);
-    if (!id) return;
-    const isAuction = p?.isAuction === true;
+    if (!id || id === "tmp") return;
+
+    const isAuction =
+      p?.isAuction === true ||
+      p?.auction === true ||
+      p?.raw?.isAuction === true ||
+      p?.raw?.auction === true;
+
     navigate(isAuction ? `/auction/detail/${id}` : `/products/detail/${id}`);
   };
 
-  // ── 화면 표시용 정규화 ─────────────────────────────────
+  // 🔍 서버 응답 확인용 로그
+  console.log("🔍 LikeBox items from server:", items);
+
+  // ── 정규화 ───────────────────────────────────────────────
   const normalized = useMemo(() => {
-    return (Array.isArray(items) ? items : []).map((p, idx) => ({
-      __key: `${p?.isAuction ? "auction" : "post"}-${getId(p) ?? "tmp-" + idx}`,
-      id: getId(p) ?? `tmp-${idx}`,
-      isAuction: p?.isAuction === true,
-      thumbnailUrl: p?.thumbnailUrl ?? null,
-      raw: p,
-    }));
+    return (Array.isArray(items) ? items : []).map((p, idx) => {
+      const id = getId(p);
+      const isAuction =
+        p?.isAuction === true ||
+        p?.auction === true ||
+        p?.raw?.isAuction === true ||
+        p?.raw?.auction === true;
+      return {
+        __key: `${isAuction ? "auction" : "post"}-${id ?? "tmp-" + idx}`,
+        id: id ?? `tmp-${idx}`,
+        isAuction,
+        thumbnailUrl: p?.thumbnailUrl ?? p?.raw?.thumbnailUrl ?? null,
+        raw: p,
+      };
+    });
   }, [items]);
 
   // ── 페이지네이션(2x2) ─────────────────────────────────
@@ -54,26 +87,26 @@ export default function LikeBox({
   const prev = () => setPage((p) => Math.max(0, p - 1));
   const next = () => setPage((p) => Math.min(totalPages - 1, p + 1));
 
+  // ── 렌더 ───────────────────────────────────────────────
   return (
-    <aside className={`likebox compact ${open ? "open" : "closed"}`}>
+    <aside className={`like-box ${open ? "open" : "closed"}`}>
       <button
-        className="likebox-toggle"
+        className="like-toggle"
         onClick={() => setOpen((v) => !v)}
         aria-label="찜 목록 열기/닫기"
       >
-        {open ? ">" : "<"}
+        {open ? "⟩" : "⟨"}
       </button>
 
       {pageItems.length > 0 ? (
-        <div className="likebox-body">
-          <div className="likebox-body--grid2">
+        <div className="like-content">
+          <div className="like-thumbnails">
             {pageItems.map((p) => (
               <button
                 key={p.__key}
-                className="likebox-thumb-only"
+                className="like-thumb"
                 onClick={() => goDetail(p.raw)}
                 aria-label="상품 상세보기"
-                title=""
               >
                 <img
                   src={resolveUrl(p.thumbnailUrl)}
@@ -86,15 +119,20 @@ export default function LikeBox({
           </div>
 
           {totalPages > 1 && (
-            <div className="likebox-pager">
-              <button className="pager-btn" onClick={prev} disabled={page === 0} aria-label="이전">
+            <div className="like-pagination">
+              <button
+                className="page-btn"
+                onClick={prev}
+                disabled={page === 0}
+                aria-label="이전"
+              >
                 ‹
               </button>
-              <span className="pager-indicator">
+              <span className="page-indicator">
                 {page + 1}/{totalPages}
               </span>
               <button
-                className="pager-btn"
+                className="page-btn"
                 onClick={next}
                 disabled={page === totalPages - 1}
                 aria-label="다음"
@@ -105,7 +143,7 @@ export default function LikeBox({
           )}
         </div>
       ) : (
-        <div className="likebox-empty">표시할 상품이 없습니다.</div>
+        <div className="like-empty">표시할 상품이 없습니다.</div>
       )}
     </aside>
   );

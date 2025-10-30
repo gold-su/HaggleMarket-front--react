@@ -233,7 +233,7 @@
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #3e7aef;
+  border: 1px solid #ddd;
   flex-shrink: 0;
 }
 
