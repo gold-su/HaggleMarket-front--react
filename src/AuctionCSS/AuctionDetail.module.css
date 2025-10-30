@@ -1,7 +1,7 @@
 /* src/AuctionCSS/AuctionDetail.module.css */
 
 /* =========================
-   공통 변수 (필요시 root에서 가져옴)
+   공통 변수
    ========================= */
 :root {
   --accent-color: #3e7aef;
@@ -16,11 +16,9 @@
    ========================= */
 .auctionPage {
   max-width: 1200px;
-  /* ProductDetail과 유사하게 */
   margin: 30px auto;
   padding: 40px 20px;
   background-color: #fff;
-  /* 배경색 통일 */
   font-family: "Noto Sans KR", sans-serif;
   color: var(--text-color-dark);
 }
@@ -39,20 +37,27 @@
    ========================= */
 .auctionDetail {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch; /* ✅ 양쪽 영역 높이 동일하게 */
   gap: 40px;
   margin-bottom: 40px;
-  flex-wrap: wrap;
-  /* 반응형을 위해 추가 */
+  min-height: fit-content; /* ⬅️ 높이 auto 문제 방지 */
+}
+
+.auctionLeftWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  width: 450px;
+  flex-shrink: 0;
+  align-self: stretch; /* ✅ 부모 높이 강제 상속 */
 }
 
 .auctionImage {
   width: 450px;
-  /* 이미지 영역 너비 조정 */
   height: 450px;
   border-radius: 12px;
   flex-shrink: 0;
-  /* 축소 방지 */
 }
 
 .auctionImage img {
@@ -63,7 +68,6 @@
 
 .auctionInfo {
   flex: 1;
-  /* 남은 공간을 채움 */
   display: flex;
   flex-direction: column;
 }
@@ -98,21 +102,17 @@
   font-weight: 800;
   color: var(--accent-color);
   font-size: 1.3rem;
-  /* 가격 글씨 크게 */
 }
 
 .currentBid {
   color: #ff5a5f;
-  /* 현재 입찰가 강조색 */
   font-size: 1.5rem;
-  /* 더 크게 */
 }
 
 .auctionTimer {
   font-size: 1.1rem;
   font-weight: 600;
   color: #ff5a5f;
-  /* 시간 강조색 */
   margin-bottom: 20px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 15px;
@@ -196,7 +196,6 @@
 
 .buyoutButton {
   background-color: #ff5a5f;
-  /* 즉시 구매 버튼은 빨간색 계열 */
   color: white;
 }
 
@@ -222,6 +221,93 @@
 .sellerShopButton:hover {
   background-color: var(--accent-color);
   color: white;
+}
+
+/* =========================
+   ✅ 판매자 정보 스트립 (ProductDetail 스타일 기반)
+   ========================= */
+.sellerInfoStrip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 18px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.sellerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sellerAvatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.sellerMeta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.sellerName {
+  font-weight: 700;
+  color: #111;
+}
+
+.sellerStats {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.sellerAddr {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.sellerRight {
+  flex-shrink: 0;
+}
+
+.sellerBtn {
+  border: 1.5px solid #3e7aef;
+  background: transparent;
+  color: #3e7aef;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sellerBtn:hover {
+  background: #3e7aef;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .sellerInfoStrip {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .sellerRight {
+    width: 100%;
+  }
+
+  .sellerBtn {
+    width: 100%;
+    max-width: 220px;
+  }
 }
 
 /* =========================
@@ -257,19 +343,16 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  /* 반응형을 위해 추가 */
 }
 
 .card {
   flex: 1;
   min-width: 250px;
-  /* 카드 최소 너비 */
   padding: 20px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   text-align: center;
   background-color: #f9f9f9;
-  /* 카드 배경 */
 }
 
 .cardTitle {
@@ -284,7 +367,7 @@
 }
 
 /* =========================
-   반응형 미디어 쿼리
+   반응형
    ========================= */
 @media (max-width: 768px) {
   .auctionDetail {
@@ -296,13 +379,11 @@
   .auctionImage {
     width: 100%;
     height: 300px;
-    /* 모바일에서 이미지 높이 조정 */
   }
 
   .auctionInfo {
     width: 100%;
     padding: 0 10px;
-    /* 정보 영역 좌우 패딩 */
   }
 
   .auctionTitle {
@@ -336,15 +417,16 @@
 
   .auctionPage {
     padding: 20px 10px;
-    /* 모바일에서 페이지 좌우 패딩 */
   }
 }
 
+/* =========================
+   이미지 네비게이션
+   ========================= */
 .mainWrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
-  /* 비율 고정(필요에 따라 수정) */
   background: #f7f7f7;
   border-radius: 16px;
   overflow: hidden;
@@ -429,12 +511,10 @@
   display: block;
 }
 
-/* 불가일 때 텍스트를 연하게 */
 .priceValueUnavailable {
   opacity: 0.65;
 }
 
-/* 버튼 비활성 시 시각적 피드백 */
 .buyoutButton:disabled {
   cursor: not-allowed;
   opacity: 0.5;
@@ -442,7 +522,6 @@
 
 .statsLink {
   cursor: pointer;
-  /* 파란색 */
   text-decoration: underline;
   display: inline-flex;
   align-items: center;
@@ -459,7 +538,7 @@
   border-radius: 4px;
 }
 
-/* --- 모달 레이어 --- */
+/* --- 모달 --- */
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -499,12 +578,9 @@
 
 .modalBody {
   padding: 8px 0;
-  /* 테이블 좌우는 자체 패딩으로 조절 */
   overflow: auto;
-  /* 테이블이 커지면 스크롤 */
 }
 
-/* --- 테이블 --- */
 .bidTable {
   width: 100%;
   border-collapse: collapse;
@@ -563,4 +639,22 @@
 .moreButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.chatButton {
+  padding: 10px 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background-color: #f9fafb;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.chatButton:hover {
+  background-color: #e8efff;
+  border-color: #3e7aef;
+  color: #3e7aef;
 }

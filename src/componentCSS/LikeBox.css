@@ -1,172 +1,128 @@
-/* ===== 기본(데스크톱 고정) ===== */
-.likebox {
+.like-box {
   position: fixed;
   top: 120px;
-  right: 24px;
-  width: clamp(140px, 22vw, 170px);
-  max-height: calc(100vh - 160px);
+  right: 40px;
+  width: 180px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 10px;
   overflow: hidden;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.25s ease, opacity 0.2s ease;
+  z-index: 2000;
+  transition: all 0.25s ease-in-out;
 }
 
-.likebox.closed {
-  transform: translateX(260px);
-  opacity: 0.9;
+/* 열리고 닫힐 때 */
+.like-box.closed {
+  transform: translateX(160px);
+  opacity: 0.6;
+}
+.like-box.open {
+  transform: translateX(0);
+  opacity: 1;
 }
 
-/* 접기/펼치기 버튼 */
-.likebox-toggle {
+/* 토글버튼 */
+.like-toggle {
   position: absolute;
   left: -28px;
-  top: 16px;
-  width: 28px;
-  height: 36px;
-  border-radius: 8px 0 0 8px;
-  border: 1px solid #e5e7eb;
+  top: 50%;
+  transform: translateY(-50%);
   background: #fff;
-  cursor: pointer;
-  box-shadow: -6px 0 12px rgba(0, 0, 0, 0.06);
-}
-
-/* 헤더 */
-.likebox-header {
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid #f1f3f5;
-  background: #fff;
-}
-
-.likebox-header h3 {
-  margin: 0 0 6px;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.likebox-count {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.likebox-count span {
-  font-weight: 700;
-  color: #111827;
-}
-
-/* 본문 */
-.likebox-body {
-  overflow: auto;
-  padding: 8px 8px 12px;
-}
-
-/* 아이템 카드 */
-.likebox-item {
-  display: grid;
-  grid-template-columns: 64px 1fr 28px;
-  gap: 10px;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  transition: transform 0.12s ease, background 0.12s ease;
-}
-
-.likebox-item:hover {
-  transform: translateY(-1px);
-  background: #fafafa;
-}
-
-/* 썸네일 */
-.likebox-thumb {
-  width: 64px;
-  height: 64px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #f3f4f6;
-}
-
-.likebox-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.likebox-thumb--placeholder {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
-  color: #9ca3af;
-}
-
-/* 텍스트 */
-.likebox-info {
-  min-width: 0;
-}
-
-.likebox-title {
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
   font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.likebox-price {
-  font-size: 13px;
-  margin-top: 4px;
-  color: #374151;
-}
-
-/* 삭제 버튼 */
-.likebox-unlike {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
   cursor: pointer;
-  transition: transform 0.12s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-.likebox-unlike:hover {
-  transform: scale(1.05);
-}
-
-/* 사진만 2열 모드 */
-.likebox-body--grid2 {
+/* 썸네일 컨테이너 */
+.like-thumbnails {
   display: grid;
-  grid-template-columns: repeat(2, 64px);
-  gap: 10px;
-  padding: 8px 8px 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  justify-items: center;
 }
 
-.likebox-thumb-only {
-  width: 64px;
-  height: 64px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 10px;
+/* 썸네일 버튼 */
+.like-thumb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fafafa;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid #eaeaea;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.likebox-thumb-only:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.like-thumb:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.likebox-thumb-only img {
+/* 썸네일 이미지 */
+.like-thumb img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  object-fit: contain; /* 이미지 잘림 방지 */
+  background-color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.like-thumb img:hover {
+  transform: scale(1.05);
+  border-radius: 10px;
+}
+
+/* 페이지 */
+.like-pagination {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+}
+
+.page-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  margin: 0 5px;
+  color: #444;
+  transition: color 0.2s;
+}
+
+.page-btn:hover {
+  color: #000;
+}
+
+.page-indicator {
+  font-size: 13px;
+  color: #888;
+}
+
+/* 빈 상태 */
+.like-empty {
+  text-align: center;
+  font-size: 13px;
+  color: #999;
+  padding: 20px 0;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .like-box {
+    top: 80px;
+    right: 10px;
+    width: 140px;
+  }
+  .like-thumb img {
+    width: 60px;
+    height: auto;
+  }
 }
