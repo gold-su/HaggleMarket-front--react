@@ -4,6 +4,7 @@ import axios from "axios";
 import "../pagesCSS/signup.css";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -15,6 +16,11 @@ const Signup = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [profileImage, setProfileImage] = useState(null); // 프로필 이미지 상태
   const [previewUrl, setPreviewUrl] = useState(null); // 미리보기 이미지 상태
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   const [form, setForm] = useState({
     userId: "",
@@ -49,7 +55,15 @@ const Signup = () => {
       const formData = new FormData();
       formData.append(
         "user",
-        new Blob([JSON.stringify(form)], { type: "application/json" })
+        new Blob(
+          [
+            JSON.stringify({
+              ...form,
+              address: `${form.address} ${form.addressDetail || ""}`.trim(),
+            }),
+          ],
+          { type: "application/json" }
+        )
       );
       if (profileImage) {
         formData.append("profileImage", profileImage);
@@ -173,24 +187,73 @@ const Signup = () => {
             <label htmlFor="password">
               비밀번호<span className="required">*</span>
             </label>
-            <div className="input-with-hint">
+            <div className="input-with-hint eye-wrapper">
               <input
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 onChange={handleChange}
                 required
                 placeholder="비밀번호는 영문, 숫자, 특수문자를 포함한 8~20자여야 합니다."
               />
+              {showPassword ? (
+                <FaEyeSlash
+                  className="eye-icon"
+                  onClick={() => setShowPassword(false)}
+                  title="비밀번호 숨기기"
+                />
+              ) : (
+                <FaEye
+                  className="eye-icon"
+                  onClick={() => setShowPassword(true)}
+                  title="비밀번호 보기"
+                />
+              )}
               <p className="password-hint">
-                비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할
-                수 있습니다.
+                비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할 수 있습니다.
               </p>
-              <p
-                className={`error-msg ${errors.password ? "visible" : "invisible"
-                  }`}
-              >
+              <p className={`error-msg ${errors.password ? "visible" : "invisible"}`}>
                 {errors.password || "‎"}
+              </p>
+            </div>
+          </div>
+
+          {/* 비밀번호 확인 */}
+          <div className="form-group">
+            <label htmlFor="confirmPassword">
+              비밀번호 확인<span className="required">*</span>
+            </label>
+            <div className="input-with-hint eye-wrapper">
+              <input
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  setPasswordMatch(e.target.value === form.password);
+                }}
+                required
+                placeholder="비밀번호를 한 번 더 입력하세요."
+              />
+              {showConfirmPassword ? (
+                <FaEyeSlash
+                  className="eye-icon"
+                  onClick={() => setShowConfirmPassword(false)}
+                  title="비밀번호 숨기기"
+                />
+              ) : (
+                <FaEye
+                  className="eye-icon"
+                  onClick={() => setShowConfirmPassword(true)}
+                  title="비밀번호 보기"
+                />
+              )}
+              <p
+                className={`error-msg ${!passwordMatch ? "visible" : "invisible"}`}
+                style={{ color: !passwordMatch ? "red" : "transparent" }}
+              >
+                {!passwordMatch ? "비밀번호가 일치하지 않습니다." : "‎"}
               </p>
             </div>
           </div>
@@ -266,25 +329,57 @@ const Signup = () => {
             <label htmlFor="address">
               주소<span className="required">*</span>
             </label>
-            <div className="input-with-hint">
+
+            <div className="address-wrapper">
+              {/* 주소 입력창 + 검색버튼 */}
+              <div className="address-row">
+                <input
+                  name="address"
+                  id="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  required
+                  placeholder="정확한 주소를 입력하거나 검색하세요."
+                />
+                <button
+                  type="button"
+                  className="address-btn"
+                  onClick={() => {
+                    new window.daum.Postcode({
+                      oncomplete: (data) => {
+                        setForm((prev) => ({
+                          ...prev,
+                          address: data.address, // 도로명 주소 자동 입력
+                        }));
+                      },
+                    }).open();
+                  }}
+                >
+                  주소검색
+                </button>
+              </div>
+
+              {/* 상세 주소 입력 */}
               <input
-                name="address"
-                id="address"
-                onChange={handleChange}
-                required
-                placeholder="정확한 주소를 입력하세요."
+                name="addressDetail"
+                id="addressDetail"
+                value={form.addressDetail || ""}
+                onChange={(e) =>
+                  setForm({ ...form, addressDetail: e.target.value })
+                }
+                placeholder="상세 주소를 입력하세요 (예: 101동 202호)"
+                className="address-detail"
               />
-              <p
-                className={`error-msg ${errors.address ? "visible" : "invisible"
-                  }`}
-              >
-                {errors.address || "‎"}
-              </p>
             </div>
+
+            <p className={`error-msg ${errors.address ? "visible" : "invisible"}`}>
+              {errors.address || "‎"}
+            </p>
           </div>
 
+
           {/* 버튼 */}
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading || !passwordMatch}>
             {loading ? "로딩 중..." : "회원가입"}
           </button>
         </div>

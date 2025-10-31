@@ -185,7 +185,7 @@
   margin: 0;
 }
 
-.signup-form button {
+.signup-form button[type="submit"] {
   width: 100%;
   padding: 10px;
   background-color: #6497b1;
@@ -196,12 +196,39 @@
   border-radius: 4px;
 }
 
-.signup-form button:hover {
+.eye-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.eye-wrapper input {
+  width: 100%;
+  padding-right: 32px;
+  /* 아이콘 공간 확보 */
+  box-sizing: border-box;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 8px;
+  font-size: 15px;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  pointer-events: auto;
+  /* 클릭 가능 */
+}
+
+.eye-icon:hover {
+  color: #555;
+}
+
+
+.signup-form button[type="submit"]:hover {
   background-color: #ffffff;
   color: #416d83;
-  /* 초록색 글자 */
   border: 1px solid #416d83;
-  /* 필요하면 테두리도 추가 */
 }
 
 .signup-message {
