@@ -210,15 +210,6 @@ function ProductDetail() {
             </button>
 
             <button className="buy">즉시구매</button>
-
-            {canEdit && (
-              <button
-                className="edit"
-                onClick={() => navigate(`/products/edit/${postId}`)}
-              >
-                수정하기
-              </button>
-            )}
           </div>
         </div>
       </div>

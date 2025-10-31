@@ -24,15 +24,6 @@ const DETAIL_AUCTION_PATH = (id) => `/auction/detail/${id}`;
 const DEFAULT_AVATAR = "/images/default-avatar.svg";
 
 /* ====== 유틸 ====== */
-const isAuctionItem = (obj) =>
-  Boolean(
-    obj?.isAuction ||
-      obj?.auction === true ||
-      obj?.type === "AUCTION" ||
-      obj?.kind === "AUCTION" ||
-      obj?.auctionId != null
-  );
-
 const normalizePrice = (v) => {
   if (v == null) return null;
   if (typeof v === "number" && !Number.isNaN(v)) return v;
@@ -201,12 +192,12 @@ export default function MyShop() {
             : prev.storeName,
           profileUrl:
             !detail.data.profileUrl ||
-            detail.data.profileUrl === "null" ||
-            detail.data.profileUrl === "undefined"
+              detail.data.profileUrl === "null" ||
+              detail.data.profileUrl === "undefined"
               ? DEFAULT_AVATAR
               : detail.data.profileUrl.startsWith("/uploads/")
-              ? `${API_BASE}${detail.data.profileUrl}`
-              : detail.data.profileUrl,
+                ? `${API_BASE}${detail.data.profileUrl}`
+                : detail.data.profileUrl,
           isVerified: !!detail.data.verified,
           description: detail.data.intro || prev.description, // ✅ intro 반영
           storeOpenedAt:
@@ -249,8 +240,8 @@ export default function MyShop() {
       const list = Array.isArray(data?.content)
         ? data.content
         : Array.isArray(data)
-        ? data
-        : [];
+          ? data
+          : [];
       setAuctionList(list);
     } catch (e) {
       console.error("❌ 경매 목록 로드 실패", e);
@@ -297,14 +288,34 @@ export default function MyShop() {
     }
   };
 
+  const isAuctionItem = (obj) => {
+    if (!obj) return false;
+    return Boolean(
+      obj?.isAuction === true ||
+      obj?.auction === true ||
+      obj?.type === "AUCTION" ||
+      obj?.kind === "AUCTION" ||
+      obj?.auctionId != null ||
+      obj?.endTime || // 경매 데이터는 보통 endTime 있음
+      obj?.endsAt ||
+      obj?.bidCount != null ||
+      obj?.startCost != null // 시작가가 있으면 거의 100% 경매
+    );
+  };
+
+
   /* ====== 삭제/수정 ====== */
   const onEdit = (item) => {
     const auc = isAuctionItem(item);
-    navigate(
-      auc
-        ? EDIT_AUCTION_PATH(item.auctionId ?? item.id)
-        : EDIT_USED_PATH(item.postId ?? item.id)
-    );
+    const targetId = item.auctionId ?? item.id ?? item.postId;
+    console.log("🟡 수정 이동 시 ID:", targetId, "isAuction:", auc);
+
+    if (!targetId) {
+      alert("⚠️ 수정할 ID를 찾을 수 없습니다.");
+      return;
+    }
+
+    navigate(auc ? `/auction/edit/${targetId}` : `/products/edit/${targetId}`);
   };
 
   const onDelete = async (item) => {
@@ -483,9 +494,8 @@ export default function MyShop() {
       >
         {items.map((it) => (
           <Card
-            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${
-              it.auctionId ?? it.id ?? it.postId
-            }`}
+            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${it.auctionId ?? it.id ?? it.postId
+              }`}
             item={it}
             withActions={withActions}
           />

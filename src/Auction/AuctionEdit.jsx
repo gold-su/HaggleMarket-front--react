@@ -13,19 +13,6 @@ import {
   toLocalDateTimeString,
 } from "../api/auction";
 
-// ✅ 카테고리 데이터 정의 (AuctionRegister.jsx에서 가져오거나 공유)
-const categoriesData = {
-  "디지털/가전": {
-    휴대폰: ["갤럭시", "아이폰"],
-    노트북: ["맥북", "그램"],
-  },
-  "의류/잡화": {
-    패션잡화: ["가방", "지갑", "시계"],
-    의류: ["상의", "하의"],
-  },
-  // 필요한 카테고리를 더 추가하세요.
-};
-
 function AuctionEdit() {
   const navigate = useNavigate();
   const params = useParams();
@@ -35,9 +22,12 @@ function AuctionEdit() {
   const [images, setImages] = useState([]);
   const [auctionTitle, setAuctionTitle] = useState(""); // 상품명
   const [auctionContent, setAuctionContent] = useState(""); // 상품 설명
-  const [selectedLargeCategory, setSelectedLargeCategory] = useState("");
-  const [selectedMiddleCategory, setSelectedMiddleCategory] = useState("");
-  const [selectedSmallCategory, setSelectedSmallCategory] = useState("");
+  const [largeCategories, setLargeCategories] = useState([]);
+  const [middleCategories, setMiddleCategories] = useState([]);
+  const [smallCategories, setSmallCategories] = useState([]);
+  const [selectedLarge, setSelectedLarge] = useState(null);
+  const [selectedMiddle, setSelectedMiddle] = useState(null);
+  const [selectedSmall, setSelectedSmall] = useState(null);
   const [startCost, setStartCost] = useState(""); // 시작가
   const [buyoutCost, setBuyoutCost] = useState(""); // 즉시 구매가 (선택 사항)
   const [startTime, setStartTime] = useState(""); // 경매 시작 시간
@@ -98,21 +88,45 @@ function AuctionEdit() {
   const handleRemoveImage = (indexToRemove) => {
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
+  
+  useEffect(() => {
+    fetch(`${BASE}/api/categories/roots`)
+      .then((res) => res.json())
+      .then((data) => setLargeCategories(data || []))
+      .catch(() => setLargeCategories([]));
+  }, []);
 
   // === 기존 카테고리 핸들러 ===
-  const handleLargeCategoryClick = (cat) => {
-    setSelectedLargeCategory(cat);
-    setSelectedMiddleCategory("");
-    setSelectedSmallCategory("");
+  const handleLargeChange = async (categoryId) => {
+    setSelectedLarge(categoryId);
+    setSelectedMiddle(null);
+    setSelectedSmall(null);
+    setSmallCategories([]);
+
+    try {
+      const res = await fetch(`${BASE}/api/categories/${categoryId}`);
+      const data = await res.json();
+      setMiddleCategories(data || []);
+    } catch {
+      setMiddleCategories([]);
+    }
   };
 
-  const handleMiddleCategoryClick = (cat) => {
-    setSelectedMiddleCategory(cat);
-    setSelectedSmallCategory("");
+  const handleMiddleChange = async (categoryId) => {
+    setSelectedMiddle(categoryId);
+    setSelectedSmall(null);
+
+    try {
+      const res = await fetch(`${BASE}/api/categories/${categoryId}`);
+      const data = await res.json();
+      setSmallCategories(data || []);
+    } catch {
+      setSmallCategories([]);
+    }
   };
 
-  const handleSmallCategoryClick = (cat) => {
-    setSelectedSmallCategory(cat);
+  const handleSmallChange = (categoryId) => {
+    setSelectedSmall(categoryId);
   };
 
   // === 경매 상품 업데이트 처리 ===
@@ -124,9 +138,9 @@ function AuctionEdit() {
       auctionTitle,
       auctionContent,
       category: {
-        large: selectedLargeCategory,
-        middle: selectedMiddleCategory,
-        small: selectedSmallCategory,
+        large: selectedLarge,
+        middle: selectedMiddle,
+        small: selectedSmall,
       },
       startCost,
       buyoutCost,
@@ -286,91 +300,96 @@ function AuctionEdit() {
                 {/* 대분류 */}
                 <div className={stylesForm.categoryColumn}>
                   <ul className={stylesForm.categoryList}>
-                    {Object.keys(categoriesData).map((cat) => (
-                      <li
-                        key={cat}
-                        className={`${stylesForm.categoryItem} ${
-                          selectedLargeCategory === cat ? stylesForm.active : ""
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => handleLargeCategoryClick(cat)}
-                        >
-                          {cat}
-                        </button>
+                    {largeCategories.length === 0 ? (
+                      <li className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>
+                        대분류 없음
                       </li>
-                    ))}
-                  </ul>
-                </div>
-                {/* 중분류 */}
-                <div className={stylesForm.categoryColumn}>
-                  <ul className={stylesForm.categoryList}>
-                    {selectedLargeCategory ? (
-                      Object.keys(categoriesData[selectedLargeCategory]).map(
-                        (cat) => (
-                          <li
-                            key={cat}
-                            className={`${stylesForm.categoryItem} ${
-                              selectedMiddleCategory === cat
-                                ? stylesForm.active
-                                : ""
-                            }`}
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleMiddleCategoryClick(cat)}
-                            >
-                              {cat}
-                            </button>
-                          </li>
-                        )
-                      )
                     ) : (
-                      <li
-                        className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
-                      >
-                        중분류
-                      </li>
-                    )}
-                  </ul>
-                </div>
-                {/* 소분류 */}
-                <div className={stylesForm.categoryColumn}>
-                  <ul className={stylesForm.categoryList}>
-                    {selectedLargeCategory && selectedMiddleCategory ? (
-                      categoriesData[selectedLargeCategory][
-                        selectedMiddleCategory
-                      ].map((cat) => (
+                      largeCategories.map((cat) => (
                         <li
-                          key={cat}
-                          className={`${stylesForm.categoryItem} ${
-                            selectedSmallCategory === cat
-                              ? stylesForm.active
-                              : ""
-                          }`}
+                          key={cat.id}
+                          className={`${stylesForm.categoryItem} ${selectedLarge === cat.id ? stylesForm.active : ""
+                            }`}
                         >
-                          {" "}
-                          {/* active는 선택된 것만 되어야 함 */}
-                          <button
-                            type="button"
-                            onClick={() => handleSmallCategoryClick(cat)}
-                          >
-                            {cat}
+                          <button type="button" onClick={() => handleLargeChange(cat.id)}>
+                            {cat.name}
                           </button>
                         </li>
                       ))
-                    ) : (
-                      <li
-                        className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
-                      >
-                        소분류
-                      </li>
                     )}
                   </ul>
                 </div>
+
+                {/* 중분류 */}
+                <div className={stylesForm.categoryColumn}>
+                  {selectedLarge ? (
+                    middleCategories.length === 0 ? (
+                      <div
+                        className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                      >
+                        중분류 없음
+                      </div>
+                    ) : (
+                      <ul className={stylesForm.categoryList}>
+                        {middleCategories.map((cat) => (
+                          <li
+                            key={cat.id}
+                            className={`${stylesForm.categoryItem} ${selectedMiddle === cat.id ? stylesForm.active : ""
+                              }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleMiddleChange(cat.id)}
+                            >
+                              {cat.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  ) : (
+                    <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>
+                      중분류 선택
+                    </div>
+                  )}
+                </div>
+
+                {/* 소분류 */}
+                <div className={stylesForm.categoryColumn}>
+                  {selectedMiddle ? (
+                    smallCategories.length === 0 ? (
+                      <div
+                        className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                      >
+                        소분류 없음
+                      </div>
+                    ) : (
+                      <ul className={stylesForm.categoryList}>
+                        {smallCategories.map((cat) => (
+                          <li
+                            key={cat.id}
+                            className={`${stylesForm.categoryItem} ${selectedSmall === cat.id ? stylesForm.active : ""
+                              }`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleSmallChange(cat.id)}
+                            >
+                              {cat.name}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  ) : (
+                    <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>
+                      소분류 선택
+                    </div>
+                  )}
+                </div>
               </div>
             </li>
+
 
             {/* 시작가 */}
             <li className={stylesLayout.formGroup}>
