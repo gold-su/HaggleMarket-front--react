@@ -21,7 +21,6 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-
   const [form, setForm] = useState({
     userId: "",
     userName: "",
@@ -152,8 +151,9 @@ const Signup = () => {
                 placeholder="올바른 이메일 형식이어야 합니다."
               />
               <p
-                className={`error-msg ${errors.email ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.email ? "visible" : "invisible"
+                }`}
               >
                 {errors.email || "‎"}
               </p>
@@ -174,8 +174,9 @@ const Signup = () => {
                 placeholder="아이디는 영문자와 숫자 조합의 5~20자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.userId ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.userId ? "visible" : "invisible"
+                }`}
               >
                 {errors.userId || "‎"}
               </p>
@@ -210,9 +211,14 @@ const Signup = () => {
                 />
               )}
               <p className="password-hint">
-                비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할 수 있습니다.
+                비밀번호에는 특수문자 <strong>! @ # $ % & * ?</strong> 를 사용할
+                수 있습니다.
               </p>
-              <p className={`error-msg ${errors.password ? "visible" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.password ? "visible" : "invisible"
+                }`}
+              >
                 {errors.password || "‎"}
               </p>
             </div>
@@ -250,7 +256,9 @@ const Signup = () => {
                 />
               )}
               <p
-                className={`error-msg ${!passwordMatch ? "visible" : "invisible"}`}
+                className={`error-msg ${
+                  !passwordMatch ? "visible" : "invisible"
+                }`}
                 style={{ color: !passwordMatch ? "red" : "transparent" }}
               >
                 {!passwordMatch ? "비밀번호가 일치하지 않습니다." : "‎"}
@@ -272,8 +280,9 @@ const Signup = () => {
                 placeholder="닉네임은 특수문자를 제외한 2~15자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.nickName ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.nickName ? "visible" : "invisible"
+                }`}
               >
                 {errors.nickName || "‎"}
               </p>
@@ -294,8 +303,9 @@ const Signup = () => {
                 placeholder="이름은 한글 2~10자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.userName ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.userName ? "visible" : "invisible"
+                }`}
               >
                 {errors.userName || "‎"}
               </p>
@@ -316,8 +326,9 @@ const Signup = () => {
                 placeholder="전화번호는 '-' 없이 숫자 11자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.phoneNumber ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.phoneNumber ? "visible" : "invisible"
+                }`}
               >
                 {errors.phoneNumber || "‎"}
               </p>
@@ -372,11 +383,14 @@ const Signup = () => {
               />
             </div>
 
-            <p className={`error-msg ${errors.address ? "visible" : "invisible"}`}>
+            <p
+              className={`error-msg ${
+                errors.address ? "visible" : "invisible"
+              }`}
+            >
               {errors.address || "‎"}
             </p>
           </div>
-
 
           {/* 버튼 */}
           <button type="submit" disabled={loading || !passwordMatch}>
