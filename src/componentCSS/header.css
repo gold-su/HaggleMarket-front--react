@@ -272,25 +272,25 @@
 /* ✅ 헤더에서 '판매하기' 와 '경매 등록' 아이콘만 검은색으로 */
 .auth-buttons a[href="/product"] svg,
 .auth-buttons a[href="/register-auction"] svg {
-  color: #000 !important;   /* react-icons는 보통 currentColor 사용 */
-  fill: #000 !important;
-  stroke: #000 !important;
+  color: #2e6ae6 !important;   /* react-icons는 보통 currentColor 사용 */
+  fill: #2e6ae6 !important;
+  stroke: #2e6ae6 !important;
 }
 
 /* hover 시에도 아이콘은 계속 검은색 유지 */
 .auth-buttons a[href="/product"]:hover svg,
 .auth-buttons a[href="/register-auction"]:hover svg {
-  color: #000 !important;
-  fill: #000 !important;
-  stroke: #000 !important;
+  color: #2e6ae6 !important;
+  fill: #2e6ae6 !important;
+  stroke: #2e6ae6 !important;
 }
 
 /* ✅ '내상점'과 '해글톡' 아이콘 색상을 검정색으로 변경 */
 .auth-buttons a[href="/myshop"] svg,
 .auth-buttons a[href="/chat"] svg {
-  color: #000 !important;
-  fill: #000 !important;
-  stroke: #000 !important;
+  color: #2e6ae6 !important;
+  fill: #2e6ae6 !important;
+  stroke: #2e6ae6 !important;
 }
 
 /* hover 시에도 검은색 유지 */

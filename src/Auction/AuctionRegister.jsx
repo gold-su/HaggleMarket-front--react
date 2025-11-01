@@ -179,13 +179,11 @@ function AuctionRegister() {
                 <div className={stylesLayout.formContent}>
                   <ul className={stylesForm.imageUploadList}>
                     <li
-                      className={`${stylesForm.imageUploadItem} ${
-                        stylesForm.addImage
-                      } ${
-                        imagePreviews.length >= maxImages
+                      className={`${stylesForm.imageUploadItem} ${stylesForm.addImage
+                        } ${imagePreviews.length >= maxImages
                           ? stylesForm.disabled
                           : ""
-                      }`}
+                        }`}
                     >
                       <label htmlFor="auction-image-input">
                         <svg
@@ -249,9 +247,6 @@ function AuctionRegister() {
                     value={auctionTitle}
                     onChange={(e) => setAuctionTitle(e.target.value)}
                   />
-                  <div className={stylesForm.charCounter}>
-                    {auctionTitle.length}/50
-                  </div>
                 </div>
               </li>
 
@@ -268,9 +263,8 @@ function AuctionRegister() {
                         {largeCategories.map((cat) => (
                           <li
                             key={cat.id}
-                            className={`${stylesForm.categoryItem} ${
-                              selectedLarge === cat.id ? stylesForm.active : ""
-                            }`}
+                            className={`${stylesForm.categoryItem} ${selectedLarge === cat.id ? stylesForm.active : ""
+                              }`}
                           >
                             <button
                               type="button"
@@ -288,9 +282,8 @@ function AuctionRegister() {
                         middleCategories.map((cat) => (
                           <li
                             key={cat.id}
-                            className={`${stylesForm.categoryItem} ${
-                              selectedMiddle === cat.id ? stylesForm.active : ""
-                            }`}
+                            className={`${stylesForm.categoryItem} ${selectedMiddle === cat.id ? stylesForm.active : ""
+                              }`}
                           >
                             <button
                               type="button"
@@ -307,9 +300,8 @@ function AuctionRegister() {
                         smallCategories.map((cat) => (
                           <li
                             key={cat.id}
-                            className={`${stylesForm.categoryItem} ${
-                              selectedSmall === cat.id ? stylesForm.active : ""
-                            }`}
+                            className={`${stylesForm.categoryItem} ${selectedSmall === cat.id ? stylesForm.active : ""
+                              }`}
                           >
                             <button
                               type="button"
@@ -329,50 +321,70 @@ function AuctionRegister() {
                 </div>
               </li>
 
-              {/* 시작가 / 즉시구매가 */}
+              {/* ✅ [수정된 부분 ①] — "가격" (시작가만 단독) */}
               <li
                 className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
               >
                 <div className={stylesLayout.formLabel}>가격</div>
                 <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.priceRow}>
-                    <input
-                      type="number"
-                      className={stylesForm.formInput}
-                      placeholder="시작가"
-                      value={startCost}
-                      onChange={(e) => setStartCost(e.target.value)}
-                      min="1"
-                    />
-                    <input
-                      type="number"
-                      className={stylesForm.formInput}
-                      placeholder="즉시 구매가 (선택)"
-                      value={buyoutCost}
-                      onChange={(e) => setBuyoutCost(e.target.value)}
-                    />
-                  </div>
+                  {/* 기존에는 시작가 + 즉시구매가가 한 줄에 같이 있었음 */}
+                  {/* 변경: 시작가만 남기고 즉시구매가는 아래 별도 li로 분리 */}
+                  <input
+                    type="number"
+                    className={stylesForm.formInput}
+                    placeholder="시작가"
+                    value={startCost}
+                    onChange={(e) => setStartCost(e.target.value)}
+                    min="1"
+                    step="1"
+                  />
                 </div>
               </li>
 
-              {/* 경매 기간 */}
+              {/* ✅ [수정된 부분 ②] — "즉시 구매가" (별도 줄로 분리) */}
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
+                <div className={stylesLayout.formLabel}>즉시 구매가</div>
+                <div className={stylesLayout.formContent}>
+                  {/* 기존: 가격 input 옆에 즉시구매가가 같이 있었음 */}
+                  {/* 변경: 별도의 formGroup으로 분리하여 한 줄 아래로 배치 */}
+                  <input
+                    type="number"
+                    className={stylesForm.formInput}
+                    placeholder="즉시 구매가 (선택)"
+                    value={buyoutCost}
+                    onChange={(e) => setBuyoutCost(e.target.value)}
+                    min={startCost ? Number(startCost) + 1 : 1}
+                    step="1"
+                  />
+                </div>
+              </li>
+
+              {/* ✅ [수정된 부분 ③] — "경매 기간" ('부터' / '까지' 추가) */}
               <li
                 className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
               >
                 <div className={stylesLayout.formLabel}>경매 기간</div>
                 <div className={stylesLayout.formContent}>
-                  <input
-                    type="datetime-local"
-                    className={stylesForm.formInput}
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                  />
-                  <input
-                    type="datetime-local"
-                    className={stylesForm.formInput}
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                  />
+                  {/* 기존: datetime-local 2개만 나란히 존재 */}
+                  {/* 변경: '부터' / '까지' 텍스트를 중간에 추가해 가독성 향상 */}
+                  <div className={stylesForm.priceRow}>
+                    <input
+                      type="datetime-local"
+                      className={stylesForm.formInput}
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                    />
+                    <span style={{ whiteSpace: "nowrap" }}>부터</span>
+                    <input
+                      type="datetime-local"
+                      className={stylesForm.formInput}
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                    />
+                    <span style={{ whiteSpace: "nowrap" }}>까지</span>
+                  </div>
                 </div>
               </li>
 
