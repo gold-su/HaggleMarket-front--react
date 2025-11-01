@@ -8,7 +8,7 @@
   --text: #334155;
   --text-muted: #64748b;
 
-  --primary: #3E7AEF;
+  --primary: #3e7aef;
   --primary-hover: #2f65c0;
 
   --seg-bg: #f1f5f9;
@@ -16,7 +16,7 @@
   --seg-hover: #e8f0ff;
 
   /* 기존 CSS에서 사용 중이던 변수 보강 */
-  --santorini-blue: #2E6AE6;
+  --santorini-blue: #2e6ae6;
   --santorini-light-blue: #9eceff;
 
   --shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
@@ -26,7 +26,7 @@
 .header-inner-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 15px 15px;
+  padding: 15px 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,7 +96,7 @@
 .logo {
   font-weight: 900;
   font-size: 1.8rem;
-  color: #3E7AEF;
+  color: #3e7aef;
   user-select: none;
   text-decoration: none;
 }
@@ -132,7 +132,7 @@
 .search-box {
   width: 100%;
   padding: 6px 15px;
-  border: 2px solid #3E7AEF;
+  border: 2px solid #3e7aef;
   border-radius: 30px;
   font-size: 1rem;
   outline: none;
@@ -229,7 +229,8 @@
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color .15s ease, color .15s ease, box-shadow .15s ease, border-color .15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease,
+    box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 /* 판매하기(중고): 라이트 아웃라인 */
@@ -272,7 +273,7 @@
 /* ✅ 헤더에서 '판매하기' 와 '경매 등록' 아이콘만 검은색으로 */
 .auth-buttons a[href="/product"] svg,
 .auth-buttons a[href="/register-auction"] svg {
-  color: #2e6ae6 !important;   /* react-icons는 보통 currentColor 사용 */
+  color: #2e6ae6 !important; /* react-icons는 보통 currentColor 사용 */
   fill: #2e6ae6 !important;
   stroke: #2e6ae6 !important;
 }
@@ -319,7 +320,7 @@
 /* ✅ 활성 탭(파란 밑줄)은 유지하지만 글자는 검정색으로 */
 .myshop-nav li.active {
   color: #000 !important;
-  border-bottom-color: #3E7AEF !important; /* 밑줄 파란색 유지 */
+  border-bottom-color: #3e7aef !important; /* 밑줄 파란색 유지 */
 }
 
 /* ✅ hover 시에도 글자색 유지 */
@@ -330,7 +331,7 @@
 /* 10월 17일 추가 */
 /* ✅ 별모양 NEW 배지 (로고 옆) */
 .new-burst {
-  --size: 28px;                 /* 필요하면 32px, 36px로 키우세요 */
+  --size: 28px; /* 필요하면 32px, 36px로 키우세요 */
   width: var(--size);
   height: var(--size);
   margin-left: 8px;
@@ -341,7 +342,7 @@
   justify-content: center;
   position: relative;
   user-select: none;
-  cursor: default;              /* 클릭처럼 보이지 않게 */
+  cursor: default; /* 클릭처럼 보이지 않게 */
   /* 스티커(별) 모양: 다각형 폭발 형태 */
   clip-path: polygon(
     50% 0%,
@@ -369,19 +370,23 @@
     26% 4%,
     40% 8%
   );
-  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* 안쪽 텍스트만 살짝 기울여 스티커 느낌 */
 .new-burst .label {
-  font-size: 9px;               /* --size에 맞춰 조정 */
+  font-size: 9px; /* --size에 맞춰 조정 */
   font-weight: 900;
-  letter-spacing: .5px;
-  transform: rotate(-20deg);    /* 이미지처럼 대각선 느낌 */
+  letter-spacing: 0.5px;
+  transform: rotate(-20deg); /* 이미지처럼 대각선 느낌 */
   line-height: 1;
   pointer-events: none;
 }
 @media (max-width: 767px) {
-  .new-burst { --size: 24px; }
-  .new-burst .label { font-size: 8px; }
+  .new-burst {
+    --size: 24px;
+  }
+  .new-burst .label {
+    font-size: 8px;
+  }
 }
