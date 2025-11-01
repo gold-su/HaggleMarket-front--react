@@ -16,12 +16,12 @@ export default function LikeBox({
     import.meta.env.VITE_API_BASE ??
     "http://localhost:8080";
 
-  // ── 유틸 ───────────────────────────────────────────────
   const resolveUrl = (v) => {
     if (!v || v === "null") return "/no-image.png";
     if (typeof v !== "string") v = String(v);
     if (/^https?:\/\//i.test(v)) return v;
-    return `${BASE}${v.startsWith("/") ? "" : "/"}${v}`;
+    // ✅ BASE 끝의 / 제거 + v의 시작 / 제거 후 합침
+    return `${BASE.replace(/\/$/, "")}/${v.replace(/^\//, "")}`;
   };
 
   // ✅ ID 추출 로직 — auction/post 구분 관계없이 대응
@@ -66,15 +66,20 @@ export default function LikeBox({
         p?.auction === true ||
         p?.raw?.isAuction === true ||
         p?.raw?.auction === true;
+
+      // ✅ thumbnail, thumbnailUrl 둘 다 대응
+      const thumb = p?.thumbnailUrl ?? p?.thumbnail ?? p?.raw?.thumbnailUrl ?? p?.raw?.thumbnail ?? null;
+
       return {
         __key: `${isAuction ? "auction" : "post"}-${id ?? "tmp-" + idx}`,
         id: id ?? `tmp-${idx}`,
         isAuction,
-        thumbnailUrl: p?.thumbnailUrl ?? p?.raw?.thumbnailUrl ?? null,
+        thumbnailUrl: thumb, // ✅ 실제 경로
         raw: p,
       };
     });
   }, [items]);
+
 
   // ── 페이지네이션(2x2) ─────────────────────────────────
   const pageSize = 4;
@@ -102,19 +107,24 @@ export default function LikeBox({
         <div className="like-content">
           <div className="like-thumbnails">
             {pageItems.map((p) => (
-              <button
-                key={p.__key}
-                className="like-thumb"
-                onClick={() => goDetail(p.raw)}
-                aria-label="상품 상세보기"
-              >
-                <img
-                  src={resolveUrl(p.thumbnailUrl)}
-                  alt=""
-                  loading="lazy"
-                  onError={(e) => (e.currentTarget.src = "/no-image.png")}
-                />
-              </button>
+              <div key={p.__key} className="like-item">
+                <button
+                  className="like-thumb"
+                  onClick={() => goDetail(p.raw)}
+                  aria-label="상품 상세보기"
+                >
+                  <img
+                    src={resolveUrl(p.thumbnailUrl)}
+                    alt={p.raw?.title ?? "상품 이미지"}
+                    loading="lazy"
+                    onError={(e) => (e.currentTarget.src = "/no-image.png")}
+                  />
+                </button>
+                {/* ✅ 상품 제목 추가 */}
+                <div className="like-title" title={p.raw?.title ?? ""}>
+                  {p.raw?.title ?? "제목 없음"}
+                </div>
+              </div>
             ))}
           </div>
 

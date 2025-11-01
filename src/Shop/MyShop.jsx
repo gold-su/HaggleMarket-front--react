@@ -64,12 +64,22 @@ const resolveThumb = (obj) => {
     obj?.thumbnail ??
     (obj?.firstImageId != null ? String(obj.firstImageId) : null);
 
-  if (!raw) return "/no-image.png";
-  if (/^\d+$/.test(String(raw))) return `${API_BASE}/api/auction/images/${raw}`;
-  if (raw.startsWith("http")) return raw;
+  if (!raw || raw === "null" || raw === "undefined") return "/no-image.png";
+
+  // ✅ 파일 경로형이면
   if (raw.startsWith("/uploads/")) return `${API_BASE}${raw}`;
+
+  // ✅ 숫자 ID라면 DB에서 불러오기
+  if (/^\d+$/.test(raw)) return `${API_BASE}/api/auction/images/${raw}`;
+
+  // ✅ 확장자가 붙은 경우 → 숫자 추출해서 API로
+  const id = raw.replace(/\D/g, "");
+  if (id) return `${API_BASE}/api/auction/images/${id}`;
+
+  if (raw.startsWith("http")) return raw;
   return `${API_BASE}${raw}`;
 };
+
 
 const daysSince = (dateStr) => {
   if (!dateStr || dateStr === "-") return "-";
@@ -178,7 +188,7 @@ export default function MyShop() {
         const me = await api.get("/api/shops/me");
 
         // ✅ 상세 프로필 (소개글 intro 포함)
-        const detail = await api.get(`/api/shops/${me.data.userNo}/detail`);
+        const detail = await api.get(`/api/shops/${me.data.userNo}`);
 
         // ✅ 상점 통계
         const s = await api.get(`/api/shops/${me.data.userNo}/stats`);

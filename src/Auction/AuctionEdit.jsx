@@ -63,6 +63,26 @@ function AuctionEdit() {
           // const notReady = data.status && data.status !== 'READY';
           setCanEdit(!hasBids /* && !notReady */);
           // 카테고리는 프로젝트 정책 따라서 매핑
+          if (data.categoryIds && Array.isArray(data.categoryIds)) {
+            const [largeId, middleId, smallId] = data.categoryIds;
+            setSelectedLarge(largeId);
+            setSelectedMiddle(middleId);
+            setSelectedSmall(smallId);
+
+            // 중분류 목록 로드
+            if (largeId) {
+              const midRes = await fetch(`${BASE}/api/categories/${largeId}`);
+              const midData = await midRes.json();
+              setMiddleCategories(midData || []);
+            }
+
+            // 소분류 목록 로드
+            if (middleId) {
+              const smallRes = await fetch(`${BASE}/api/categories/${middleId}`);
+              const smallData = await smallRes.json();
+              setSmallCategories(smallData || []);
+            }
+          }
         } catch (e) {
           alert("경매 정보를 불러오는 데 실패했습니다.");
           //navigate(-1);
@@ -88,7 +108,7 @@ function AuctionEdit() {
   const handleRemoveImage = (indexToRemove) => {
     setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
-  
+
   useEffect(() => {
     fetch(`${BASE}/api/categories/roots`)
       .then((res) => res.json())

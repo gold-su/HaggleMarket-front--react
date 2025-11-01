@@ -39,6 +39,45 @@
   display: block;
 }
 
+/* ✅ 큰 이미지와 썸네일 사이 간격 추가 */
+.product-thumbs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 18px; /* 🔥 여백 추가 (기존 auto → 18px) */
+}
+
+.product-thumb {
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+}
+
+.product-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-thumb.active {
+  outline: 2px solid #ff4d4f;
+  border-color: transparent;
+}
+
+.product-thumb:hover {
+  outline: 2px solid #999;
+}
+
+/* -----------------------------
+   상품 정보 텍스트
+----------------------------- */
 .product-info {
   flex: 1;
   display: flex;
@@ -46,9 +85,6 @@
   justify-content: space-between;
 }
 
-/* -----------------------------
-   상품 정보 텍스트
------------------------------ */
 .product-info .price {
   font-size: 28px;
   font-weight: bold;
@@ -108,43 +144,6 @@
 }
 
 /* -----------------------------
-   썸네일
------------------------------ */
-.product-thumbs {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: auto;
-}
-
-.product-thumb {
-  width: 70px;
-  height: 70px;
-  padding: 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #fff;
-  cursor: pointer;
-}
-
-.product-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.product-thumb.active {
-  outline: 2px solid #ff4d4f;
-  border-color: transparent;
-}
-
-.product-thumb:hover {
-  outline: 2px solid #999;
-}
-
-/* -----------------------------
    하단 : 카드 3개 (지역/카테고리/판매자)
 ----------------------------- */
 .product-extra-cards {
@@ -152,19 +151,20 @@
   gap: 20px;
   flex-wrap: wrap;
   margin-top: 20px;
-  margin-bottom: 10px; /* 👈 기존보다 아래 간격 줄임 */
+  margin-bottom: 10px;
 }
 
 .product-extra-cards .card {
   flex: 1;
   min-width: 280px;
-  padding: 16px; /* 👈 내부 여백도 살짝 줄임 (20 → 16) */
+  padding: 16px;
   border: 1px solid #eee;
   border-radius: 8px;
   text-align: center;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
+
 .product-extra-cards .card-title {
   font-weight: bold;
   margin-bottom: 8px;
@@ -176,12 +176,12 @@
 }
 
 /* -----------------------------
-   판매자 정보 카드 (3번째) - 버튼 오른쪽 밀착
+   판매자 정보 카드 (3번째)
 ----------------------------- */
 .product-extra-cards .card:last-child {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 왼쪽 기준으로 배치 */
+  justify-content: flex-start;
   gap: 16px;
   padding: 16px 18px;
 }
@@ -192,7 +192,7 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  justify-content: space-between; /* ✅ 버튼을 오른편 중앙에 배치 */
+  justify-content: space-between;
 }
 
 .seller-avatar {
