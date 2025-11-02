@@ -1,5 +1,5 @@
 // src/Shop/MyShop.jsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../ShopCSS/MyShopContainer.css";
@@ -65,29 +65,21 @@ const resolveThumb = (obj) => {
     (obj?.firstImageId != null ? String(obj.firstImageId) : null);
 
   if (!raw || raw === "null" || raw === "undefined") return "/no-image.png";
-
-  // ✅ 파일 경로형이면
   if (raw.startsWith("/uploads/")) return `${API_BASE}${raw}`;
-
-  // ✅ 숫자 ID라면 DB에서 불러오기
   if (/^\d+$/.test(raw)) return `${API_BASE}/api/auction/images/${raw}`;
-
-  // ✅ 확장자가 붙은 경우 → 숫자 추출해서 API로
+  if (raw.startsWith("http")) return raw;
   const id = raw.replace(/\D/g, "");
   if (id) return `${API_BASE}/api/auction/images/${id}`;
-
-  if (raw.startsWith("http")) return raw;
   return `${API_BASE}${raw}`;
 };
 
 
 const daysSince = (dateStr) => {
   if (!dateStr || dateStr === "-") return "-";
-  const start = new Date(dateStr);
-  const today = new Date();
-  const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+  const diff = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
   return `${diff}일째`;
 };
+
 
 /* ====== 드롭다운 ====== */
 function FilterDropdown({ value, onChange }) {
@@ -167,18 +159,30 @@ export default function MyShop() {
     try {
       const token = localStorage.getItem("jwtToken");
       await api.put(
-        `/api/shops/${profile.userNo}/intro`,
-        { intro: introText },
-        { headers: { Authorization: `Bearer ${token}` } }
+        `/api/shops/me/intro`,
+        introText,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "text/plain",
+          },
+        }
       );
-      setProfile((prev) => ({ ...prev, description: introText }));
+
+      // ✅ 상태만 갱신해서 화면 즉시 반영
+      setProfile((prev) => {
+        if (prev.description === introText) return prev; // 내용 동일하면 리렌더 안 함
+        return { ...prev, description: introText };
+      });
+
+      // ✅ 편집 모드 자연스럽게 종료
       setEditIntro(false);
-      alert("소개글이 저장되었습니다!");
     } catch (e) {
       console.error(e);
       alert("소개글 저장 실패");
     }
   };
+
 
   /* ====== 초기 로드 ====== */
   useEffect(() => {
@@ -212,6 +216,7 @@ export default function MyShop() {
           description: detail.data.intro || prev.description, // ✅ intro 반영
           storeOpenedAt:
             detail.data.storeOpenedAt ?? s.data.storeOpenedAt ?? "-",
+          visitCount: detail.data.visitCount ?? 0,
         }));
 
         setStats(s.data);
@@ -225,7 +230,7 @@ export default function MyShop() {
         console.error("❌ 상점 정보 불러오기 실패", e);
       }
     })();
-  }, [api]);
+  }, []);
 
   /* ====== 로드 함수 ====== */
   const loadUsed = async (userNo) => {
@@ -298,7 +303,7 @@ export default function MyShop() {
     }
   };
 
-  const isAuctionItem = (obj) => {
+  const isAuctionItem = useCallback((obj) => {
     if (!obj) return false;
     return Boolean(
       obj?.isAuction === true ||
@@ -311,7 +316,7 @@ export default function MyShop() {
       obj?.bidCount != null ||
       obj?.startCost != null // 시작가가 있으면 거의 100% 경매
     );
-  };
+  }, []);
 
 
   /* ====== 삭제/수정 ====== */
@@ -346,7 +351,7 @@ export default function MyShop() {
   };
 
   /* ====== 카드/그리드 ====== */
-  function Card({ item, withActions = false }) {
+  const Card = React.memo(function Card({ item, withActions = false }) {
     const auc = isAuctionItem(item) || item._isAuction;
     const id = item.auctionId ?? item.id ?? item.postId;
     const imageSrc = resolveThumb(item);
@@ -487,9 +492,9 @@ export default function MyShop() {
         </div>
       </div>
     );
-  }
+  });
 
-  const Grid = ({ items, withActions = false }) => {
+  const Grid = React.memo(({ items, withActions = false }) => {
     if (loading) return <p>로딩 중…</p>;
     if (!items?.length) return <p>표시할 상품이 없습니다.</p>;
     return (
@@ -512,7 +517,7 @@ export default function MyShop() {
         ))}
       </div>
     );
-  };
+  });
 
   /* ====== 렌더 ====== */
   return (
@@ -523,7 +528,9 @@ export default function MyShop() {
             profile.profileUrl
               ? profile.profileUrl.startsWith("http")
                 ? profile.profileUrl
-                : `${API_BASE}${profile.profileUrl}`
+                : profile.profileUrl.startsWith("/uploads/")
+                  ? `${API_BASE}${profile.profileUrl}`
+                  : profile.profileUrl // ✅ API_BASE 제거
               : "/images/default-avatar.svg"
           }
           alt="상점 프로필"
@@ -540,7 +547,7 @@ export default function MyShop() {
           </h1>
           <div className="myshop-store-stats">
             <span>오픈한지 {daysSince(profile.storeOpenedAt)}</span>
-            <span>상점방문수 {profile.storeVisits}명</span>
+            <span>상점방문수 {profile.visitCount ?? 0}명</span>
             <span>상품판매 {profile.salesCount}회</span>
           </div>
           <div className="myshop-store-description">

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../MainPages/ProductCard';
+import { PRODUCT_STATUS_LABEL } from "../Product/productStatus.js";
 
 function CategoryPostList() {
     const { categoryId } = useParams();
@@ -18,7 +19,6 @@ function CategoryPostList() {
                     price: post.cost.toLocaleString() + '원',
                     imageUrl: post.thumbnail
                 }));
-
                 setPosts(mappedPosts);
             })
             .catch((err) => console.error("카테고리 게시글 조회 실패", err));

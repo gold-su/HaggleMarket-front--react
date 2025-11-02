@@ -1,49 +1,77 @@
-/* src/MainPagesCSS/menubox.css*/
-/* 메뉴 박스 스타일 */
 .menu-box {
-  position: fixed;
-  top: 60px;
-  left: 15px;
-  background-color: var(--santorini-white);
-  border-radius: 20px;
-  box-shadow: 0 8px 24px var(--santorini-shadow);
-  width: 320px;
-  max-height: 400px;
-  overflow-y: auto;
+  position: absolute;
+  top: 55px;
+  left: 0;
+  background-color: var(--santorini-white, #fff);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: auto; /* ✅ 가로로 늘어나게 */
+  max-width: 100%;
+  max-height: 420px;
+  display: flex;               /* ✅ 가로 배치 */
+  flex-direction: row;         /* 옆으로 확장 */
+  gap: 20px;                   /* 각 열 사이 여백 */
+  overflow-x: auto;            /* 가로 스크롤 허용 */
   padding: 20px;
-  display: none;
-  z-index: 1500;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.25s ease;
+  z-index: 500;
 }
 
 .menu-box.active {
-  display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
+/* 각 카테고리 열 */
 .menu-category {
-  margin-bottom: 20px;
+  flex: 1 1 180px; /* 기본 너비 설정 (대/중/소 열 비슷하게) */
+  min-width: 150px;
 }
 
-.menu-category > h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  border-bottom: 2px solid var(--santorini-light-blue);
-  padding-bottom: 6px;
-  margin-bottom: 12px;
+/* 나머지는 그대로 유지 */
+.menu-category h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  color: #333;
 }
 
-ul {
+.menu-category ul {
   list-style: none;
-  padding-left: 0;
+  padding: 0;
   margin: 0;
 }
 
-ul li {
-  margin-bottom: 10px;
-  font-weight: 600;
-  color: var(--santorini-blue);
+.menu-category li {
+  padding: 6px 8px;
   cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
 }
 
-ul li:hover {
-  color: var(--santorini-light-blue);
+.menu-category li:hover {
+  background-color: #f3f3f3;
+}
+
+.menu-category li.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* 스크롤바 */
+.menu-box::-webkit-scrollbar {
+  height: 6px; /* ✅ 가로 스크롤용 */
+}
+.menu-box::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+.menu-box::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
 }

@@ -25,6 +25,13 @@ main {
   margin: 16px 0 12px;
 }
 
+.product-list-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* 글자와 아이콘 사이 여백 */
+}
+
 .product-list-title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -126,6 +133,7 @@ main {
   font-weight: 600;
   color: #ef4444;
 }
+
 .left-time.ended {
   color: #c03;
 }
@@ -173,6 +181,7 @@ main {
   font-weight: 700;
   opacity: 0.9;
 }
+
 .product-dday.ended {
   background: #c0392b;
 }
@@ -187,9 +196,11 @@ main {
   stroke: #9ca3af;
   transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease;
 }
+
 .favorite-icon:hover {
   transform: scale(1.08);
 }
+
 .favorite-icon.active {
   fill: #ef4444;
   stroke: #ef4444;
@@ -202,6 +213,20 @@ main {
   color: #9ca3af;
   padding: 36px 0;
 }
+
+.menu-icon {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  fill: #000000;
+  transition: fill 0.3s ease;
+  margin-left: 8px;
+}
+
+.menu-icon:hover {
+  fill: #000000;
+}
+
 
 /* ===== 반응형 ===== */
 @media (max-width: 640px) {

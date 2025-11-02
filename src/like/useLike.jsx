@@ -105,8 +105,6 @@ export default function useLike(
       const s = err?.response?.status;
       if (s === 401 || s === 403) {
         alert("세션이 만료되었거나 권한이 없습니다. 다시 로그인해주세요.");
-        localStorage.removeItem("jwtToken");
-        window.dispatchEvent(new Event("auth:changed"));
       }
     } finally {
       busyRef.current = false;

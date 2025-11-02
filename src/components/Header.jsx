@@ -35,19 +35,6 @@ function Header({ onMenuToggle, onSearch, frequentKeywords }) {
             <span className="label">NEW</span>
           </span>
           <Link to="/" className="logo">해글마켓</Link>
-          <svg
-            className="menu-icon"
-            id="menuToggle"
-            viewBox="0 0 24 24"
-            aria-label="메뉴 열기"
-            role="button"
-            tabIndex="0"
-            onClick={onMenuToggle}
-          >
-            <rect y="4" width="24" height="2"></rect>
-            <rect y="11" width="24" height="2"></rect>
-            <rect y="18" width="24" height="2"></rect>
-          </svg>
         </div>
 
         <div className="search-container">
@@ -56,7 +43,6 @@ function Header({ onMenuToggle, onSearch, frequentKeywords }) {
               type="text"
               className="search-box"
               id="searchInput"
-              placeholder="검색어를 입력해주세요."
               aria-label="검색창"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}

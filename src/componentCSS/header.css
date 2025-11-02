@@ -30,7 +30,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 100px;
+  gap: 0;
   white-space: nowrap;
   box-sizing: border-box;
   flex-wrap: nowrap;
@@ -90,6 +90,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-right: 10px;
   flex-shrink: 1;
 }
 
@@ -115,54 +116,47 @@
 }
 
 .search-container {
-  flex-grow: 0;
-  width: 550px;
-  margin: 0 0px;
+  width: 540px;              /* 줄 약간 짧게 */
+  margin-left: 10px;         /* 왼쪽으로 붙이기 */
   display: flex;
-  flex-direction: column;
-  flex-shrink: 1;
+  justify-content: flex-start;
 }
 
 .search-box-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .search-box {
-  width: 100%;
-  padding: 6px 15px;
-  border: 2px solid #3e7aef;
-  border-radius: 30px;
-  font-size: 1rem;
+  width: 70%;
+  border: none;
+  border-bottom: 2px solid #9eceff;
+  border-radius: 0;
+  background: transparent;
+  padding: 6px 0 6px 0;
   outline: none;
-  background-color: #fff; /* 배경 수정 */
-  color: #000000;
+  font-size: 1rem;
 }
 
 .search-box::placeholder {
-  color: #9c9b9b;
+  color: #a9b8d0;
 }
 
-.search-box:focus {
-  border-color: var(--santorini-blue);
-  box-shadow: 0 0 8px var(--santorini-light-blue);
+.search-box::placeholder {
+  color: #a9b8d0;
 }
 
 .search-icon {
   position: absolute;
-  right: 15px;
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  color: var(--santorini-light-blue);
-  transition: color 0.3s ease;
+  width: 18px;
+  height: 18px;
+  color: #9eceff;
 }
 
 .search-icon:hover {
-  color: var(--santorini-blue);
+  color: #2e6ae6;
 }
 
 .popular-search {
@@ -192,6 +186,7 @@
 .auth-buttons {
   display: flex;
   align-items: center;
+  margin-left: auto;
   gap: 12px;
   flex-shrink: 1;
 }
