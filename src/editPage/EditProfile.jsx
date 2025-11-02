@@ -240,8 +240,8 @@ const EditProfile = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="비밀번호 입력"
               />
+              <button onClick={handlePasswordCheck}>확인</button>
             </div>
-            <button onClick={handlePasswordCheck}>확인</button>
           </div>
         </div>
       )}
