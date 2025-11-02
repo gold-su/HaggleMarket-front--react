@@ -122,18 +122,21 @@
   justify-content: flex-start;
 }
 
+/* 부모에 밑줄 추가 */
 .search-box-wrapper {
   position: relative;
-  width: 100%;
+  width: 65%;
+  border-bottom: 2px solid #9eceff; /* ✅ 밑줄을 wrapper에 적용 */
 }
 
+
+/* 기존 input 밑줄 제거 */
 .search-box {
   width: 70%;
-  border: none;
-  border-bottom: 2px solid #9eceff;
+  border: none; /* ← 이거만 남기기 */
   border-radius: 0;
   background: transparent;
-  padding: 6px 0 6px 0;
+  padding: 6px 0;
   outline: none;
   font-size: 1rem;
 }
@@ -146,13 +149,16 @@
   color: #a9b8d0;
 }
 
+/* 돋보기 아이콘을 밑줄 안쪽에 맞게 */
 .search-icon {
   position: absolute;
   top: 50%;
+  right: 0; /* ✅ 오른쪽 끝으로 맞춤 */
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
   color: #9eceff;
+  cursor: pointer;
 }
 
 .search-icon:hover {
