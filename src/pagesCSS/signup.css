@@ -1,34 +1,82 @@
-/* src/pagesCSS/signup.css*/
+/* src/pagesCSS/signup.css */
+/* 2025-11-02: 하드코딩 최소화(변수화), 중복/충돌 스타일 정리, 레이아웃 절대값 제거 */
+
+/* =========================
+   1) 전역 변수/리셋 추가
+   ========================= */
 :root {
   --santorini-blue: #416d83;
   --santorini-light-blue: #6497b1;
   --santorini-white: #f9f9f9;
   --santorini-bg: #eaf4f9;
   --santorini-shadow: rgba(65, 109, 131, 0.15);
+
+  /* [추가] 하드코딩 제거용 디자인 토큰 */
+  --gap: 20px;                 /* form-group 간격 */
+  --gap-sm: 8px;               /* address 세부 간격 */
+  --radius: 0px;               /* 인풋 라운드 통일 */
+  --input-h: 40px;             /* 인풋 높이 통일 */
+  --font-sm: 12px;             /* 힌트/작은 글씨 */
+  --border-color: #ccc;        /* 경계선 컬러 통일 */
+  --border-color-hover: #999;  /* 호버 시 경계 */
+  --text-muted: #9c9c9c;       /* 보조 텍스트 */
+  --title-color: #000000;      /* 타이틀 컬러 */
 }
 
+/* [추가] 전역 box-sizing 통일: 레이아웃 깨짐 방지 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* 기존 각 요소별 box-sizing 선언 중복 제거 */
+}
+
+/* =========================
+   2) 레이아웃/컨테이너
+   ========================= */
+.page-wrapper {
+  min-height: 100vh;
+  /* width: 100vw; */          /* [삭제] 스크롤바 폭 포함 이슈 -> 100%로 대체 */
+  width: 100%;                 /* [추가] 반응형 안전값 */
+  background-color: #ffffff;
+  margin: 0 auto;
+  /* min-height: 100vh; */     /* [삭제] 중복 선언 제거 */
+}
+
+.signup-container {
+  /* position: absolute; */    /* [삭제] 절대 위치로 중앙정렬 → 스크롤/반응형에 취약 */
+  /* top: 72%; left: 50%; transform: translate(-50%, -50%); */ /* [삭제] 하드코딩된 중앙 정렬 제거 */
+  position: relative;          /* [추가] 문서 흐름 내 배치 */
+  margin: 0 auto;              /* [추가] 가로 중앙정렬 */
+  margin-top: 100px;            /* [추가] 상단 여백(토큰화 필요 시 변수화 가능) */
+  width: 100%;
+  max-width: 700px;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: var(--radius);
+  /* box-shadow / border는 디자인 가이드 확정 시 재도입 */
+}
+
+.signup-container h2 {
+  margin-top: 0;               /* 위 여백 제거 */
+  margin-bottom: 1.5rem;
+}
+
+/* =========================
+   3) 폼 그리드/정렬
+   ========================= */
 .form-group {
   display: flex;
-  align-items: flex-start;
-  /* ✅ 왼쪽 정렬로 수정 */
+  align-items: flex-start;      /* 왼쪽 정렬 유지 */
   margin-bottom: 1rem;
-  gap: 20px;
+  gap: var(--gap);              /* [변경] 20px 하드코딩 → 변수 */
   width: 100%;
 }
 
 .form-group-address {
   display: flex;
-  flex-direction: column; /* 세로 배치 */
+  flex-direction: column;       /* 세로 배치 */
   width: 90%;
   margin-bottom: 1rem;
-}
-
-.visible {
-  visibility: visible;
-}
-
-.invisible {
-  visibility: hidden;
 }
 
 .form-group label {
@@ -36,77 +84,112 @@
   margin-right: 40px;
   color: darkgrey;
   display: flex;
-  height: 40px;
-  /* ✅ input 높이에 맞춤 */
+  height: var(--input-h);       /* [변경] 40px → 변수 */
 }
 
 .form-group input {
   flex: 1;
-  height: 40px;
+  height: var(--input-h);       /* [변경] 40px → 변수 */
   padding: 0 10px;
-  border: 1px solid #ccc;
-  border-radius: 0px;
-  box-sizing: border-box;
+  border: 1px solid var(--border-color); /* [변경] #ccc → 변수 */
+  border-radius: var(--radius);           /* [변경] 0px → 변수 */
+}
+
+/* [추가] 인풋/버튼 통일 규칙 묶음: 중복 제거 */
+.input-like,
+.address-detail,
+.address-btn,
+.signup-form input {
+  height: var(--input-h);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 0 10px;
+}
+
+/* 힌트/가이드 영역 */
+.input-with-hint {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;                       /* [변경] 0px → 0 (동일 의미, 일관성) */
+}
+
+.password-hint {
+  font-size: var(--font-sm);    /* [변경] 12px → 변수 */
+  color: var(--text-muted);     /* [변경] #9c9c9c → 변수 */
+  margin: 0;                    /* 불필요 여백 제거 유지 */
+  margin-left: 3px;
+}
+
+/* =========================
+   4) 폼 전반(충돌 제거)
+   ========================= */
+.signup-form input {
+  width: 100%;
+  padding: 10px;
+  /* height: 80px; */           /* [삭제] form-group input(40px)와 충돌 → 통일을 위해 제거 */
+  border-radius: 4px;           /* [유지] signup 내부 인풋만 둥글게 하려면 이 값 우선 */
+  border: 1px solid #ddd;       /* [유지] 섹션별 스타일 차별화 의도 시 유지, 아니면 var(--border-color)로 통일 가능 */
+}
+
+.signup-form button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--santorini-light-blue); /* [변경] 하드코드 → 변수 */
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.signup-form button[type="submit"]:hover {
+  background-color: #ffffff;
+  color: var(--santorini-blue);
+  border: 1px solid var(--santorini-blue);
+}
+
+/* =========================
+   5) 텍스트/에러/타이틀
+   ========================= */
+.signup-title {
+  text-align: left;
+  font-size: 1.3rem;
+  color: var(--title-color);    /* [변경] #000000 → 변수 */
+  font-weight: bold;
+  margin: 0;                    /* [변경] top/bottom 0으로 합침 (중복 제거) */
 }
 
 .error-msg {
   width: 100%;
   color: #d32f2f;
   font-size: 13px;
-  margin: -12px 0 12px 0;
+  /* margin: -12px 0 12px 0; */ /* [삭제] 가독성/일관성 저해, 아래 두 줄로 대체 */
   margin-top: 1px;
   margin-left: 3px;
-  /* 위 아래 간격 조정 */
   text-align: left;
 }
 
-.signup-title {
-  text-align: left;
-  font-size: 1.3rem;
-  color: #000000;
-  font-weight: bold;
-  margin-top: 0px;
-  /* 상단 여백 */
-  margin-bottom: 0px;
-  /* 하단 여백 */
-}
-
-.page-wrapper {
-  min-height: 100vh;
-  /* 화면 세로 꽉 차도록 */
-  width: 100vw;
-  /* 화면 가로 꽉 차도록 */
-  background-color: #ffffff;
-  /* 원하는 배경색 */
-  margin: 0 auto;
-  min-height: 100vh;
-}
-
-.signup-container {
+.haggle-title {
   position: absolute;
-  justify-content: space-between;
-  top: 70%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* 정확한 중앙 정렬 */
+  top: 38px;
   width: 100%;
-  max-width: 700px;
-  padding: 2rem;
-  background-color: #ffffff;
-  /* border: 1px solid #e0e0e0; */
-  border-radius: 0px;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
+  text-align: center;
+  font-size: 3rem;
+  color: var(--santorini-light-blue);      /* [변경] 하드코드 → 변수 */
+  font-weight: bold;
+  margin: 0;
 }
 
-.signup-container h2 {
-  margin-top: 0;
-  /* 위 여백 없애기 */
-  margin-bottom: 1.5rem;
-  /* 아래 간격만 주기 */
-  /* text-align: center; */
-}
+/* =========================
+   6) 가시성/필수 표기
+   ========================= */
+.visible { visibility: visible; }
+.invisible { visibility: hidden; }
+.required { color: red; margin-left: 4px; }
 
-/* 이미지 업로드 라벨 */
+/* =========================
+   7) 프로필 이미지 업로드
+   ========================= */
 .profile-label {
   width: 150px;
   color: darkgrey;
@@ -114,11 +197,10 @@
   text-align: right;
 }
 
-/* 업로드 박스 */
 .image-upload-box-signup {
   width: 130px;
   height: 130px;
-  border: 2px dashed #ccc;
+  border: 2px dashed var(--border-color);  /* [변경] #ccc → 변수 */
   border-radius: 8px;
   background-color: #f5f5f5;
   display: flex;
@@ -130,16 +212,12 @@
   position: relative;
   overflow: hidden;
 }
-
-/* 업로드된 이미지 스타일 */
 .image-upload-box-signup img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
 }
-
-/* 숨겨진 input */
 .hidden-file-input {
   position: absolute;
   width: 100%;
@@ -148,71 +226,17 @@
   cursor: pointer;
 }
 
-.required {
-  color: red;
-  margin-left: 4px;
-}
-
-.input-with-hint {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0px;
-  /* ✅ 인풋과 텍스트 사이 간격 */
-}
-
-.password-hint {
-  font-size: 12px;
-  color: #9c9c9c;
-  margin: 0;
-  /* ✅ 불필요한 여백 제거 */
-  margin-left: 3px;
-  /* ✅ 왼쪽 여백 추가 */
-}
-
-.signup-form input {
-  width: 100%;
-  padding: 10px;
-  height: 80px;
-  /* margin-bottom: 1rem; */
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-.haggle-title {
-  position: absolute;
-  top: 38px;
-  width: 100%;
-  text-align: center;
-  font-size: 3rem;
-  color: #6497b1;
-  font-weight: bold;
-  margin: 0;
-}
-
-.signup-form button[type="submit"] {
-  width: 100%;
-  padding: 10px;
-  background-color: #6497b1;
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
+/* =========================
+   8) 비밀번호 가리기 아이콘
+   ========================= */
 .eye-wrapper {
   position: relative;
   display: flex;
 }
-
 .eye-wrapper input {
   width: 100%;
-  padding-right: 32px;
-  /* 아이콘 공간 확보 */
-  box-sizing: border-box;
+  padding-right: 32px;           /* 아이콘 공간 확보 */
 }
-
 .eye-icon {
   position: absolute;
   right: 8px;
@@ -221,75 +245,77 @@
   cursor: pointer;
   transition: color 0.2s ease;
   pointer-events: auto;
-  /* 클릭 가능 */
+}
+.eye-icon:hover { color: #555; }
+
+/* =========================
+   9) 주소 행(비율/정렬 통일)
+   ========================= */
+.address-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);            /* [변경] 8px → 변수 */
+  width: 100%;
+}
+.address-btn {
+  height: var(--input-h);        /* 인풋과 동일 높이 */
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  color: #333;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.address-btn:hover { border-color: var(--border-color-hover); }
+
+/* 상세주소 */
+.address-detail {
+  margin-top: var(--gap-sm);     /* [변경] 8px → 변수 */
 }
 
-.eye-icon:hover {
-  color: #555;
+/* =========================
+   10) 주소 힌트(placeholder) 제어
+   ========================= */
+/* 기존: #address::placeholder { font-size: 19px; ... } */
+/* [변경] ID 의존 제거 → 재사용 가능한 유틸 클래스로 분리 */
+.placeholder-lg::placeholder {
+  font-size: 19px;               /* 필요 시 --hint-lg 등으로 변수화 가능 */
+  color: #9a9a9a;
+  opacity: 1;
+  font-weight: 400;
 }
+/* 사용법 예시) <input class="address-input placeholder-lg" ... /> */
 
-.signup-form button[type="submit"]:hover {
-  background-color: #ffffff;
-  color: #416d83;
-  border: 1px solid #416d83;
-}
-
-.signup-message {
-  margin-top: 1rem;
-  padding: 10px;
-  background-color: #ffe6e6;
-  color: #d32f2f;
-  border: 1px solid #f5c2c2;
-  border-radius: 4px;
-  font-size: 14px;
-  text-align: center;
-}
-
-/* 모달 전체 화면 오버레이 */
+/* =========================
+   11) 모달
+   ========================= */
 .modal-overlay-signup {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;                       /* [변경] top/left/width/height → inset 단축 */
   background-color: rgba(0, 0, 0, 0.4);
-  /* 반투명 검정 배경 */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
-/* 모달 본문 박스 */
 .modal-content-signup {
   background-color: var(--santorini-white);
-  /* 밝은 배경 */
   padding: 30px 50px;
   border-radius: 10px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  /* 부드러운 그림자 */
   text-align: center;
   animation: modalFadeIn 0.3s ease-out;
 }
-
-/* 모달 텍스트 */
 .modal-content-signup p {
   font-size: 1.2rem;
   color: var(--santorini-blue);
-  /* 포인트 컬러 */
   font-weight: bold;
   margin: 0;
 }
 
-/* 모달 애니메이션 (열릴 때 부드럽게) */
+/* 모달 애니메이션 */
 @keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1);   }
 }
