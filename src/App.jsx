@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Header from "./components/Header";
-import MenuBox from "./MainPages/MenuBox";
 import TopBar from "./components/TopBar";
 import ProductList from "./MainPages/ProductList";
 import AuctionAdSection from "./MainPages/AuctionAdSection";
@@ -53,7 +52,6 @@ function ProtectedRoute({ children }) {
 
 
 function App() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
   const location = useLocation();
@@ -137,10 +135,6 @@ function App() {
       .catch((err) => console.error(err));
   };
 
-  const handleMenuToggle = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
   useEffect(() => {
     const handleClickOutsideMenu = (e) => {
       const menuBox = document.getElementById("menuBox");
@@ -175,16 +169,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ForgotPassword />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -195,16 +183,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ResetPassword />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -216,24 +198,19 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
+
             <AuctionAdSection />
             <main>
               <ProductList
                 products={products}
                 selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory} //변경 핸들러 전달
+                onCategoryChange={setSelectedCategory}
               />
             </main>
             <LikeSidebarContainer />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -245,16 +222,10 @@ function App() {
             <>
               <TopBar />
               <Header
-                onMenuToggle={handleMenuToggle}
                 onSearch={handleSearch}
                 frequentKeywords={frequentKeywords}
               />
               <MyShop />
-              <MenuBox
-                isOpen={isMenuOpen}
-                onClose={() => setIsMenuOpen(false)}
-                frequentKeywords={frequentKeywords}
-              />
             </>
           </ProtectedRoute>
         }
@@ -267,16 +238,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ShopDetail />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -287,16 +252,11 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <SearchPage />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
+            <LikeSidebarContainer />
           </>
         }
       />
@@ -308,16 +268,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ProductDetail />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -329,16 +283,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ProductForm mode="create" />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -350,16 +298,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ProductForm mode="edit" />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -370,16 +312,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <CategoryPostList />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -391,16 +327,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <AuctionRegister />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -412,16 +342,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <AuctionEdit />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -433,16 +357,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <AuctionDetail />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />
@@ -454,16 +372,10 @@ function App() {
           <>
             <TopBar />
             <Header
-              onMenuToggle={handleMenuToggle}
               onSearch={handleSearch}
               frequentKeywords={frequentKeywords}
             />
             <ChatPage />
-            <MenuBox
-              isOpen={isMenuOpen}
-              onClose={() => setIsMenuOpen(false)}
-              frequentKeywords={frequentKeywords}
-            />
           </>
         }
       />

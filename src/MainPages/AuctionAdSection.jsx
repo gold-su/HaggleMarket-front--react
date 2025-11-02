@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "../MainPagesCSS/auctionadsection.css"; // CSS 파일 경로를 맞춰주세요
 import { fetchHotAuctions, BASE } from "../api/auction";
 import { useNavigate } from "react-router-dom";
+import LikeHeart from "../like/LikeHeart";
 
 function AuctionAdSection() {
   const auctionContainerRef = useRef(null); // 스크롤 컨테이너 참조
@@ -20,8 +21,8 @@ function AuctionAdSection() {
     !url
       ? "https://via.placeholder.com/280x180?text=No+Image"
       : url.startsWith("http")
-      ? url
-      : `${BASE}${url}`;
+        ? url
+        : `${BASE}${url}`;
   const formatEndTime = (iso) => {
     if (!iso) return "";
     const d = new Date(iso);
@@ -53,15 +54,6 @@ function AuctionAdSection() {
     const t = setInterval(() => setNowTs(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
-
-  // 찜 아이콘 클릭 핸들러
-  const toggleFavorite = (id) => {
-    setAuctionItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id ? { ...item, isFavorite: !item.isFavorite } : item
-      )
-    );
-  };
 
   // 스크롤 가능 여부 업데이트 함수
   const updateScrollButtons = () => {
@@ -221,34 +213,15 @@ function AuctionAdSection() {
                   </div>
                 </div>
                 {/* 상단 우측엔 찜만 남김 */}
-                <div className="auction-item-meta">
-                  <svg
-                    className={`auction-favorite-icon ${
-                      item.isFavorite ? "active" : ""
-                    }`}
-                    viewBox="0 0 24 24"
-                    aria-label="찜하기"
-                    role="button"
-                    tabIndex="0"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(item.id);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleFavorite(item.id);
-                      }
-                    }}
-                  >
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
-                  </svg>
+                <div
+                  className="auction-item-meta"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <LikeHeart
+                    id={item.id}
+                    isAuction={true}   // ✅ 명시적으로 경매로 지정
+                    size={22}
+                  />
                 </div>
               </div>
             )
@@ -274,7 +247,7 @@ function AuctionAdSection() {
       </div>
       {/* "경매 참여하기" 버튼 제거 */}
       {/* <button className="auction-cta-button">경매 참여하기</button> */}
-    </section>
+    </section >
   );
 }
 

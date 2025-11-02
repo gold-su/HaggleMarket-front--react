@@ -45,7 +45,8 @@
   gap: 10px;
   flex-wrap: wrap;
   justify-content: flex-start;
-  margin-top: 18px; /* 🔥 여백 추가 (기존 auto → 18px) */
+  margin-top: 18px;
+  /* 🔥 여백 추가 (기존 auto → 18px) */
 }
 
 .product-thumb {
@@ -267,6 +268,48 @@
   margin-bottom: 30px;
   white-space: pre-line;
 }
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 28px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.nav-btn.left {
+  left: 10px;
+}
+
+.nav-btn.right {
+  right: 10px;
+}
+
+.nav-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.image-counter {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
 
 /* -----------------------------
    반응형

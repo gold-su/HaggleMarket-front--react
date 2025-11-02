@@ -154,6 +154,7 @@ export default function ShopDetail() {
           isVerified: !!p.data.verified,
           description: p.data.intro || prev.description,
           storeOpenedAt: p.data.storeOpenedAt ?? "-",
+          visitCount: p.data.visitCount ?? 0,
         }));
         await Promise.all([loadUsed(p.data.userNo), loadAuction(p.data.userNo)]);
       } catch (e) {
@@ -302,7 +303,7 @@ export default function ShopDetail() {
           </h1>
           <div className="myshop-store-stats">
             <span>오픈한지 {daysSince(profile.storeOpenedAt)}</span>
-            <span>상점방문수 {profile.storeVisits}명</span>
+            <span>상점방문수 {profile.visitCount ?? 0}명</span>
             <span>상품판매 {profile.salesCount}회</span>
           </div>
           <p className="myshop-store-description">
