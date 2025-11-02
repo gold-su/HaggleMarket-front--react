@@ -26,7 +26,7 @@
 .header-inner-wrapper {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 15px 0px;
+  padding: 10px 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -116,8 +116,8 @@
 }
 
 .search-container {
-  width: 540px;              /* 줄 약간 짧게 */
-  margin-left: 10px;         /* 왼쪽으로 붙이기 */
+  width: 540px; /* 줄 약간 짧게 */
+  margin-left: 10px; /* 왼쪽으로 붙이기 */
   display: flex;
   justify-content: flex-start;
 }

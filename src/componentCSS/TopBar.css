@@ -9,8 +9,8 @@
 
 /* 내부 최대 너비 지정 + 중앙 정렬 */
 .top-bar {
-  max-width: 1150px;
-  padding: 6px 20px;
+  max-width: 1200px;
+  padding: 10px 0px;
   font-size: 0.9rem;
   display: flex;
   justify-content: flex-end;
@@ -41,7 +41,7 @@
 
 .top-bar-links a:hover,
 .top-bar-links button:hover {
-  color: #3E7AEF;
+  color: #3e7aef;
 }
 
 /* ===== 알림 드롭다운 ===== */
@@ -89,7 +89,7 @@
   width: 260px;
   background: #fff;
   border: 1px solid #ddd;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   z-index: 999;
   overflow: hidden;
