@@ -109,7 +109,6 @@ function AuctionDetail() {
     }
   }, [auction]);
 
-
   useEffect(() => {
     if (!auction?.endTime) return setLeftText("");
     const tick = () => {
@@ -205,10 +204,10 @@ function AuctionDetail() {
         setAuction((prev) =>
           prev
             ? {
-              ...prev,
-              currentPrice: res.currentHighestBid ?? bidAmount,
-              bidCount: (prev.bidCount ?? 0) + 1,
-            }
+                ...prev,
+                currentPrice: res.currentHighestBid ?? bidAmount,
+                bidCount: (prev.bidCount ?? 0) + 1,
+              }
             : prev
         );
         setMyBid("");
@@ -245,10 +244,10 @@ function AuctionDetail() {
   const disabledReason = !hasBuyout
     ? "즉시구매가 미설정"
     : isEnded
-      ? "경매가 종료되어 즉시구매 불가"
-      : buyoutCost < currentPrice
-        ? "즉시구매가가 현재가보다 낮아 불가"
-        : undefined;
+    ? "경매가 종료되어 즉시구매 불가"
+    : buyoutCost < currentPrice
+    ? "즉시구매가가 현재가보다 낮아 불가"
+    : undefined;
 
   function handleBuyoutClick() {
     if (!canBuyNow) return; // 방어코드
@@ -350,7 +349,9 @@ function AuctionDetail() {
                   <button
                     key={idx}
                     type="button"
-                    className={`${styles.thumbBtn} ${idx === activeIdx ? styles.active : ""}`}
+                    className={`${styles.thumbBtn} ${
+                      idx === activeIdx ? styles.active : ""
+                    }`}
                     onClick={() => setActiveIdx(idx)}
                     aria-label={`${idx + 1}번 이미지 보기`}
                     title={`${idx + 1}번 이미지`}
@@ -359,7 +360,9 @@ function AuctionDetail() {
                       src={src}
                       alt={`thumbnail-${idx + 1}`}
                       className={styles.thumb}
-                      onError={(e) => (e.currentTarget.style.visibility = "hidden")}
+                      onError={(e) =>
+                        (e.currentTarget.style.visibility = "hidden")
+                      }
                       loading="lazy"
                     />
                   </button>
@@ -380,7 +383,9 @@ function AuctionDetail() {
                     : "/images/default-avatar.svg"
                 }
                 alt="판매자 프로필"
-                onError={(e) => (e.currentTarget.src = "/images/default-avatar.svg")}
+                onError={(e) =>
+                  (e.currentTarget.src = "/images/default-avatar.svg")
+                }
               />
               <div className={styles.sellerMeta}>
                 <div className={styles.sellerName}>
@@ -415,7 +420,6 @@ function AuctionDetail() {
             </div>
           </div>
         </div>
-
 
         <div className={styles.auctionInfo}>
           <h2 className={styles.auctionTitle}>{auction.title}</h2>
@@ -466,7 +470,6 @@ function AuctionDetail() {
               🔨입찰 {auction.bidCount ?? 0}
             </span>
             <span>👁 {auction.hit ?? 0}</span>
-            <span>📅 {(auction.createdAt ?? "").slice(0, 10)}</span>
             {/* 입찰 내역 모달 */}
             <BidHistoryModal
               open={openBids}

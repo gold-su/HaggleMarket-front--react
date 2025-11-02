@@ -38,7 +38,7 @@ export default function CategoryPostList() {
   }, [categoryId]);
 
   return (
-    <div style={{ maxWidth: 1100, margin: "24px auto", padding: "0 16px" }}>
+    <div style={{ maxWidth: 1200, margin: "0px auto", padding: "0 16px" }}>
       {/* ✅ 헤더 영역 */}
       <h2 style={{ fontSize: "1.5rem", marginBottom: 8 }}>
         {categoryName ? `${categoryName} 카테고리` : "카테고리"}
@@ -59,7 +59,12 @@ export default function CategoryPostList() {
           }}
         >
           {posts.map((post) => (
-            <ProductCard key={post.id} product={post} mode="used" link={post.detailUrl} />
+            <ProductCard
+              key={post.id}
+              product={post}
+              mode="used"
+              link={post.detailUrl}
+            />
           ))}
         </div>
       ) : (

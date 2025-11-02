@@ -85,7 +85,7 @@ function ProductDetail() {
   let myNo = null;
   try {
     myNo = token ? jwtDecode(token)?.userNo : null;
-  } catch { }
+  } catch {}
   const isMineFromToken =
     myNo != null &&
     product?.seller?.userNo != null &&
@@ -127,8 +127,9 @@ function ProductDetail() {
               {imageList.map((img, idx) => (
                 <button
                   key={idx}
-                  className={`product-thumb ${displayMain === img ? "active" : ""
-                    }`}
+                  className={`product-thumb ${
+                    displayMain === img ? "active" : ""
+                  }`}
                   onClick={() => setMainImage(img)}
                   aria-label={`이미지 ${idx + 1}`}
                 >
@@ -147,7 +148,6 @@ function ProductDetail() {
           )}
         </div>
 
-
         {/* 우측 상품 정보 */}
         <div className="product-info">
           <h2>{product.title}</h2>
@@ -156,7 +156,7 @@ function ProductDetail() {
           </div>
 
           <div className="stats">
-            ❤️ {product.likeCount ?? 0} &nbsp; 👁 {product.hit} &nbsp; 📅{" "}
+            ❤️ {product.likeCount ?? 0} &nbsp; 👁 {product.hit} &nbsp;{" "}
             {createdAtText}
           </div>
 
@@ -259,7 +259,9 @@ function ProductDetail() {
                   })()}
                 </span>
               </div>
-              <div className="seller-addr">{product?.seller?.address || "-"}</div>
+              <div className="seller-addr">
+                {product?.seller?.address || "-"}
+              </div>
             </div>
             <button
               type="button"
@@ -278,7 +280,6 @@ function ProductDetail() {
             </button>
           </div>
         </div>
-
 
         {/* ───────────── 상품 추가 정보 ───────────── */}
         <div className="product-extra-info">
