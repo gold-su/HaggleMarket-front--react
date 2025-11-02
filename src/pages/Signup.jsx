@@ -151,9 +151,8 @@ const Signup = () => {
                 placeholder="올바른 이메일 형식이어야 합니다."
               />
               <p
-                className={`error-msg ${
-                  errors.email ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${errors.email ? "visible" : "invisible"
+                  }`}
               >
                 {errors.email || "‎"}
               </p>
@@ -174,9 +173,8 @@ const Signup = () => {
                 placeholder="아이디는 영문자와 숫자 조합의 5~20자여야 합니다."
               />
               <p
-                className={`error-msg ${
-                  errors.userId ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${errors.userId ? "visible" : "invisible"
+                  }`}
               >
                 {errors.userId || "‎"}
               </p>
@@ -215,9 +213,8 @@ const Signup = () => {
                 수 있습니다.
               </p>
               <p
-                className={`error-msg ${
-                  errors.password ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${errors.password ? "visible" : "invisible"
+                  }`}
               >
                 {errors.password || "‎"}
               </p>
@@ -256,9 +253,8 @@ const Signup = () => {
                 />
               )}
               <p
-                className={`error-msg ${
-                  !passwordMatch ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${!passwordMatch ? "visible" : "invisible"
+                  }`}
                 style={{ color: !passwordMatch ? "red" : "transparent" }}
               >
                 {!passwordMatch ? "비밀번호가 일치하지 않습니다." : "‎"}
@@ -280,9 +276,8 @@ const Signup = () => {
                 placeholder="닉네임은 특수문자를 제외한 2~15자여야 합니다."
               />
               <p
-                className={`error-msg ${
-                  errors.nickName ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${errors.nickName ? "visible" : "invisible"
+                  }`}
               >
                 {errors.nickName || "‎"}
               </p>
@@ -303,9 +298,8 @@ const Signup = () => {
                 placeholder="이름은 한글 2~10자여야 합니다."
               />
               <p
-                className={`error-msg ${
-                  errors.userName ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${errors.userName ? "visible" : "invisible"
+                  }`}
               >
                 {errors.userName || "‎"}
               </p>
@@ -326,9 +320,8 @@ const Signup = () => {
                 placeholder="전화번호는 '-' 없이 숫자 11자여야 합니다."
               />
               <p
-                className={`error-msg ${
-                  errors.phoneNumber ? "visible" : "invisible"
-                }`}
+                className={`error-msg ${errors.phoneNumber ? "visible" : "invisible"
+                  }`}
               >
                 {errors.phoneNumber || "‎"}
               </p>
@@ -341,9 +334,11 @@ const Signup = () => {
               주소<span className="required">*</span>
             </label>
 
-            <div className="address-wrapper">
-              {/* 주소 입력창 + 검색버튼 */}
+            {/* [변경] 기존 address-wrapper 최상위 → 공통 레이아웃(.input-with-hint)로 감싸 비율/간격을 다른 필드와 통일 */}
+            <div className="input-with-hint">
+              {/* [변경] address-row 내부 구성은 유지하되, 버튼과 인풋 높이를 40px로 고정해 비율 통일 */}
               <div className="address-row">
+                {/* [유지] 메인 주소 입력 */}
                 <input
                   name="address"
                   id="address"
@@ -352,15 +347,18 @@ const Signup = () => {
                   required
                   placeholder="정확한 주소를 입력하거나 검색하세요."
                 />
+
+                {/* [유지] 주소검색 버튼 */}
                 <button
                   type="button"
                   className="address-btn"
-                  onClick={() => {
+                  onClick={async () => {
+                    // [주의] window.daum 스크립트 로드는 기존 로직 유지(또는 별도 ensure 함수 사용 가능)
                     new window.daum.Postcode({
                       oncomplete: (data) => {
                         setForm((prev) => ({
                           ...prev,
-                          address: data.address, // 도로명 주소 자동 입력
+                          address: data.address,
                         }));
                       },
                     }).open();
@@ -370,26 +368,21 @@ const Signup = () => {
                 </button>
               </div>
 
-              {/* 상세 주소 입력 */}
+              {/* [유지] 상세 주소 입력 */}
               <input
                 name="addressDetail"
                 id="addressDetail"
                 value={form.addressDetail || ""}
-                onChange={(e) =>
-                  setForm({ ...form, addressDetail: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, addressDetail: e.target.value })}
                 placeholder="상세 주소를 입력하세요 (예: 101동 202호)"
                 className="address-detail"
               />
-            </div>
 
-            <p
-              className={`error-msg ${
-                errors.address ? "visible" : "invisible"
-              }`}
-            >
-              {errors.address || "‎"}
-            </p>
+              {/* [유지] 에러 메시지: 다른 필드와 동일한 위치/간격으로 표시 */}
+              <p className={`error-msg ${errors.address ? "visible" : "invisible"}`}>
+                {errors.address || "‎"}
+              </p>
+            </div>
           </div>
 
           {/* 버튼 */}
