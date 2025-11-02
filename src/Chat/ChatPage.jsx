@@ -69,22 +69,16 @@ function ChatPage() {
     [chatRooms, selectedChatRoomId]
   );
 
-  /** 1️⃣ 방 목록 로드 + 해글봇 항상 맨 위 고정 */
+  /** 🟩 1️⃣ 방 목록 로드 + 해글봇 항상 맨 위 고정 */
   useEffect(() => {
     (async () => {
       try {
         const data = await fetchChatRooms();
         const botRoom = data.find((r) => r.otherUserName === BOT_ROOM_NAME);
-
-        let sorted = data;
-        if (botRoom) {
-          sorted = [
-            botRoom,
-            ...data.filter((r) => r.roomId !== botRoom.roomId),
-          ];
-        }
-
-        setChatRooms(sorted);
+        const nonBotRooms = data.filter(
+          (r) => r.otherUserName !== BOT_ROOM_NAME
+        );
+        setChatRooms(botRoom ? [botRoom, ...nonBotRooms] : data);
 
         if (preselectRoomId) {
           setSelectedChatRoomId(Number(preselectRoomId));
@@ -97,7 +91,7 @@ function ChatPage() {
     })();
   }, [preselectRoomId]);
 
-  /** 2️⃣ 선택된 방 메시지 로딩 */
+  /** 🟩 2️⃣ 선택된 방 메시지 로딩 */
   useEffect(() => {
     if (!selectedChatRoomId) {
       setMessages([]);
@@ -109,13 +103,11 @@ function ChatPage() {
       try {
         const data = await fetchChatMessages(selectedChatRoomId);
         const reversed = data.reverse();
-
         const nextSeen = new Set(seenSetRef.current);
         for (const m of reversed) {
           const key = m.id ?? `${m.clientMsgId || "x"}:${m.senderNo || "x"}`;
           nextSeen.add(key);
         }
-
         seenSetRef.current = nextSeen;
         setMessages(reversed);
       } catch (e) {
@@ -124,7 +116,7 @@ function ChatPage() {
     })();
   }, [selectedChatRoomId]);
 
-  /** 3️⃣ STOMP 연결 (앱 생명주기 1회) */
+  /** 🟩 3️⃣ STOMP 연결 (앱 생명주기 1회) */
   useEffect(() => {
     if (stompRef.current && stompRef.current.connected) {
       console.log("[WS] 이미 연결됨");
@@ -168,7 +160,7 @@ function ChatPage() {
     };
   }, []);
 
-  /** 4️⃣ 방 변경 시 구독 갱신 (중복 방지) */
+  /** 🟩 4️⃣ 방 변경 시 구독 갱신 */
   useEffect(() => {
     const client = stompRef.current;
     if (!client || !client.connected || !selectedChatRoomId) return;
@@ -188,23 +180,22 @@ function ChatPage() {
           msg.id ?? `${msg.clientMsgId || "x"}:${msg.senderNo || "x"}`;
         if (seenSetRef.current.has(key)) return;
         seenSetRef.current.add(key);
-
         setMessages((prev) => [...prev, msg]);
 
-        // ✅ 채팅 목록에서 해당 방을 상단으로 이동 (단, 해글봇은 항상 맨 위)
+        // ✅ 봇방 절대 맨 위 고정 정렬
         setChatRooms((prev) => {
-          const current = prev.find((r) => r.roomId === msg.roomId);
-          if (!current) return prev;
-          const others = prev.filter((r) => r.roomId !== msg.roomId);
           const botRoom = prev.find((r) => r.otherUserName === BOT_ROOM_NAME);
-          const reordered = botRoom
-            ? [
-                botRoom,
-                current,
-                ...others.filter((r) => r.roomId !== botRoom.roomId),
-              ]
+          const nonBotRooms = prev.filter(
+            (r) => r.otherUserName !== BOT_ROOM_NAME
+          );
+
+          const current = nonBotRooms.find((r) => r.roomId === msg.roomId);
+          const others = nonBotRooms.filter((r) => r.roomId !== msg.roomId);
+
+          const newRooms = botRoom
+            ? [botRoom, current, ...others].filter(Boolean)
             : [current, ...others];
-          return reordered;
+          return newRooms;
         });
       } catch (err) {
         console.error("실시간 메시지 파싱 실패:", err);
@@ -220,12 +211,12 @@ function ChatPage() {
     };
   }, [selectedChatRoomId]);
 
-  /** 5️⃣ 자동 스크롤 */
+  /** 🟩 5️⃣ 자동 스크롤 */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /** 6️⃣ 메시지 전송 */
+  /** 🟩 6️⃣ 메시지 전송 */
   const handleSendMessage = () => {
     if (!currentMessage.trim() || !selectedChatRoomId) return;
     const body = {
@@ -240,20 +231,23 @@ function ChatPage() {
         body: JSON.stringify(body),
       });
 
-      // ✅ 최근 대화방 상단 이동 (단, 해글봇은 맨 위 고정)
+      // ✅ 봇방 절대 고정 정렬
       setChatRooms((prev) => {
-        const current = prev.find((r) => r.roomId === selectedChatRoomId);
-        if (!current) return prev;
-        const others = prev.filter((r) => r.roomId !== selectedChatRoomId);
         const botRoom = prev.find((r) => r.otherUserName === BOT_ROOM_NAME);
-        const reordered = botRoom
-          ? [
-              botRoom,
-              current,
-              ...others.filter((r) => r.roomId !== botRoom.roomId),
-            ]
+        const nonBotRooms = prev.filter(
+          (r) => r.otherUserName !== BOT_ROOM_NAME
+        );
+
+        const current = nonBotRooms.find(
+          (r) => r.roomId === selectedChatRoomId
+        );
+        const others = nonBotRooms.filter(
+          (r) => r.roomId !== selectedChatRoomId
+        );
+
+        return botRoom
+          ? [botRoom, current, ...others].filter(Boolean)
           : [current, ...others];
-        return reordered;
       });
 
       setCurrentMessage("");
@@ -282,11 +276,13 @@ function ChatPage() {
           {chatRooms.length === 0 ? (
             <p className={styles.emptyMessage}>채팅 목록이 없습니다.</p>
           ) : (
-            chatRooms.map((room) => (
+            chatRooms.map((room, idx) => (
               <div
                 key={room.roomId}
                 className={`${styles.chatRoomItem} ${
                   selectedChatRoomId === room.roomId ? styles.active : ""
+                } ${
+                  room.otherUserName === BOT_ROOM_NAME ? styles.botRoom : ""
                 }`}
                 onClick={() => setSelectedChatRoomId(room.roomId)}
               >
