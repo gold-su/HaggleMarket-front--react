@@ -54,6 +54,7 @@ function CategoryDropdownForForm({ onSelect, defaultCategoryId }) {
     // ✅ 살짝 늦게 닫기 (렌더링 후)
     setTimeout(() => setOpen(false), 150);
   };
+  
   return (
     <div className="category-dropdown-form-wrapper">
       {/* 버튼 */}
