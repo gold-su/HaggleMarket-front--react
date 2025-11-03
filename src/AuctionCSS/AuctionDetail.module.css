@@ -267,7 +267,6 @@
   outline-offset: 2px;
 }
 
-
 /* =========================
    ✅ 판매자 정보 스트립 (ProductDetail 스타일 기반)
    ========================= */
@@ -701,7 +700,7 @@
   cursor: pointer;
   font-size: 1.05rem;
   font-weight: 600;
-  background-color: #f9fafb;
+  background-color: #ffffff;
   color: #333;
   transition: all 0.2s ease;
 }
