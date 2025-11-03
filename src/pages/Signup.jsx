@@ -69,7 +69,7 @@ const Signup = () => {
       }
 
       const res = await axios.post(
-        "http://localhost:8080/api/users/signup",
+        "https://hagglemarket.onrender.com/api/users/signup",
         formData
       );
 
@@ -151,8 +151,9 @@ const Signup = () => {
                 placeholder="올바른 이메일 형식이어야 합니다."
               />
               <p
-                className={`error-msg ${errors.email ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.email ? "visible" : "invisible"
+                }`}
               >
                 {errors.email || "‎"}
               </p>
@@ -173,8 +174,9 @@ const Signup = () => {
                 placeholder="아이디는 영문자와 숫자 조합의 5~20자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.userId ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.userId ? "visible" : "invisible"
+                }`}
               >
                 {errors.userId || "‎"}
               </p>
@@ -213,8 +215,9 @@ const Signup = () => {
                 수 있습니다.
               </p>
               <p
-                className={`error-msg ${errors.password ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.password ? "visible" : "invisible"
+                }`}
               >
                 {errors.password || "‎"}
               </p>
@@ -253,8 +256,9 @@ const Signup = () => {
                 />
               )}
               <p
-                className={`error-msg ${!passwordMatch ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  !passwordMatch ? "visible" : "invisible"
+                }`}
                 style={{ color: !passwordMatch ? "red" : "transparent" }}
               >
                 {!passwordMatch ? "비밀번호가 일치하지 않습니다." : "‎"}
@@ -276,8 +280,9 @@ const Signup = () => {
                 placeholder="닉네임은 특수문자를 제외한 2~15자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.nickName ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.nickName ? "visible" : "invisible"
+                }`}
               >
                 {errors.nickName || "‎"}
               </p>
@@ -298,8 +303,9 @@ const Signup = () => {
                 placeholder="이름은 한글 2~10자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.userName ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.userName ? "visible" : "invisible"
+                }`}
               >
                 {errors.userName || "‎"}
               </p>
@@ -320,8 +326,9 @@ const Signup = () => {
                 placeholder="전화번호는 '-' 없이 숫자 11자여야 합니다."
               />
               <p
-                className={`error-msg ${errors.phoneNumber ? "visible" : "invisible"
-                  }`}
+                className={`error-msg ${
+                  errors.phoneNumber ? "visible" : "invisible"
+                }`}
               >
                 {errors.phoneNumber || "‎"}
               </p>
@@ -373,13 +380,19 @@ const Signup = () => {
                 name="addressDetail"
                 id="addressDetail"
                 value={form.addressDetail || ""}
-                onChange={(e) => setForm({ ...form, addressDetail: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, addressDetail: e.target.value })
+                }
                 placeholder="상세 주소를 입력하세요 (예: 101동 202호)"
                 className="address-detail"
               />
 
               {/* [유지] 에러 메시지: 다른 필드와 동일한 위치/간격으로 표시 */}
-              <p className={`error-msg ${errors.address ? "visible" : "invisible"}`}>
+              <p
+                className={`error-msg ${
+                  errors.address ? "visible" : "invisible"
+                }`}
+              >
                 {errors.address || "‎"}
               </p>
             </div>

@@ -69,11 +69,15 @@ function ProductDetail() {
   // ✅ 이미지 처리
   const imageList = (
     product.images?.length
-      ? product.images.map((p) => `http://localhost:8080${p}`)
+      ? product.images.map((p) => `https://hagglemarket.onrender.com${p}`)
       : []
   ).concat(
-    product.thumbnail ? [`http://localhost:8080${product.thumbnail}`] : [],
-    product.imageUrl ? [`http://localhost:8080${product.imageUrl}`] : []
+    product.thumbnail
+      ? [`https://hagglemarket.onrender.com${product.thumbnail}`]
+      : [],
+    product.imageUrl
+      ? [`https://hagglemarket.onrender.com${product.imageUrl}`]
+      : []
   );
 
   const displayMain = mainImage || imageList[0] || "/images/default.jpg";
@@ -99,7 +103,7 @@ function ProductDetail() {
       return "/images/default-avatar.svg";
     }
     if (typeof url === "string" && url.startsWith("/uploads/")) {
-      return `http://localhost:8080${url}`;
+      return `https://hagglemarket.onrender.com${url}`;
     }
     return url;
   };

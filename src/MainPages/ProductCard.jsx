@@ -48,7 +48,8 @@ function ProductCard({ product, mode = "used", link, endsAt }) {
   const navigate = useNavigate();
 
   // 1) 이미지 URL 안전 처리 (절대/상대/없음)
-  const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+  const BASE =
+    import.meta.env.VITE_API_BASE_URL ?? "https://hagglemarket.onrender.com";
   const imageSrc = useMemo(() => {
     const url = product?.thumbnailUrl ?? product?.imageUrl;
     if (!url) return "/no-image.png";

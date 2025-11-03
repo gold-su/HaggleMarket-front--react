@@ -35,7 +35,6 @@ import SearchPage from "./search/SearchPage.jsx";
 import ForgotPassword from "./auth/ForgotPassword";
 import ResetPassword from "./auth/ResetPassword";
 
-
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("jwtToken");
 
@@ -50,13 +49,13 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-
 function App() {
   const [frequentKeywords, setFrequentKeywords] = useState([]);
   const [products, setProducts] = useState([]);
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("used");
-  const BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8080"; //백엔드 URL
+  const BASE =
+    import.meta.env.VITE_API_BASE ?? "https://hagglemarket.onrender.com"; //백엔드 URL
   const navigate = useNavigate();
 
   //검색코딩
@@ -154,7 +153,6 @@ function App() {
     return () => document.removeEventListener("click", handleClickOutsideMenu);
   }, []);
 
-
   return (
     <Routes>
       {/* 로그인 & 회원가입 */}
@@ -230,7 +228,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-
 
       <Route
         path="/shop/:userNo"

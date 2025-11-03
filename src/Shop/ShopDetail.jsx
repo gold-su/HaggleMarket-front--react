@@ -8,9 +8,11 @@ import "../ShopCSS/MyShopNavigation.css";
 import "../ShopCSS/MyShopContent.css";
 
 /* ====== 설정 ====== */
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ?? "https://hagglemarket.onrender.com";
 const USED_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=used`;
-const AUCTION_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=auction`;
+const AUCTION_LIST_URL = (userNo) =>
+  `/api/shops/${userNo}/products?type=auction`;
 const DETAIL_USED_PATH = (id) => `/products/detail/${id}`;
 const DETAIL_AUCTION_PATH = (id) => `/auction/detail/${id}`;
 const DEFAULT_AVATAR = "/images/default-avatar.svg";
@@ -34,7 +36,8 @@ const normalizePrice = (v) => {
     const n = Number(cleaned);
     return Number.isNaN(n) ? null : n;
   }
-  if (typeof v === "object") return normalizePrice(v?.amount ?? v?.value ?? null);
+  if (typeof v === "object")
+    return normalizePrice(v?.amount ?? v?.value ?? null);
   return null;
 };
 
@@ -156,7 +159,10 @@ export default function ShopDetail() {
           storeOpenedAt: p.data.storeOpenedAt ?? "-",
           visitCount: p.data.visitCount ?? 0,
         }));
-        await Promise.all([loadUsed(p.data.userNo), loadAuction(p.data.userNo)]);
+        await Promise.all([
+          loadUsed(p.data.userNo),
+          loadAuction(p.data.userNo),
+        ]);
       } catch (e) {
         console.error(e);
       }
@@ -307,7 +313,8 @@ export default function ShopDetail() {
             <span>상품판매 {profile.salesCount}회</span>
           </div>
           <p className="myshop-store-description">
-            {profile.description || "판매자가 아직 상점 소개를 작성하지 않았습니다."}
+            {profile.description ||
+              "판매자가 아직 상점 소개를 작성하지 않았습니다."}
           </p>
         </div>
       </div>

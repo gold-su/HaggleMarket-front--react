@@ -10,7 +10,7 @@ const Signup = () => {
     nickName: "",
     email: "",
     address: "",
-    imageURL: ""
+    imageURL: "",
   });
 
   const [message, setMessage] = useState("");
@@ -23,7 +23,10 @@ const Signup = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:8080/api/users/signup", form);
+      const res = await axios.post(
+        "https://hagglemarket.onrender.com/api/users/signup",
+        form
+      );
       setMessage(res.data); // ex. "회원가입 성공"
     } catch (err) {
       const res = err.response;
@@ -42,14 +45,55 @@ const Signup = () => {
     <div>
       <h2>회원가입</h2>
       <form onSubmit={handleSubmit}>
-        <input name="userId" placeholder="아이디" onChange={handleChange} required />
-        <input name="userName" placeholder="이름" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="비밀번호" onChange={handleChange} required />
-        <input name="phoneNumber" placeholder="전화번호" onChange={handleChange} required />
-        <input name="nickName" placeholder="닉네임" onChange={handleChange} required />
-        <input name="email" type="email" placeholder="이메일" onChange={handleChange} required />
-        <input name="address" placeholder="주소" onChange={handleChange} required />
-        <input name="imageURL" placeholder="이미지 URL" onChange={handleChange} />
+        <input
+          name="userId"
+          placeholder="아이디"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="userName"
+          placeholder="이름"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="비밀번호"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="phoneNumber"
+          placeholder="전화번호"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="nickName"
+          placeholder="닉네임"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="이메일"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="address"
+          placeholder="주소"
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="imageURL"
+          placeholder="이미지 URL"
+          onChange={handleChange}
+        />
         <button type="submit">회원가입</button>
       </form>
       {message && <p>{message}</p>}

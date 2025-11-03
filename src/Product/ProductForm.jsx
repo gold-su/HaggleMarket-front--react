@@ -1,17 +1,17 @@
 // src/Product/ProductForm.jsx
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
-import { whoAmI } from '../api/auction';
-import { PRODUCT_STATUS } from '../Product/productStatus.js';
-import stylesLayout from '../ProductCSS/ProductFormLayout.module.css';
-import stylesForm from '../ProductCSS/ProductFormInputs.module.css';
-import stylesButtons from '../ProductCSS/ProductFormButtons.module.css';
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { whoAmI } from "../api/auction";
+import { PRODUCT_STATUS } from "../Product/productStatus.js";
+import stylesLayout from "../ProductCSS/ProductFormLayout.module.css";
+import stylesForm from "../ProductCSS/ProductFormInputs.module.css";
+import stylesButtons from "../ProductCSS/ProductFormButtons.module.css";
 
-function ProductForm({ mode = 'create' }) {
+function ProductForm({ mode = "create" }) {
   const { id } = useParams();
   const navigate = useNavigate();
-  const token = localStorage.getItem('jwtToken');
+  const token = localStorage.getItem("jwtToken");
   /* 10월 19일 강제 로그인 설정 */
   /*useEffect(() => {
     if (!token) {
@@ -28,19 +28,18 @@ function ProductForm({ mode = 'create' }) {
   // 🔁 로그인 강제 리다이렉트 제거: 새 등록(create)은 비로그인 접근 허용
   useEffect(() => {
     // 수정 모드일 때만 로그인/인증 체크
-    if (mode === 'edit') {
+    if (mode === "edit") {
       if (!token) {
-        alert('로그인이 필요합니다. (수정은 로그인 후 가능)');
-        navigate('/login');
+        alert("로그인이 필요합니다. (수정은 로그인 후 가능)");
+        navigate("/login");
         return;
       }
       whoAmI().catch(() => {
-        alert('로그인이 필요합니다. (수정은 로그인 후 가능)');
-        navigate('/login');
+        alert("로그인이 필요합니다. (수정은 로그인 후 가능)");
+        navigate("/login");
       });
     }
   }, [mode, token, navigate]);
-
 
   // 카테고리
   const [largeCategories, setLargeCategories] = useState([]);
@@ -56,11 +55,11 @@ function ProductForm({ mode = 'create' }) {
   const [imagePreviews, setImagePreviews] = useState([]);
 
   // 폼 필드
-  const [productName, setProductName] = useState('');
+  const [productName, setProductName] = useState("");
   const [productStatus, setProductStatus] = useState(PRODUCT_STATUS.NEW);
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState("");
   const [negotiable, setNegotiable] = useState(false);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -68,8 +67,9 @@ function ProductForm({ mode = 'create' }) {
 
   // 카테고리 로드
   useEffect(() => {
-    axios.get('/api/categories/roots')
-      .then(res => setLargeCategories(res.data || []))
+    axios
+      .get("/api/categories/roots")
+      .then((res) => setLargeCategories(res.data || []))
       .catch(() => setLargeCategories([]));
   }, []);
 
@@ -78,16 +78,18 @@ function ProductForm({ mode = 'create' }) {
     setSelectedMiddle(null);
     setSelectedSmall(null);
     setSmallCategories([]);
-    axios.get(`/api/categories/${categoryId}`)
-      .then(res => setMiddleCategories(res.data || []))
+    axios
+      .get(`/api/categories/${categoryId}`)
+      .then((res) => setMiddleCategories(res.data || []))
       .catch(() => setMiddleCategories([]));
   };
 
   const handleMiddleChange = (categoryId) => {
     setSelectedMiddle(categoryId);
     setSelectedSmall(null);
-    axios.get(`/api/categories/${categoryId}`)
-      .then(res => setSmallCategories(res.data || []))
+    axios
+      .get(`/api/categories/${categoryId}`)
+      .then((res) => setSmallCategories(res.data || []))
       .catch(() => setSmallCategories([]));
   };
 
@@ -95,30 +97,35 @@ function ProductForm({ mode = 'create' }) {
 
   // edit 데이터 로드
   useEffect(() => {
-    if (mode !== 'edit' || !id) return;
-    axios.get(`/api/products/detail/${id}`)
+    if (mode !== "edit" || !id) return;
+    axios
+      .get(`/api/products/detail/${id}`)
       .then(async (res) => {
         const data = res.data || {};
-        setProductName(data.title || '');
-        setPrice(data.cost ?? '');
-        setDescription(data.content || '');
+        setProductName(data.title || "");
+        setPrice(data.cost ?? "");
+        setDescription(data.content || "");
         setProductStatus(data.productStatus || PRODUCT_STATUS.NEW);
         setNegotiable(!!data.negotiable);
-        setDeliveryFee(data.deliveryFee ? '포함' : '별도');
-        setTags(data.tag || '');
-        setTradeLocation(data.seller?.address || '');
+        setDeliveryFee(data.deliveryFee ? "포함" : "별도");
+        setTags(data.tag || "");
+        setTradeLocation(data.seller?.address || "");
 
         const imgs = Array.isArray(data.images) ? data.images : [];
         setExistingImageUrls(imgs);
 
         if (data.categoryId) {
           try {
-            const smallRes = await axios.get(`/api/categories/detail/${data.categoryId}`);
+            const smallRes = await axios.get(
+              `/api/categories/detail/${data.categoryId}`
+            );
             const middleId = smallRes.data.parent.id;
-            const middleRes = await axios.get(`/api/categories/detail/${middleId}`);
+            const middleRes = await axios.get(
+              `/api/categories/detail/${middleId}`
+            );
             const largeId = middleRes.data.parent.id;
 
-            const largeList = await axios.get('/api/categories/roots');
+            const largeList = await axios.get("/api/categories/roots");
             setLargeCategories(largeList.data);
             setSelectedLarge(largeId);
 
@@ -130,11 +137,11 @@ function ProductForm({ mode = 'create' }) {
             setSmallCategories(smallList.data);
             setSelectedSmall(data.categoryId);
           } catch (e) {
-            console.error('카테고리 자동 세팅 실패', e);
+            console.error("카테고리 자동 세팅 실패", e);
           }
         }
       })
-      .catch(e => console.error('게시글 로딩 실패', e));
+      .catch((e) => console.error("게시글 로딩 실패", e));
   }, [mode, id]);
 
   // 이미지 업로드/제거
@@ -144,24 +151,26 @@ function ProductForm({ mode = 'create' }) {
     const total = existingImageUrls.length + imagePreviews.length;
     const remain = Math.max(0, 12 - total);
     const picked = files.slice(0, remain);
-    const newURLs = picked.map(f => URL.createObjectURL(f));
-    setImages(prev => [...prev, ...picked]);
-    setImagePreviews(prev => [...prev, ...newURLs]);
+    const newURLs = picked.map((f) => URL.createObjectURL(f));
+    setImages((prev) => [...prev, ...picked]);
+    setImagePreviews((prev) => [...prev, ...newURLs]);
   };
 
   const handleRemoveImage = (index) => {
     if (index < existingImageUrls.length) {
-      setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
+      setExistingImageUrls((prev) => prev.filter((_, i) => i !== index));
     } else {
       const pIdx = index - existingImageUrls.length;
-      setImagePreviews(prev => {
+      setImagePreviews((prev) => {
         const url = prev[pIdx];
-        if (url?.startsWith('blob:')) {
-          try { URL.revokeObjectURL(url); } catch (_) { }
+        if (url?.startsWith("blob:")) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch (_) {}
         }
         return prev.filter((_, i) => i !== pIdx);
       });
-      setImages(prev => prev.filter((_, i) => i !== pIdx));
+      setImages((prev) => prev.filter((_, i) => i !== pIdx));
     }
   };
 
@@ -169,8 +178,10 @@ function ProductForm({ mode = 'create' }) {
   useEffect(() => {
     return () => {
       imagePreviews.forEach((url) => {
-        if (typeof url === 'string' && url.startsWith('blob:')) {
-          try { URL.revokeObjectURL(url); } catch (_) { }
+        if (typeof url === "string" && url.startsWith("blob:")) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch (_) {}
         }
       });
     };
@@ -185,22 +196,29 @@ function ProductForm({ mode = 'create' }) {
   }, [token]);
 
   // 임시저장
-  const draftKey = (mode === 'edit' && id) ? `productDraft:${id}` : 'productDraft:new';
+  const draftKey =
+    mode === "edit" && id ? `productDraft:${id}` : "productDraft:new";
   const handleSaveDraft = () => {
     const draft = {
       savedAt: new Date().toISOString(),
-      mode, id: mode === 'edit' ? id : null,
-      productName, productStatus, price, negotiable,
+      mode,
+      id: mode === "edit" ? id : null,
+      productName,
+      productStatus,
+      price,
+      negotiable,
       description,
-      selectedLarge, selectedMiddle, selectedSmall,
+      selectedLarge,
+      selectedMiddle,
+      selectedSmall,
       existingImageUrls,
     };
     try {
       localStorage.setItem(draftKey, JSON.stringify(draft));
-      alert('임시 저장되었습니다.');
+      alert("임시 저장되었습니다.");
     } catch (e) {
-      console.error('임시 저장 실패:', e);
-      alert('임시 저장에 실패했습니다.');
+      console.error("임시 저장 실패:", e);
+      alert("임시 저장에 실패했습니다.");
     }
   };
 
@@ -210,17 +228,18 @@ function ProductForm({ mode = 'create' }) {
     if (submitting) return;
 
     if (!token) {
-      alert('로그인이 필요합니다.');
-      navigate('/login');
+      alert("로그인이 필요합니다.");
+      navigate("/login");
       return;
     }
 
-    console.log('headers', headers);
+    console.log("headers", headers);
 
-    if (!productName.trim()) return alert('상품명을 입력해 주세요.');
-    if (!selectedSmall) return alert('카테고리를 선택해 주세요.');
-    if (!(Number(price) > 0)) return alert('가격은 0보다 큰 숫자여야 합니다.');
-    if (description.trim().length < 10) return alert('상품 설명은 10자 이상 입력해 주세요.');
+    if (!productName.trim()) return alert("상품명을 입력해 주세요.");
+    if (!selectedSmall) return alert("카테고리를 선택해 주세요.");
+    if (!(Number(price) > 0)) return alert("가격은 0보다 큰 숫자여야 합니다.");
+    if (description.trim().length < 10)
+      return alert("상품 설명은 10자 이상 입력해 주세요.");
 
     try {
       setSubmitting(true);
@@ -228,9 +247,9 @@ function ProductForm({ mode = 'create' }) {
       let uploaded = [];
       if (images.length > 0) {
         const fd = new FormData();
-        images.forEach((f) => fd.append('images', f));
-        const res = await axios.post('/api/products/images', fd, {
-          headers: { ...headers, 'Content-Type': 'multipart/form-data' },
+        images.forEach((f) => fd.append("images", f));
+        const res = await axios.post("/api/products/images", fd, {
+          headers: { ...headers, "Content-Type": "multipart/form-data" },
         });
         uploaded = res.data || [];
       }
@@ -245,19 +264,24 @@ function ProductForm({ mode = 'create' }) {
         categoryId: selectedSmall,
       };
 
-      if (mode === 'edit' && id) {
-        await axios.put(`/api/products/${id}`, dto, { headers: { ...headers, 'Content-Type': 'application/json' } });
-        alert('수정 완료!');
+      if (mode === "edit" && id) {
+        await axios.put(`/api/products/${id}`, dto, {
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
+        alert("수정 완료!");
         navigate(`/products/detail/${id}`);
       } else {
-        const res = await axios.post('/api/products', dto, { headers: { ...headers, 'Content-Type': 'application/json' } });
+        const res = await axios.post("/api/products", dto, {
+          headers: { ...headers, "Content-Type": "application/json" },
+        });
         const newId = res?.data?.postId ?? res?.data?.id;
-        alert('등록 완료!');
-        if (newId) navigate(`/products/detail/${newId}`); else navigate(-1);
+        alert("등록 완료!");
+        if (newId) navigate(`/products/detail/${newId}`);
+        else navigate(-1);
       }
     } catch (err) {
-      console.error('저장 실패:', err);
-      alert('저장에 실패했습니다.');
+      console.error("저장 실패:", err);
+      alert("저장에 실패했습니다.");
     } finally {
       setSubmitting(false);
     }
@@ -272,17 +296,32 @@ function ProductForm({ mode = 'create' }) {
 
             <ul className={stylesLayout.formGroups}>
               {/* 상품 이미지 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>상품 이미지</div>
                 <div className={stylesLayout.formContent}>
                   <ul className={stylesForm.imageUploadList}>
                     <li
-                      className={`${stylesForm.imageUploadItem} ${stylesForm.addImage} ${existingImageUrls.length + imagePreviews.length >= 12 ? stylesForm.disabled : ''
-                        }`}
+                      className={`${stylesForm.imageUploadItem} ${
+                        stylesForm.addImage
+                      } ${
+                        existingImageUrls.length + imagePreviews.length >= 12
+                          ? stylesForm.disabled
+                          : ""
+                      }`}
                     >
                       <label htmlFor="image-upload-input">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                           <circle cx="12" cy="13" r="4"></circle>
                         </svg>
@@ -294,22 +333,49 @@ function ProductForm({ mode = 'create' }) {
                         accept="image/jpg, image/jpeg, image/png"
                         multiple
                         onChange={handleImageChange}
-                        disabled={existingImageUrls.length + imagePreviews.length >= 12}
-                        style={{ display: 'none' }}
+                        disabled={
+                          existingImageUrls.length + imagePreviews.length >= 12
+                        }
+                        style={{ display: "none" }}
                       />
                     </li>
 
                     {existingImageUrls.map((url, idx) => (
-                      <li key={`exist-${idx}`} className={`${stylesForm.imageUploadItem} ${stylesForm.imagePreviewItem}`}>
-                        <img src={`http://localhost:8080${url}`} alt={`기존 이미지 ${idx + 1}`} />
-                        <button type="button" className={stylesForm.removeImageButton} onClick={() => handleRemoveImage(idx)} aria-label="이미지 삭제">×</button>
+                      <li
+                        key={`exist-${idx}`}
+                        className={`${stylesForm.imageUploadItem} ${stylesForm.imagePreviewItem}`}
+                      >
+                        <img
+                          src={`https://hagglemarket.onrender.com${url}`}
+                          alt={`기존 이미지 ${idx + 1}`}
+                        />
+                        <button
+                          type="button"
+                          className={stylesForm.removeImageButton}
+                          onClick={() => handleRemoveImage(idx)}
+                          aria-label="이미지 삭제"
+                        >
+                          ×
+                        </button>
                       </li>
                     ))}
 
                     {imagePreviews.map((src, idx) => (
-                      <li key={`blob-${idx}`} className={`${stylesForm.imageUploadItem} ${stylesForm.imagePreviewItem}`}>
+                      <li
+                        key={`blob-${idx}`}
+                        className={`${stylesForm.imageUploadItem} ${stylesForm.imagePreviewItem}`}
+                      >
                         <img src={src} alt={`미리보기 ${idx + 1}`} />
-                        <button type="button" className={stylesForm.removeImageButton} onClick={() => handleRemoveImage(existingImageUrls.length + idx)} aria-label="이미지 삭제">×</button>
+                        <button
+                          type="button"
+                          className={stylesForm.removeImageButton}
+                          onClick={() =>
+                            handleRemoveImage(existingImageUrls.length + idx)
+                          }
+                          aria-label="이미지 삭제"
+                        >
+                          ×
+                        </button>
                       </li>
                     ))}
                   </ul>
@@ -317,7 +383,9 @@ function ProductForm({ mode = 'create' }) {
               </li>
 
               {/* 상품 명 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>상품 명</div>
                 <div className={stylesLayout.formContent}>
                   <input
@@ -329,23 +397,44 @@ function ProductForm({ mode = 'create' }) {
                     onChange={(e) => setProductName(e.target.value)}
                     required
                   />
-                  <div className={stylesForm.charCounter}>{productName.length}/40</div>
+                  <div className={stylesForm.charCounter}>
+                    {productName.length}/40
+                  </div>
                 </div>
               </li>
 
               {/* 카테고리 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>카테고리</div>
                 <div className={stylesLayout.formContent}>
                   <div className={stylesForm.categorySelectionArea}>
                     <div className={stylesForm.categoryColumn}>
                       <ul className={stylesForm.categoryList}>
                         {largeCategories.length === 0 ? (
-                          <li className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>카테고리 불러오는 중...</li>
+                          <li
+                            className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                          >
+                            카테고리 불러오는 중...
+                          </li>
                         ) : (
                           largeCategories.map((cat) => (
-                            <li key={cat.id} className={`${stylesForm.categoryItem} ${selectedLarge === cat.id ? stylesForm.active : ''}`}>
-                              <button type="button" onClick={() => handleLargeChange(cat.id)} aria-selected={selectedLarge === cat.id}>{cat.name}</button>
+                            <li
+                              key={cat.id}
+                              className={`${stylesForm.categoryItem} ${
+                                selectedLarge === cat.id
+                                  ? stylesForm.active
+                                  : ""
+                              }`}
+                            >
+                              <button
+                                type="button"
+                                onClick={() => handleLargeChange(cat.id)}
+                                aria-selected={selectedLarge === cat.id}
+                              >
+                                {cat.name}
+                              </button>
                             </li>
                           ))
                         )}
@@ -355,36 +444,78 @@ function ProductForm({ mode = 'create' }) {
                     <div className={stylesForm.categoryColumn}>
                       {selectedLarge ? (
                         middleCategories.length === 0 ? (
-                          <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>중분류 없음</div>
+                          <div
+                            className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                          >
+                            중분류 없음
+                          </div>
                         ) : (
                           <ul className={stylesForm.categoryList}>
                             {middleCategories.map((cat) => (
-                              <li key={cat.id} className={`${stylesForm.categoryItem} ${selectedMiddle === cat.id ? stylesForm.active : ''}`}>
-                                <button type="button" onClick={() => handleMiddleChange(cat.id)} aria-selected={selectedMiddle === cat.id}>{cat.name}</button>
+                              <li
+                                key={cat.id}
+                                className={`${stylesForm.categoryItem} ${
+                                  selectedMiddle === cat.id
+                                    ? stylesForm.active
+                                    : ""
+                                }`}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => handleMiddleChange(cat.id)}
+                                  aria-selected={selectedMiddle === cat.id}
+                                >
+                                  {cat.name}
+                                </button>
                               </li>
                             ))}
                           </ul>
                         )
                       ) : (
-                        <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>중분류 선택</div>
+                        <div
+                          className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                        >
+                          중분류 선택
+                        </div>
                       )}
                     </div>
 
                     <div className={stylesForm.categoryColumn}>
                       {selectedMiddle ? (
                         smallCategories.length === 0 ? (
-                          <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>소분류 없음</div>
+                          <div
+                            className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                          >
+                            소분류 없음
+                          </div>
                         ) : (
                           <ul className={stylesForm.categoryList}>
                             {smallCategories.map((cat) => (
-                              <li key={cat.id} className={`${stylesForm.categoryItem} ${selectedSmall === cat.id ? stylesForm.active : ''}`}>
-                                <button type="button" onClick={() => handleSmallChange(cat.id)} aria-selected={selectedSmall === cat.id}>{cat.name}</button>
+                              <li
+                                key={cat.id}
+                                className={`${stylesForm.categoryItem} ${
+                                  selectedSmall === cat.id
+                                    ? stylesForm.active
+                                    : ""
+                                }`}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => handleSmallChange(cat.id)}
+                                  aria-selected={selectedSmall === cat.id}
+                                >
+                                  {cat.name}
+                                </button>
                               </li>
                             ))}
                           </ul>
                         )
                       ) : (
-                        <div className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}>소분류 선택</div>
+                        <div
+                          className={`${stylesForm.categoryItem} ${stylesForm.placeholder}`}
+                        >
+                          소분류 선택
+                        </div>
                       )}
                     </div>
                   </div>
@@ -392,17 +523,27 @@ function ProductForm({ mode = 'create' }) {
               </li>
 
               {/* 상품 상태 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>상품 상태</div>
                 <div className={stylesLayout.formContent}>
-                  <div className={`${stylesForm.radioGroup} ${stylesForm.radioGroupVertical}`}>
+                  <div
+                    className={`${stylesForm.radioGroup} ${stylesForm.radioGroupVertical}`}
+                  >
                     {[
-                      { label: '새 상품 (미사용)', value: PRODUCT_STATUS.NEW },
-                      { label: '사용감 없음', value: PRODUCT_STATUS.USED_LIKE_NEW },
-                      { label: '사용감 적음', value: PRODUCT_STATUS.USED_GOOD },
-                      { label: '사용감 많음', value: PRODUCT_STATUS.USED },
-                      { label: '고장/파손 상품', value: PRODUCT_STATUS.DAMAGED },
-                    ].map(item => (
+                      { label: "새 상품 (미사용)", value: PRODUCT_STATUS.NEW },
+                      {
+                        label: "사용감 없음",
+                        value: PRODUCT_STATUS.USED_LIKE_NEW,
+                      },
+                      { label: "사용감 적음", value: PRODUCT_STATUS.USED_GOOD },
+                      { label: "사용감 많음", value: PRODUCT_STATUS.USED },
+                      {
+                        label: "고장/파손 상품",
+                        value: PRODUCT_STATUS.DAMAGED,
+                      },
+                    ].map((item) => (
                       <label key={item.value} className={stylesForm.radioLabel}>
                         <input
                           type="radio"
@@ -419,7 +560,9 @@ function ProductForm({ mode = 'create' }) {
               </li>
 
               {/* 상품 설명 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>상품 설명</div>
                 <div className={stylesLayout.formContent}>
                   <textarea
@@ -445,7 +588,9 @@ function ProductForm({ mode = 'create' }) {
               </li>
 
               {/* 가격 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
+              <li
+                className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}
+              >
                 <div className={stylesLayout.formLabel}>가격</div>
                 <div className={stylesLayout.formContent}>
                   <div className={stylesForm.priceRow}>
@@ -465,7 +610,9 @@ function ProductForm({ mode = 'create' }) {
                       />
                       <span className={stylesForm.currency}>원</span>
                     </div>
-                    <label className={`${stylesForm.checkboxLabel} ${stylesForm.checkboxRight}`}>
+                    <label
+                      className={`${stylesForm.checkboxLabel} ${stylesForm.checkboxRight}`}
+                    >
                       <input
                         type="checkbox"
                         checked={negotiable}
@@ -482,9 +629,27 @@ function ProductForm({ mode = 'create' }) {
           <footer className={stylesLayout.registerFooter}>
             <div className={stylesLayout.inner}>
               <div className={stylesButtons.btnGroup}>
-                <button type="button" className={stylesButtons.btnDraft} onClick={handleSaveDraft} disabled={submitting}>임시저장</button>
-                <button type="submit" className={stylesButtons.btnSubmit} disabled={submitting} aria-disabled={submitting}>
-                  {submitting ? (mode === 'edit' ? '수정 중…' : '등록 중…') : (mode === 'edit' ? '수정하기' : '등록하기')}
+                <button
+                  type="button"
+                  className={stylesButtons.btnDraft}
+                  onClick={handleSaveDraft}
+                  disabled={submitting}
+                >
+                  임시저장
+                </button>
+                <button
+                  type="submit"
+                  className={stylesButtons.btnSubmit}
+                  disabled={submitting}
+                  aria-disabled={submitting}
+                >
+                  {submitting
+                    ? mode === "edit"
+                      ? "수정 중…"
+                      : "등록 중…"
+                    : mode === "edit"
+                    ? "수정하기"
+                    : "등록하기"}
                 </button>
               </div>
             </div>

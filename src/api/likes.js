@@ -4,7 +4,7 @@ import axios from "axios";
 const BASE =
   import.meta.env.VITE_API_BASE_URL ??
   import.meta.env.VITE_API_BASE ??
-  "http://localhost:8080";
+  "https://hagglemarket.onrender.com";
 
 export async function fetchSidebarLikes(limit = 20) {
   const token = localStorage.getItem("jwtToken");

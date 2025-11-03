@@ -37,9 +37,12 @@ const EditProfile = () => {
 
     const fetchUserData = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          "https://hagglemarket.onrender.com/api/users/me",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setForm(res.data);
       } catch (err) {
         console.error("유저 정보 불러오기 실패", err);
@@ -65,7 +68,7 @@ const EditProfile = () => {
   const handlePasswordCheck = async () => {
     try {
       await axios.post(
-        "http://localhost:8080/api/users/check-password",
+        "https://hagglemarket.onrender.com/api/users/check-password",
         { password },
         {
           headers: {
@@ -91,7 +94,7 @@ const EditProfile = () => {
       const { password, ...updateData } = form;
 
       const res = await axios.put(
-        "http://localhost:8080/api/users/update",
+        "https://hagglemarket.onrender.com/api/users/update",
         updateData,
         {
           headers: {

@@ -14,7 +14,7 @@ export default function LikeBox({
   const BASE =
     import.meta.env.VITE_API_BASE_URL ??
     import.meta.env.VITE_API_BASE ??
-    "http://localhost:8080";
+    "https://hagglemarket.onrender.com";
 
   const resolveUrl = (v) => {
     if (!v || v === "null") return "/no-image.png";
@@ -68,7 +68,12 @@ export default function LikeBox({
         p?.raw?.auction === true;
 
       // ✅ thumbnail, thumbnailUrl 둘 다 대응
-      const thumb = p?.thumbnailUrl ?? p?.thumbnail ?? p?.raw?.thumbnailUrl ?? p?.raw?.thumbnail ?? null;
+      const thumb =
+        p?.thumbnailUrl ??
+        p?.thumbnail ??
+        p?.raw?.thumbnailUrl ??
+        p?.raw?.thumbnail ??
+        null;
 
       return {
         __key: `${isAuction ? "auction" : "post"}-${id ?? "tmp-" + idx}`,
@@ -79,7 +84,6 @@ export default function LikeBox({
       };
     });
   }, [items]);
-
 
   // ── 페이지네이션(2x2) ─────────────────────────────────
   const pageSize = 4;

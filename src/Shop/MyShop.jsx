@@ -1,5 +1,11 @@
 // src/Shop/MyShop.jsx
-import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../ShopCSS/MyShopContainer.css";
@@ -8,7 +14,8 @@ import "../ShopCSS/MyShopNavigation.css";
 import "../ShopCSS/MyShopContent.css";
 
 /* ====== 설정 ====== */
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ?? "https://hagglemarket.onrender.com";
 const USED_LIST_URL = (userNo) => `/api/shops/${userNo}/products?type=used`;
 const AUCTION_LIST_URL = (userNo) =>
   `/api/shops/${userNo}/products?type=auction`;
@@ -73,13 +80,13 @@ const resolveThumb = (obj) => {
   return `${API_BASE}${raw}`;
 };
 
-
 const daysSince = (dateStr) => {
   if (!dateStr || dateStr === "-") return "-";
-  const diff = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
+  const diff = Math.floor(
+    (new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24)
+  );
   return `${diff}일째`;
 };
-
 
 /* ====== 드롭다운 ====== */
 function FilterDropdown({ value, onChange }) {
@@ -158,16 +165,12 @@ export default function MyShop() {
   const saveIntro = async () => {
     try {
       const token = localStorage.getItem("jwtToken");
-      await api.put(
-        `/api/shops/me/intro`,
-        introText,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "text/plain",
-          },
-        }
-      );
+      await api.put(`/api/shops/me/intro`, introText, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "text/plain",
+        },
+      });
 
       // ✅ 상태만 갱신해서 화면 즉시 반영
       setProfile((prev) => {
@@ -182,7 +185,6 @@ export default function MyShop() {
       alert("소개글 저장 실패");
     }
   };
-
 
   /* ====== 초기 로드 ====== */
   useEffect(() => {
@@ -206,12 +208,12 @@ export default function MyShop() {
             : prev.storeName,
           profileUrl:
             !detail.data.profileUrl ||
-              detail.data.profileUrl === "null" ||
-              detail.data.profileUrl === "undefined"
+            detail.data.profileUrl === "null" ||
+            detail.data.profileUrl === "undefined"
               ? DEFAULT_AVATAR
               : detail.data.profileUrl.startsWith("/uploads/")
-                ? `${API_BASE}${detail.data.profileUrl}`
-                : detail.data.profileUrl,
+              ? `${API_BASE}${detail.data.profileUrl}`
+              : detail.data.profileUrl,
           isVerified: !!detail.data.verified,
           description: detail.data.intro || prev.description, // ✅ intro 반영
           storeOpenedAt:
@@ -255,8 +257,8 @@ export default function MyShop() {
       const list = Array.isArray(data?.content)
         ? data.content
         : Array.isArray(data)
-          ? data
-          : [];
+        ? data
+        : [];
       setAuctionList(list);
     } catch (e) {
       console.error("❌ 경매 목록 로드 실패", e);
@@ -307,17 +309,16 @@ export default function MyShop() {
     if (!obj) return false;
     return Boolean(
       obj?.isAuction === true ||
-      obj?.auction === true ||
-      obj?.type === "AUCTION" ||
-      obj?.kind === "AUCTION" ||
-      obj?.auctionId != null ||
-      obj?.endTime || // 경매 데이터는 보통 endTime 있음
-      obj?.endsAt ||
-      obj?.bidCount != null ||
-      obj?.startCost != null // 시작가가 있으면 거의 100% 경매
+        obj?.auction === true ||
+        obj?.type === "AUCTION" ||
+        obj?.kind === "AUCTION" ||
+        obj?.auctionId != null ||
+        obj?.endTime || // 경매 데이터는 보통 endTime 있음
+        obj?.endsAt ||
+        obj?.bidCount != null ||
+        obj?.startCost != null // 시작가가 있으면 거의 100% 경매
     );
   }, []);
-
 
   /* ====== 삭제/수정 ====== */
   const onEdit = (item) => {
@@ -509,8 +510,9 @@ export default function MyShop() {
       >
         {items.map((it) => (
           <Card
-            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${it.auctionId ?? it.id ?? it.postId
-              }`}
+            key={`${isAuctionItem(it) || it._isAuction ? "a" : "p"}-${
+              it.auctionId ?? it.id ?? it.postId
+            }`}
             item={it}
             withActions={withActions}
           />
@@ -529,8 +531,8 @@ export default function MyShop() {
               ? profile.profileUrl.startsWith("http")
                 ? profile.profileUrl
                 : profile.profileUrl.startsWith("/uploads/")
-                  ? `${API_BASE}${profile.profileUrl}`
-                  : profile.profileUrl // ✅ API_BASE 제거
+                ? `${API_BASE}${profile.profileUrl}`
+                : profile.profileUrl // ✅ API_BASE 제거
               : "/images/default-avatar.svg"
           }
           alt="상점 프로필"

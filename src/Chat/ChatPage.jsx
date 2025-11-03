@@ -5,8 +5,8 @@ import styles from "../ChatCSS/ChatPage.module.css";
 import { fetchChatRooms, fetchChatMessages } from "../api/chat";
 import { Client } from "@stomp/stompjs";
 
-const BASE_HTTP_URL = "http://localhost:8080";
-const BASE_WS_URL = "ws://localhost:8080/ws";
+const BASE_HTTP_URL = "https://hagglemarket.onrender.com";
+const BASE_WS_URL = "ws://hagglemarket.onrender.com/ws";
 const DEFAULT_AVATAR = "/images/default-avatar.jpg";
 const BOT_ROOM_NAME = "해글봇 💬";
 
