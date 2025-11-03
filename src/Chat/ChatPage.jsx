@@ -6,7 +6,7 @@ import { fetchChatRooms, fetchChatMessages } from "../api/chat";
 import { Client } from "@stomp/stompjs";
 
 const BASE_HTTP_URL = "https://hagglemarket.onrender.com";
-const BASE_WS_URL = "ws://hagglemarket.onrender.com/ws";
+const BASE_WS_URL = "wss://hagglemarket.onrender.com/ws";
 const DEFAULT_AVATAR = "/images/default-avatar.jpg";
 const BOT_ROOM_NAME = "해글봇 💬";
 
