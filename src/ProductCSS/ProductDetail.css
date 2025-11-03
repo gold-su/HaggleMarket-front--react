@@ -137,13 +137,21 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.product-info .buttons .chat,
-.product-info .buttons .buy {
-  background: #e0f2fe;
-  color: #0369a1;
+.product-info .buttons .chat {
+  background: #6d9dff;
+  color: #ffffff;
   font-weight: 600;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
+.product-info .buttons .chat:hover {
+  background: #2f65c0;
+  transform: scale(1.05);
+}
+
+.product-info .buttons .chat:active {
+  transform: scale(0.95);
+}
 /* -----------------------------
    하단 : 카드 3개 (지역/카테고리/판매자)
 ----------------------------- */

@@ -37,7 +37,7 @@
   width: 100%;
   max-width: var(--container-max);
   margin: 0 auto;
-  padding: 20px 0 calc(140px + env(safe-area-inset-bottom, 0px));
+  padding: 20px 0 calc(60px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
@@ -145,7 +145,7 @@
 }
 
 @media (max-width: 768px) {
-  .registerMainContent { padding: 16px 0 calc(120px + env(safe-area-inset-bottom, 0px)); }
+  .registerMainContent { padding: 16px 0 calc(60px + env(safe-area-inset-bottom, 0px)); }
   .registerSection { padding: 16px var(--section-x-sm); }
   .registerFooter { padding: 10px var(--section-x-sm); }
 

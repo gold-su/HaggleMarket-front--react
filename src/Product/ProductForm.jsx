@@ -12,7 +12,7 @@ function ProductForm({ mode = 'create' }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('jwtToken');
- /* 10월 19일 강제 로그인 설정 */
+  /* 10월 19일 강제 로그인 설정 */
   /*useEffect(() => {
     if (!token) {
       alert('로그인이 필요합니다.');
@@ -60,11 +60,7 @@ function ProductForm({ mode = 'create' }) {
   const [productStatus, setProductStatus] = useState(PRODUCT_STATUS.NEW);
   const [price, setPrice] = useState('');
   const [negotiable, setNegotiable] = useState(false);
-  const [deliveryFee, setDeliveryFee] = useState('별도');
   const [description, setDescription] = useState('');
-  const [contact, setContact] = useState('');
-  const [tradeLocation, setTradeLocation] = useState('');
-  const [tags, setTags] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -194,8 +190,8 @@ function ProductForm({ mode = 'create' }) {
     const draft = {
       savedAt: new Date().toISOString(),
       mode, id: mode === 'edit' ? id : null,
-      productName, productStatus, price, negotiable, deliveryFee,
-      description, contact, tradeLocation, tags,
+      productName, productStatus, price, negotiable,
+      description,
       selectedLarge, selectedMiddle, selectedSmall,
       existingImageUrls,
     };
@@ -244,13 +240,9 @@ function ProductForm({ mode = 'create' }) {
         cost: Number(price),
         content: description.trim(),
         negotiable,
-        deliveryFee: deliveryFee === '포함',
         productStatus,
         imageUrls: [...existingImageUrls, ...uploaded],
         categoryId: selectedSmall,
-        tag: tags,
-        tradeLocation,
-        contact,
       };
 
       if (mode === 'edit' && id) {
@@ -447,20 +439,6 @@ function ProductForm({ mode = 'create' }) {
                 </div>
               </li>
 
-              {/* 태그 (선택) */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>태그 (선택)</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="쉼표로 구분해 입력 (예: 빈티지, 시계)"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                  />
-                </div>
-              </li>
-
               {/* 섹션 타이틀: 가격 */}
               <li className={stylesLayout.formGroupTitle}>
                 <h2 className={stylesLayout.registerTitle}>가격</h2>
@@ -496,65 +474,6 @@ function ProductForm({ mode = 'create' }) {
                       가격 제안 받기
                     </label>
                   </div>
-                </div>
-              </li>
-
-              {/* 섹션 타이틀: 택배거래 */}
-              <li className={stylesLayout.formGroupTitle}>
-                <h2 className={stylesLayout.registerTitle}>택배거래</h2>
-              </li>
-
-              {/* 배송비 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>배송비</div>
-                <div className={stylesLayout.formContent}>
-                  <div className={stylesForm.radioGroup}>
-                    {['포함', '별도'].map(fee => (
-                      <label key={fee} className={stylesForm.radioLabel}>
-                        <input
-                          type="radio"
-                          name="deliveryFee"
-                          value={fee}
-                          checked={deliveryFee === fee}
-                          onChange={() => setDeliveryFee(fee)}
-                        />
-                        <span>{fee}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </li>
-
-              {/* 섹션 타이틀: 추가정보 */}
-              <li className={stylesLayout.formGroupTitle}>
-                <h2 className={stylesLayout.registerTitle}>추가정보</h2>
-              </li>
-
-              {/* 직거래 지역 */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>직거래 지역</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="예) 서울 강남구"
-                    value={tradeLocation}
-                    onChange={(e) => setTradeLocation(e.target.value)}
-                  />
-                </div>
-              </li>
-
-              {/* 연락(맨 아래) */}
-              <li className={`${stylesLayout.formGroup} ${stylesLayout.formGroupInline} ${stylesLayout.labelW140}`}>
-                <div className={stylesLayout.formLabel}>연락</div>
-                <div className={stylesLayout.formContent}>
-                  <input
-                    type="text"
-                    className={stylesForm.formInput}
-                    placeholder="전화번호 또는 메신저 ID"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                  />
                 </div>
               </li>
             </ul>

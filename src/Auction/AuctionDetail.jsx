@@ -6,6 +6,7 @@ import styles from "../AuctionCSS/AuctionDetail.module.css";
 import BidHistoryModal from "../components/BidHistoryModal";
 import { createChatRoom } from "../api/chat";
 import { jwtDecode } from "jwt-decode";
+import LikeHeart from "../like/LikeHeart";
 
 function AuctionDetail() {
   const { id } = useParams(); //URL에서 경매 ID 추출
@@ -204,10 +205,10 @@ function AuctionDetail() {
         setAuction((prev) =>
           prev
             ? {
-                ...prev,
-                currentPrice: res.currentHighestBid ?? bidAmount,
-                bidCount: (prev.bidCount ?? 0) + 1,
-              }
+              ...prev,
+              currentPrice: res.currentHighestBid ?? bidAmount,
+              bidCount: (prev.bidCount ?? 0) + 1,
+            }
             : prev
         );
         setMyBid("");
@@ -244,10 +245,10 @@ function AuctionDetail() {
   const disabledReason = !hasBuyout
     ? "즉시구매가 미설정"
     : isEnded
-    ? "경매가 종료되어 즉시구매 불가"
-    : buyoutCost < currentPrice
-    ? "즉시구매가가 현재가보다 낮아 불가"
-    : undefined;
+      ? "경매가 종료되어 즉시구매 불가"
+      : buyoutCost < currentPrice
+        ? "즉시구매가가 현재가보다 낮아 불가"
+        : undefined;
 
   function handleBuyoutClick() {
     if (!canBuyNow) return; // 방어코드
@@ -276,12 +277,6 @@ function AuctionDetail() {
       console.error(e);
       alert("즉시 구매 요청 중 오류가 발생했습니다.");
     }
-  };
-
-  // 판매자 상점 보기
-  const goToSellerShop = () => {
-    alert("판매자 상점 페이지로 이동합니다.");
-    // navigate(`/shop/${auction.seller.id}`); // 실제 판매자 ID 기반 이동
   };
 
   //카테고리 빵부스러기 클릭(가능할 때만)
@@ -349,9 +344,8 @@ function AuctionDetail() {
                   <button
                     key={idx}
                     type="button"
-                    className={`${styles.thumbBtn} ${
-                      idx === activeIdx ? styles.active : ""
-                    }`}
+                    className={`${styles.thumbBtn} ${idx === activeIdx ? styles.active : ""
+                      }`}
                     onClick={() => setActiveIdx(idx)}
                     aria-label={`${idx + 1}번 이미지 보기`}
                     title={`${idx + 1}번 이미지`}
@@ -523,6 +517,34 @@ function AuctionDetail() {
             >
               즉시 구매
             </button>
+          </div>
+
+          <div className={styles.bidDivider}></div>
+
+          <div className={styles.likeSection}>
+            {/* ✅ 찜 버튼 추가 (버튼형식) */}
+            <LikeHeart
+              id={auction.id}
+              isAuction={true}
+              textMode
+              showCount={false}
+              initialLiked={auction?.likedByMe ?? false}
+              initialCount={auction?.likeCount ?? 0}
+              onChanged={() => {
+                // 새로고침 없이 갱신
+                setAuction((prev) =>
+                  prev
+                    ? {
+                      ...prev,
+                      likedByMe: !prev.likedByMe,
+                      likeCount:
+                        (prev.likeCount ?? 0) + (prev.likedByMe ? -1 : 1),
+                    }
+                    : prev
+                );
+              }}
+            />
+            
             <button
               className={styles.chatButton}
               onClick={async () => {
@@ -559,10 +581,6 @@ function AuctionDetail() {
               💬 채팅하기
             </button>
           </div>
-
-          <button className={styles.sellerShopButton} onClick={goToSellerShop}>
-            판매자 상점 보기
-          </button>
         </div>
       </div>
 

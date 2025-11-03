@@ -208,8 +208,6 @@ function ProductDetail() {
             >
               해글톡
             </button>
-
-            <button className="buy">즉시구매</button>
           </div>
         </div>
       </div>

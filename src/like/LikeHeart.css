@@ -1,4 +1,3 @@
-/* src/like/LikeHeart.css*/
 .like-btn-text,
 .heart-btn {
   border: none;
@@ -15,14 +14,13 @@
 .like-btn-text.on,
 .heart-btn.on {
   background: transparent;
-  /* 박스 배경 제거 */
   border: none;
 }
 
 .heart {
   width: 28px;
   height: 28px;
-  transition: transform .15s ease;
+  transition: transform 0.15s ease;
 }
 
 .heart-btn:hover .heart {
@@ -46,40 +44,48 @@
   outline: none;
 }
 
-/* 텍스트 모드 전용 버튼 */
-.like-text-btn {
-  border: 1px solid #38bdf8;
-  /* 하늘색 테두리 */
-  background: #e0f2fe;
-  /* 연한 하늘색 배경 */
-  color: #0369a1;
-  /* 진한 하늘색 글자 */
-  padding: 6px 12px;
+/* ===============================
+   ✅ 버튼형(텍스트 모드) - 경매/상품과 통일
+   =============================== */
+.like-text-btn,
+.likeTextBtn {
+  padding: 10px 15px;
+  border: 1.5px solid #ccc;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background-color: #f9fafb;
+  color: #333;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-/* 찜됨 상태 */
-.like-text-btn.on {
-  border-color: #0284c7;
-  /* 진한 하늘색 테두리 */
-  background: #bae6fd;
-  /* 중간 톤 하늘색 배경 */
-  color: #075985;
-  /* 더 진한 글자 */
+/* hover 시 색상 강조 (연한 분홍톤) */
+.like-text-btn:hover,
+.likeTextBtn:hover {
+  background-color: #ffeef2;
+  border-color: #e0245e;
+  color: #e0245e;
 }
 
-/* hover 효과 */
-.like-text-btn:hover {
-  transform: scale(1.05);
-  background: #bae6fd;
-  /* hover 시 좀 더 진한 하늘색 */
+/* 찜됨(on) 상태일 때 */
+.like-text-btn.on,
+.likeTextBtn.on {
+  background-color: #ffe5eb;
+  border-color: #e0245e;
+  color: #e0245e;
 }
 
-/* active 눌림 효과 */
-.like-text-btn:active {
-  transform: scale(0.95);
+/* 포커스 시 테두리 강조 */
+.like-text-btn:focus-visible,
+.likeTextBtn:focus-visible {
+  outline: 2px solid #e0245e;
+  outline-offset: 2px;
+}
+
+/* 클릭 눌림 효과 */
+.like-text-btn:active,
+.likeTextBtn:active {
+  transform: scale(0.96);
 }

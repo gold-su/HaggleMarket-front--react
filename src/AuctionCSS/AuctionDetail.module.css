@@ -37,10 +37,12 @@
    ========================= */
 .auctionDetail {
   display: flex;
-  align-items: stretch; /* ✅ 양쪽 영역 높이 동일하게 */
+  align-items: stretch;
+  /* ✅ 양쪽 영역 높이 동일하게 */
   gap: 40px;
   margin-bottom: 40px;
-  min-height: fit-content; /* ⬅️ 높이 auto 문제 방지 */
+  min-height: fit-content;
+  /* ⬅️ 높이 auto 문제 방지 */
 }
 
 .auctionLeftWrap {
@@ -50,7 +52,8 @@
   gap: 16px;
   width: 450px;
   flex-shrink: 0;
-  align-self: stretch; /* ✅ 부모 높이 강제 상속 */
+  align-self: stretch;
+  /* ✅ 부모 높이 강제 상속 */
 }
 
 .auctionImage {
@@ -222,6 +225,48 @@
   background-color: var(--accent-color);
   color: white;
 }
+
+.likeSection {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* =========================
+   찜 버튼 (LikeHeart 텍스트 모드)
+   ========================= */
+.likeTextBtn {
+  padding: 10px 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 600;
+  background-color: #f9fafb;
+  color: #333;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* hover 시 다른 버튼들과 톤 통일 */
+.likeTextBtn:hover {
+  background-color: #ffeef2;
+  border-color: #e0245e;
+  color: #e0245e;
+}
+
+/* 눌렸을 때 (찜 활성화) */
+.likeTextBtn.on {
+  background-color: #ffe5eb;
+  border-color: #e0245e;
+  color: #e0245e;
+}
+
+.likeTextBtn:focus-visible {
+  outline: 2px solid #e0245e;
+  outline-offset: 2px;
+}
+
 
 /* =========================
    ✅ 판매자 정보 스트립 (ProductDetail 스타일 기반)
@@ -619,6 +664,14 @@
 .bidColDate,
 .bidColTime {
   white-space: nowrap;
+}
+
+.bidDivider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 15px 0;
+  opacity: 0.7;
 }
 
 .emptyRow,
