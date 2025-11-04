@@ -19,6 +19,14 @@ body {
   overflow-x: hidden;
 }
 
+/* chat 전용: 전역 border-box를 되돌림 */
+.chatPage,
+.chatPage *,
+.chatPage ::before,
+.chatPage ::after {
+  box-sizing: content-box; /* 또는 initial */
+}
+
 .chatPage {
   height: 80vh;
   max-width: 1200px;
@@ -368,6 +376,7 @@ body {
 
 .messageBubble {
   padding: 12px 16px;
+  display: inline-block;
   border-radius: 20px;
   font-size: 0.95rem;
   line-height: 1.65;
@@ -376,7 +385,7 @@ body {
   color: var(--text-color);
   border: 1px solid var(--border-color);
   white-space: pre-wrap;
-  word-break: keep-all;
+  word-break: break-word;
   overflow-wrap: break-word;
 }
 
