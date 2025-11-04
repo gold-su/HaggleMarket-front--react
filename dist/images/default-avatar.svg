@@ -1,0 +1,20 @@
+<!-- /public/images/default-avatar.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- 배경 원 + 테두리 -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5f7fa"></stop>
+      <stop offset="1" stop-color="#edf1f5"></stop>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="url(#bg)" stroke="#dfe6ee" stroke-width="8"></circle>
+
+  <!-- 사용자 아이콘 (머리) -->
+  <circle cx="100" cy="78" r="34" fill="#cfd8e3"></circle>
+
+  <!-- 사용자 아이콘 (어깨/몸) -->
+  <path d="M40 160c8-36 44-54 60-54h0c16 0 52 18 60 54" fill="#cfd8e3"></path>
+
+  <!-- 포커스 링(해글마켓 블루) -->
+  <circle cx="100" cy="100" r="96" fill="none" stroke="#4a90e2" stroke-width="2" opacity="0.6"></circle>
+</svg>
