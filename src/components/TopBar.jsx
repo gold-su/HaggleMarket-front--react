@@ -1,7 +1,7 @@
 // src/components/TopBar.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "../componentCSS/topBar.css"; // CSS 파일 경로 유지
+import "../componentCSS/TopBar.css"; // CSS 파일 경로 유지
 import "../editPage/EditProfile";
 
 function TopBar() {
