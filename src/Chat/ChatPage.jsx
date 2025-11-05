@@ -5,8 +5,8 @@ import styles from "../ChatCSS/ChatPage.module.css";
 import { fetchChatRooms, fetchChatMessages } from "../api/chat";
 import { Client } from "@stomp/stompjs";
 
-const BASE_HTTP_URL = "http://localhost:8080";
-const BASE_WS_URL = "ws://localhost:8080/ws";
+const BASE_HTTP_URL = "https://hagglemarket.onrender.com";
+const BASE_WS_URL = "wss://hagglemarket.onrender.com/ws";
 const DEFAULT_AVATAR = "/images/default-avatar.jpg";
 const BOT_ROOM_NAME = "해글봇 💬";
 
@@ -63,6 +63,7 @@ function ChatPage() {
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
   const seenSetRef = useRef(new Set());
+  const myUserNoRef = useRef(null);
 
   const selectedRoom = useMemo(
     () => chatRooms.find((r) => r.roomId === selectedChatRoomId) || null,
@@ -110,18 +111,18 @@ function ChatPage() {
         }
         seenSetRef.current = nextSeen;
         setMessages(reversed);
+        if (reversed.length > 0) {
+          myUserNoRef.current = reversed[0].currentUserNo;
+        }
       } catch (e) {
         console.error("메시지 불러오기 실패:", e);
       }
     })();
   }, [selectedChatRoomId]);
 
-  /** 🟩 3️⃣ STOMP 연결 (앱 생명주기 1회) */
+  /** 🟩 3️⃣ STOMP 연결 */
   useEffect(() => {
-    if (stompRef.current && stompRef.current.connected) {
-      console.log("[WS] 이미 연결됨");
-      return;
-    }
+    if (stompRef.current && stompRef.current.connected) return;
 
     const token =
       localStorage.getItem("jwtToken") ||
@@ -178,24 +179,32 @@ function ChatPage() {
         const msg = JSON.parse(frame.body);
         const key =
           msg.id ?? `${msg.clientMsgId || "x"}:${msg.senderNo || "x"}`;
+
         if (seenSetRef.current.has(key)) return;
+
+        const isMine =
+          msg.senderNo === messages.find((m) => m.currentUserNo)?.currentUserNo;
+        const alreadyInUI = messages.some(
+          (m) =>
+            m.clientMsgId === msg.clientMsgId && m.senderNo === msg.senderNo
+        );
+        if (isMine && alreadyInUI) return;
+
         seenSetRef.current.add(key);
-        setMessages((prev) => [...prev, msg]);
-
-        // ✅ 봇방 절대 맨 위 고정 정렬
-        setChatRooms((prev) => {
-          const botRoom = prev.find((r) => r.otherUserName === BOT_ROOM_NAME);
-          const nonBotRooms = prev.filter(
-            (r) => r.otherUserName !== BOT_ROOM_NAME
+        setMessages((prev) => {
+          const combined = [...prev, msg];
+          // ✅ createdAt이 undefined인 경우 안전하게 처리
+          const unique = Array.from(
+            new Map(
+              combined.map((m) => [m.id ?? `${m.clientMsgId}:${m.senderNo}`, m])
+            ).values()
           );
-
-          const current = nonBotRooms.find((r) => r.roomId === msg.roomId);
-          const others = nonBotRooms.filter((r) => r.roomId !== msg.roomId);
-
-          const newRooms = botRoom
-            ? [botRoom, current, ...others].filter(Boolean)
-            : [current, ...others];
-          return newRooms;
+          unique.sort((a, b) => {
+            const t1 = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const t2 = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return t1 - t2;
+          });
+          return unique;
         });
       } catch (err) {
         console.error("실시간 메시지 파싱 실패:", err);
@@ -216,40 +225,33 @@ function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /** 🟩 6️⃣ 메시지 전송 */
+  /** 🟩 6️⃣ 메시지 전송 (Optimistic UI) */
   const handleSendMessage = () => {
     if (!currentMessage.trim() || !selectedChatRoomId) return;
-    const body = {
-      content: normalizeMessage(currentMessage),
+    const trimmed = normalizeMessage(currentMessage);
+    const msgObj = {
+      content: trimmed,
       clientMsgId: Date.now(),
+      senderNo: myUserNoRef.current,
+      currentUserNo: myUserNoRef.current,
+      roomId: selectedChatRoomId,
+      createdAt: new Date().toISOString(),
+      type: "CHAT",
+      status: "NORMAL",
+      temp: true,
     };
+
+    setMessages((prev) => [...prev, msgObj]);
 
     const client = stompRef.current;
     if (client && client.connected) {
       client.publish({
         destination: `/app/chat.send.${selectedChatRoomId}`,
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          content: trimmed,
+          clientMsgId: msgObj.clientMsgId,
+        }),
       });
-
-      // ✅ 봇방 절대 고정 정렬
-      setChatRooms((prev) => {
-        const botRoom = prev.find((r) => r.otherUserName === BOT_ROOM_NAME);
-        const nonBotRooms = prev.filter(
-          (r) => r.otherUserName !== BOT_ROOM_NAME
-        );
-
-        const current = nonBotRooms.find(
-          (r) => r.roomId === selectedChatRoomId
-        );
-        const others = nonBotRooms.filter(
-          (r) => r.roomId !== selectedChatRoomId
-        );
-
-        return botRoom
-          ? [botRoom, current, ...others].filter(Boolean)
-          : [current, ...others];
-      });
-
       setCurrentMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
     } else {
@@ -257,7 +259,6 @@ function ChatPage() {
     }
   };
 
-  /** 이미지 경로 처리 */
   const resolveImageUrl = (url) => {
     if (!url) return DEFAULT_AVATAR;
     if (/^https?:\/\//i.test(url)) return url;
@@ -276,7 +277,7 @@ function ChatPage() {
           {chatRooms.length === 0 ? (
             <p className={styles.emptyMessage}>채팅 목록이 없습니다.</p>
           ) : (
-            chatRooms.map((room, idx) => (
+            chatRooms.map((room) => (
               <div
                 key={room.roomId}
                 className={`${styles.chatRoomItem} ${
@@ -299,16 +300,6 @@ function ChatPage() {
                   <div className={styles.chatRoomLastMessage}>
                     {room.lastMessage || "메시지가 없습니다."}
                   </div>
-                </div>
-                <div className={styles.chatRoomMeta}>
-                  <span className={styles.chatRoomTime}>
-                    {room.lastMessageTime
-                      ? new Date(room.lastMessageTime).toLocaleTimeString(
-                          "ko-KR",
-                          { hour: "2-digit", minute: "2-digit" }
-                        )
-                      : ""}
-                  </span>
                 </div>
               </div>
             ))
@@ -355,7 +346,10 @@ function ChatPage() {
                   const isMe = msg.senderNo === msg.currentUserNo;
                   const msgDate = new Date(msg.createdAt).toLocaleDateString(
                     "ko-KR",
-                    { month: "2-digit", day: "2-digit" }
+                    {
+                      month: "2-digit",
+                      day: "2-digit",
+                    }
                   );
                   const prevDate =
                     idx > 0
