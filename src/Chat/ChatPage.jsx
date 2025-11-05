@@ -135,18 +135,13 @@ function ChatPage() {
       return;
     }
 
-    const wsFactory = () =>
-      new WebSocket(
-        `${BASE_WS_URL}?Authorization=${encodeURIComponent(`Bearer ${token}`)}`
-      );
-
     const client = new Client({
-      webSocketFactory: wsFactory,
+      brokerURL: BASE_WS_URL, // ✅ wss://로 직접 연결
       connectHeaders: { Authorization: `Bearer ${token}` },
       debug: (msg) => console.log("[STOMP]", msg),
-      reconnectDelay: 0,
+      reconnectDelay: 3000, // 자동 재연결 (3초)
       onConnect: () => console.log("✅ STOMP 연결 성공"),
-      onStompError: (f) => console.error("❌ STOMP 에러:", f.body),
+      onStompError: (frame) => console.error("❌ STOMP 에러:", frame.body),
       onWebSocketError: (e) => console.error("❌ WS 에러:", e),
       onWebSocketClose: (e) => console.warn("⚠️ WS 종료:", e),
     });
@@ -193,7 +188,6 @@ function ChatPage() {
         seenSetRef.current.add(key);
         setMessages((prev) => {
           const combined = [...prev, msg];
-          // ✅ createdAt이 undefined인 경우 안전하게 처리
           const unique = Array.from(
             new Map(
               combined.map((m) => [m.id ?? `${m.clientMsgId}:${m.senderNo}`, m])
@@ -225,7 +219,7 @@ function ChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /** 🟩 6️⃣ 메시지 전송 (Optimistic UI) */
+  /** 🟩 6️⃣ 메시지 전송 */
   const handleSendMessage = () => {
     if (!currentMessage.trim() || !selectedChatRoomId) return;
     const trimmed = normalizeMessage(currentMessage);
@@ -251,6 +245,14 @@ function ChatPage() {
           content: trimmed,
           clientMsgId: msgObj.clientMsgId,
         }),
+        headers: {
+          Authorization: `Bearer ${
+            localStorage.getItem("jwtToken") ||
+            localStorage.getItem("accessToken") ||
+            localStorage.getItem("token") ||
+            ""
+          }`,
+        },
       });
       setCurrentMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
@@ -346,10 +348,7 @@ function ChatPage() {
                   const isMe = msg.senderNo === msg.currentUserNo;
                   const msgDate = new Date(msg.createdAt).toLocaleDateString(
                     "ko-KR",
-                    {
-                      month: "2-digit",
-                      day: "2-digit",
-                    }
+                    { month: "2-digit", day: "2-digit" }
                   );
                   const prevDate =
                     idx > 0

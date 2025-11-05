@@ -324,7 +324,7 @@
   font-weight: bold;
   margin: 0;
 }
-
+a
 /* 모달 애니메이션 */
 @keyframes modalFadeIn {
   from {
